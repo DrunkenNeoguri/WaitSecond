@@ -40,4 +40,6 @@ export type StyledCommonType = {
     | "flex-end"
     | "stretch"
     | "baseline";
+  padding?: string;
+  margin?: string;
 };
