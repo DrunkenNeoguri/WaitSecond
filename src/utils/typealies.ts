@@ -12,13 +12,16 @@ export type TypedCommonInput = {
 
 export type TypedCommonButton = {
   type: "button" | "submit" | "reset";
-  onClick: () => void;
+  onClick?: () => void;
   value?: string;
-  style?: {
-    padding?: string;
-    margin?: string;
-    border?: string;
-  };
+  children: React.ReactNode;
+  padding?: string;
+  margin?: string;
+  border?: string;
+  background?: string;
+  fontSize?: string;
+  borderRadius?: string;
+  color?: string;
 };
 
 // styled type
@@ -26,6 +29,11 @@ export type StyledButtonType = {
   border?: string;
   padding?: string;
   margin?: string;
+  width?: string;
+  borderRadius?: string;
+  background?: string;
+  fontSize?: string;
+  color?: string;
 };
 
 export type StyledCommonType = {
@@ -46,6 +54,9 @@ export type StyledCommonType = {
     | "baseline";
   padding?: string;
   margin?: string;
+  width?: string;
+  height?: string;
+  gap?: string;
 };
 
 export type StyledCheckBox = {
@@ -56,6 +67,7 @@ export type StyledCheckBox = {
 
 export type Props = {
   children?: React.ReactNode;
+  page?: "user" | "admin";
 };
 
 export class UserData {
