@@ -1,45 +1,47 @@
+import { Button, Flex } from "@chakra-ui/react";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import styled from "styled-components";
 
 const CommonHeader: React.FC<{
   children?: React.ReactNode;
   page: "admin" | "user";
 }> = (props) => {
   return (
-    <NavBar>
+    <Flex
+      as="nav"
+      background="#5a5a5a"
+      width="100vw"
+      height="3.5rem"
+      display="flex"
+      justify="space-between"
+      align="center"
+      padding="0.625rem"
+      position="fixed"
+      zIndex="3"
+      top="0"
+    >
       {props.page === "admin" ? (
         <>
-          <menu /> <button>예</button>
+          <Button>예</Button>
+          <Button>예</Button>
         </>
       ) : (
         <>
-          <button></button>{" "}
-          <button>
+          <Button background="none" color="#ffffff" fontSize="1.25rem">
+            저시력
+          </Button>
+          <Button background="none">
             <FontAwesomeIcon
               icon={faGlobe}
               color="#ffffff"
               style={{ height: "2.25rem", width: "2.25rem" }}
             />
-          </button>
+          </Button>
         </>
       )}
-    </NavBar>
+    </Flex>
   );
 };
 
 export default CommonHeader;
-
-const NavBar = styled.nav`
-  background: #5a5a5a;
-  width: 100vw;
-  height: 3.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.625rem;
-  position: fixed;
-  z-index: 3;
-  top: 0;
-`;
