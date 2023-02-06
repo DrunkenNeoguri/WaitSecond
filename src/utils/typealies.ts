@@ -7,60 +7,15 @@ export type TypedCommonInput = {
   title: string;
   placeholder?: string;
   maxLength?: number;
+  justify?: string;
+  align?: string;
+  margin?: string;
+  padding?: string;
+  fontSize?: string;
+  fontWeight?: string;
+  labelWidth?: string;
+  inputWidth?: string;
   onChange: (e: React.ChangeEvent) => void;
-};
-
-export type TypedCommonButton = {
-  type: "button" | "submit" | "reset";
-  onClick?: () => void;
-  value?: string;
-  children: React.ReactNode;
-  padding?: string;
-  margin?: string;
-  border?: string;
-  background?: string;
-  fontSize?: string;
-  borderRadius?: string;
-  color?: string;
-};
-
-// styled type
-export type StyledButtonType = {
-  border?: string;
-  padding?: string;
-  margin?: string;
-  width?: string;
-  borderRadius?: string;
-  background?: string;
-  fontSize?: string;
-  color?: string;
-};
-
-export type StyledCommonType = {
-  justifyContent?:
-    | "normal"
-    | "center"
-    | "flex-start"
-    | "flex-end"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
-  alignItems?:
-    | "normal"
-    | "center"
-    | "flex-start"
-    | "flex-end"
-    | "stretch"
-    | "baseline";
-  padding?: string;
-  margin?: string;
-  width?: string;
-  height?: string;
-  gap?: string;
-};
-
-export type StyledCheckBox = {
-  isChecked: string;
 };
 
 // feature type
