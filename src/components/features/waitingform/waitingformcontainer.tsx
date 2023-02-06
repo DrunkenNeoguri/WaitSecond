@@ -1,25 +1,24 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  EventObject,
-  UserData,
-  StyledCheckBox,
-} from "../../../utils/typealies";
-import { CommonRowInput, StCommonLabel } from "../../common/commoninput";
-import {
-  CommonRowBox,
-  CommonColumnBox,
-  CommonBorder,
-} from "../../common/commonui";
+import { EventObject, UserData } from "../../../utils/typealies";
+import { CommonInput } from "../../common/commoninput";
 import {
   faMinus,
   faPlus,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
-import CommonButton from "../../common/commonbutton";
 import { telRegex } from "../../../utils/reqlist";
 import CheckDataModal from "./checkdatamodal";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData("", "", 1, false, false);
@@ -36,7 +35,7 @@ const WaitingFormContainer: React.FC = () => {
   };
 
   // Func - change state when user clicked checkbox
-  const changeCheckState = (e: React.MouseEvent, state: boolean) => {
+  const changeCheckState = (e: React.ChangeEvent, state: boolean) => {
     e.preventDefault();
     setUserData({ ...userData, [e.currentTarget.id]: !state });
   };
@@ -53,7 +52,7 @@ const WaitingFormContainer: React.FC = () => {
   };
 
   // Func - change state when user clicked agree button
-  const changeAgreeState = (e: React.MouseEvent) => {
+  const changeAgreeState = (e: React.ChangeEvent) => {
     e.preventDefault();
     setAgreeState(!agreeState);
   };
@@ -72,255 +71,251 @@ const WaitingFormContainer: React.FC = () => {
     if (userData.tel === "" || telRegex.test(userData.tel) === false) {
       return alert("연락처를 정확하게 작성해주세요.");
     }
-
+    console.log("여기?");
     setModalState(true);
   };
 
   return (
     <section>
-      <StBackground />
+      <Box
+        background="#58a6dc"
+        display="block"
+        height="13rem"
+        marginTop="3.5rem"
+      />
       {modalState === true ? (
         <CheckDataModal userInfo={userData} close={setModalState} />
       ) : (
         <></>
       )}
-      <StArticle>
-        <StShopTitle>너굴 상점</StShopTitle>
-        <StNowWaitingTeamBlock>
-          <p>현재 대기 팀</p>
-          <p
-            style={{ fontSize: "1.75rem", fontWeight: "700", color: "#58a6dc" }}
-          >
+      <Flex
+        as="article"
+        direction="column"
+        position="relative"
+        background="#ffffff"
+        padding="2rem 1rem"
+        margin="0 1rem"
+        border="none"
+        borderRadius="1rem 1rem 0 0"
+        top="-4rem"
+        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+      >
+        <Heading as="h1" textAlign="center">
+          너굴 상점
+        </Heading>
+        <Flex
+          direction="row"
+          justify="space-between"
+          align="center"
+          fontSize="1.25rem"
+          margin="1.5rem 0"
+        >
+          <Text>현재 대기 팀</Text>
+          <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
             4팀
-          </p>
-        </StNowWaitingTeamBlock>
+          </Text>
+        </Flex>
         <form onSubmit={submitUserData}>
-          <CommonColumnBox>
-            <CommonRowBox alignItems="center">
-              <FontAwesomeIcon
-                icon={faTriangleExclamation}
-                style={{
-                  color: "red",
-                  fontSize: "1.5rem",
-                }}
-              />
-              <p
-                style={{
-                  margin: "0 0.5rem",
-                  fontSize: "1.5rem",
-                  color: "#58a6dc",
-                  fontWeight: "600",
-                }}
+          <FormControl textAlign="center">
+            <Flex direction="column">
+              <Flex direction="row" align="center">
+                <FontAwesomeIcon
+                  icon={faTriangleExclamation}
+                  style={{
+                    color: "red",
+                    fontSize: "1.5rem",
+                  }}
+                />
+                <Text
+                  margin="0 0.5rem"
+                  fontSize="1.5rem"
+                  color="#58a6dc"
+                  fontWeight="600"
+                >
+                  참고해주세요!
+                </Text>
+              </Flex>
+              <Text
+                border="2px solid #4E95FF"
+                borderRadius="0.25rem"
+                fontSize="1rem"
+                letterSpacing="-2%"
+                lineHeight="1.25rem"
+                margin="1.5rem 0"
+                padding="0.25rem"
+                whiteSpace="pre-wrap"
+                textAlign="left"
               >
-                참고해주세요!
-              </p>
-            </CommonRowBox>
-            <p
-              style={{
-                border: "2px solid #4E95FF",
-                borderRadius: "0.25rem",
-                fontSize: "1rem",
-                letterSpacing: "-2%",
-                lineHeight: "1.25rem",
-                margin: "1.5rem 0",
-                padding: "0.25rem",
-                whiteSpace: "pre-wrap",
-              }}
+                대기 등록을 위해 성함과 연락처를 수집하고 있습니다. 수집한
+                정보는 가게에 입장하거나, 대기 취소 시 자동으로 삭제됩니다.
+              </Text>
+              <Flex direction="row" align="center">
+                <Checkbox
+                  size="lg"
+                  id="agree"
+                  onChange={changeAgreeState}
+                  isChecked={agreeState === false ? false : true}
+                />
+                <FormLabel htmlFor="agree" fontSize="1.25rem" margin="0 0.5rem">
+                  확인했습니다.
+                </FormLabel>
+              </Flex>
+            </Flex>
+            <Box
+              display="block"
+              background="#d4d4d4"
+              height="0.125rem"
+              borderRadius="1rem"
+              boxSizing="border-box"
+              margin="2rem 1rem"
+            />
+            <CommonInput
+              id="name"
+              type="text"
+              title="성함"
+              value={userData.name}
+              onChange={inputUserText}
+              fontSize="1.5rem"
+              labelWidth="30%"
+              inputWidth="70%"
+              margin="2rem 0"
+            />
+            <CommonInput
+              id="tel"
+              type="tel"
+              title="연락처"
+              value={userData.tel}
+              onChange={inputUserText}
+              fontSize="1.5rem"
+              labelWidth="30%"
+              inputWidth="70%"
+              margin="2rem 0"
+            />
+            <Flex
+              direction="row"
+              align="center"
+              justify="space-between"
+              margin="2rem 0"
             >
-              대기 등록을 위해 성함과 연락처를 수집하고 있습니다. 수집한 정보는
-              가게에 입장하거나, 대기 취소 시 자동으로 삭제됩니다.
-            </p>
-            <CommonRowBox alignItems="center">
-              <StCheckBox
-                type="button"
-                id="agree"
-                onClick={changeAgreeState}
-                isChecked={agreeState === false ? "none" : "#5ABFB7"}
-              />
-              <label
-                htmlFor="agree"
-                style={{ fontSize: "1.25rem", margin: "0 0.5rem" }}
+              <FormLabel
+                fontSize="1.5rem"
+                fontWeight="500"
+                width="30%"
+                margin="0"
               >
-                확인했습니다.
-              </label>
-            </CommonRowBox>
-          </CommonColumnBox>
-          <CommonBorder />
-          <CommonRowInput
-            id="name"
-            type="text"
-            title="성함"
-            value={userData.name}
-            onChange={inputUserText}
-          />
-          <CommonRowInput
-            id="tel"
-            type="tel"
-            title="연락처"
-            value={userData.tel}
-            onChange={inputUserText}
-          />
-          <CommonRowBox
-            alignItems="center"
-            justifyContent="space-between"
-            margin="2rem 0"
-          >
-            <StCommonLabel>인원</StCommonLabel>
-            <div
-              style={{
-                display: "flex",
-                width: "70%",
-                justifyContent: "space-between",
-                flex: "1 0 2.5rem",
-              }}
+                인원
+              </FormLabel>
+              <Flex
+                width="70%"
+                justifyContent="space-between"
+                flex="1 0 2.5rem"
+              >
+                <Button
+                  id="countMinus"
+                  onClick={changeMemberCount}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="2.5rem"
+                  flex="1 0 2.5rem"
+                  margin="0 1rem 0 0"
+                  background="#5ABFB7"
+                  fontSize="1.5rem"
+                  color="#FFFFFF"
+                  padding={0}
+                  borderRadius="4px"
+                  border="1px solid gray"
+                >
+                  <FontAwesomeIcon icon={faMinus} />
+                </Button>
+                <Flex
+                  justify="center"
+                  align="center"
+                  height="2.5rem"
+                  fontSize="1.5rem"
+                  color="#000000"
+                  padding="0.5rem 0"
+                  borderRadius="4px"
+                  border="1px solid gray"
+                  width="100%"
+                >
+                  {userData.member}명
+                </Flex>
+                <Button
+                  id="countPlus"
+                  onClick={changeMemberCount}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="2.5rem"
+                  flex="1 0 2.5rem"
+                  margin="0 0 0 1rem"
+                  background="#5ABFB7"
+                  fontSize="1.5rem"
+                  color="#FFFFFF"
+                  padding={0}
+                  borderRadius="4px"
+                  border="1px solid gray"
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                </Button>
+              </Flex>
+            </Flex>
+            <Box>
+              <Flex align="center" margin="1rem 0">
+                <Checkbox
+                  size="lg"
+                  id="child"
+                  onChange={(e: React.ChangeEvent) =>
+                    changeCheckState(e, userData.child!)
+                  }
+                  isChecked={userData.child === false ? false : true}
+                />
+                <FormLabel
+                  fontSize="1.5rem"
+                  fontWeight="500"
+                  width="auto"
+                  margin="0 0.5rem"
+                >
+                  아이가 있어요.
+                </FormLabel>
+              </Flex>
+              <Flex align="center" margin="1rem 0">
+                <Checkbox
+                  size="lg"
+                  id="pet"
+                  onChange={(e: React.ChangeEvent) =>
+                    changeCheckState(e, userData.pet!)
+                  }
+                  isChecked={userData.pet === false ? false : true}
+                />
+                <FormLabel
+                  fontSize="1.5rem"
+                  fontWeight="500"
+                  width="auto"
+                  margin="0 0.5rem"
+                >
+                  반려 동물이 있어요.
+                </FormLabel>
+              </Flex>
+            </Box>
+            <Button
+              type="submit"
+              variant="solid"
+              background="#5ABFB7"
+              padding="0.5rem auto"
+              fontSize="1.5rem"
+              borderRadius="0.25rem"
+              color="#ffffff"
+              width="90%"
             >
-              <button
-                id="countMinus"
-                onClick={changeMemberCount}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "2.5rem",
-                  flex: "1 0 2.5rem",
-                  margin: "0 1rem 0 0",
-                  background: "#5ABFB7",
-                  fontSize: "1.5rem",
-                  color: "#FFFFFF",
-                  padding: 0,
-                  borderRadius: "4px",
-                  border: "1px solid gray",
-                }}
-              >
-                <FontAwesomeIcon icon={faMinus} />
-              </button>
-              <span
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "2.5rem",
-                  fontSize: "1.5rem",
-                  color: "#000000",
-                  padding: "0.5rem 0",
-                  borderRadius: "4px",
-                  border: "1px solid gray",
-                  width: "100%",
-                }}
-              >
-                {userData.member}명
-              </span>
-              <button
-                id="countPlus"
-                onClick={changeMemberCount}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "2.5rem",
-                  flex: "1 0 2.5rem",
-                  margin: "0 0 0 1rem",
-                  background: "#5ABFB7",
-                  fontSize: "1.5rem",
-                  color: "#FFFFFF",
-                  padding: 0,
-                  borderRadius: "4px",
-                  border: "1px solid gray",
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
-          </CommonRowBox>
-          <div>
-            <CommonRowBox alignItems="center" margin="1rem 0">
-              <StCheckBox
-                type="button"
-                id="child"
-                onClick={(e) => changeCheckState(e, userData.child!)}
-                isChecked={userData.child === false ? "none" : "#5ABFB7"}
-              />
-              <StCommonLabel width="auto" style={{ margin: "0 0.5rem" }}>
-                아이가 있어요.
-              </StCommonLabel>
-            </CommonRowBox>
-            <CommonRowBox alignItems="center" margin="1rem 0">
-              <StCheckBox
-                type="button"
-                id="pet"
-                onClick={(e) => changeCheckState(e, userData.pet!)}
-                isChecked={userData.pet === false ? "none" : "#5ABFB7"}
-              />
-              <StCommonLabel width="auto" style={{ margin: "0 0.5rem" }}>
-                반려 동물이 있어요.
-              </StCommonLabel>
-            </CommonRowBox>
-          </div>
-          <CommonButton
-            type="submit"
-            border="1px solid gray"
-            background="#5ABFB7"
-            padding="0.5rem 0"
-            fontSize="1.5rem"
-            borderRadius="0.25rem"
-            color="#ffffff"
-          >
-            대기 등록
-          </CommonButton>
+              대기 등록
+            </Button>
+          </FormControl>
         </form>
-      </StArticle>
+      </Flex>
     </section>
   );
 };
 
 export default WaitingFormContainer;
-
-const StBackground = styled.div`
-  background: #58a6dc;
-  display: block;
-  height: 13rem;
-  margin-top: 3.5rem;
-`;
-
-const StArticle = styled.article`
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background: #ffffff;
-  padding: 2rem 1rem;
-  margin: 0 1rem;
-  border: none;
-  border-radius: 1rem 1rem 0 0;
-  top: -4rem;
-  box-shadow: 0px 4px 6px rgba(90, 90, 90, 30%);
-`;
-
-const StShopTitle = styled.h1`
-  margin: auto;
-  font-size: 1.875rem;
-  font-weight: 700;
-`;
-
-const StNowWaitingTeamBlock = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.25rem;
-  margin: 1.5rem 0;
-`;
-
-const StCheckBox = styled.button<StyledCheckBox>`
-  background-color: ${(props) => props.isChecked};
-
-  border: 2px solid gray;
-  border-radius: 4px;
-  margin: 0;
-  padding: 0;
-  outline: none;
-
-  width: 1.5rem;
-  height: 1.5rem;
-
-  cursor: pointer;
-`;
