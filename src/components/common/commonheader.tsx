@@ -2,11 +2,21 @@ import { Button, Flex } from "@chakra-ui/react";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { useRecoilState } from "recoil";
+import { lowVisionState } from "../../modules/atoms/atoms";
 
 const CommonHeader: React.FC<{
   children?: React.ReactNode;
   page: "admin" | "user";
 }> = (props) => {
+  const [visionState, setVisionState] = useRecoilState<boolean>(lowVisionState);
+
+  //Func - change font size when user clicked low vision button
+  const changeLowVisionState = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setVisionState(!visionState);
+  };
+
   return (
     <Flex
       as="nav"
@@ -28,13 +38,27 @@ const CommonHeader: React.FC<{
         </>
       ) : (
         <>
-          <Button background="none" color="#ffffff" fontSize="1.25rem">
+          <Button
+            background="none"
+            color="#ffffff"
+            fontSize="1.25rem"
+            onClick={changeLowVisionState}
+            _hover={{
+              background: "#ffffff",
+              color: "#000000",
+            }}
+          >
             저시력
           </Button>
-          <Button background="none">
+          <Button
+            background="none"
+            color="#ffffff"
+            _hover={{
+              color: "#5ABFB7",
+            }}
+          >
             <FontAwesomeIcon
               icon={faGlobe}
-              color="#ffffff"
               style={{ height: "2.25rem", width: "2.25rem" }}
             />
           </Button>
