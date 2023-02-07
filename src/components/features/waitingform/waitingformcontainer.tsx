@@ -19,6 +19,8 @@ import {
   Heading,
   Text,
 } from "@chakra-ui/react";
+import { lowVisionState } from "../../../modules/atoms/atoms";
+import { useRecoilValue } from "recoil";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData("", "", 1, false, false);
@@ -26,6 +28,7 @@ const WaitingFormContainer: React.FC = () => {
   const [userData, setUserData] = useState<UserData>(initialState);
   const [agreeState, setAgreeState] = useState(false);
   const [modalState, setModalState] = useState(false);
+  const visionState = useRecoilValue<boolean>(lowVisionState);
 
   // Func - Input User Data
   const inputUserText = (e: React.ChangeEvent) => {
@@ -107,7 +110,7 @@ const WaitingFormContainer: React.FC = () => {
           direction="row"
           justify="space-between"
           align="center"
-          fontSize="1.25rem"
+          fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           margin="1.5rem 0"
         >
           <Text>현재 대기 팀</Text>
@@ -123,12 +126,12 @@ const WaitingFormContainer: React.FC = () => {
                   icon={faTriangleExclamation}
                   style={{
                     color: "red",
-                    fontSize: "1.5rem",
+                    fontSize: visionState === false ? "1.5rem" : "1.625rem",
                   }}
                 />
                 <Text
                   margin="0 0.5rem"
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   color="#58a6dc"
                   fontWeight="600"
                 >
@@ -138,16 +141,18 @@ const WaitingFormContainer: React.FC = () => {
               <Text
                 border="2px solid #4E95FF"
                 borderRadius="0.25rem"
-                fontSize="1rem"
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
                 letterSpacing="-2%"
-                lineHeight="1.25rem"
+                lineHeight={visionState === false ? "1.5rem" : "2.25rem"}
                 margin="1.5rem 0"
                 padding="0.25rem"
                 whiteSpace="pre-wrap"
                 textAlign="left"
               >
-                대기 등록을 위해 성함과 연락처를 수집하고 있습니다. 수집한
-                정보는 가게에 입장하거나, 대기 취소 시 자동으로 삭제됩니다.
+                대기 등록을 위해 성함과 연락처를 수집하고 있습니다.
+                <br />
+                수집한 정보는 가게에 입장하거나, 대기 취소 시 자동으로
+                삭제됩니다.
               </Text>
               <Flex direction="row" align="center">
                 <Checkbox
@@ -156,7 +161,12 @@ const WaitingFormContainer: React.FC = () => {
                   onChange={changeAgreeState}
                   isChecked={agreeState === false ? false : true}
                 />
-                <FormLabel htmlFor="agree" fontSize="1.25rem" margin="0 0.5rem">
+                <FormLabel
+                  htmlFor="agree"
+                  fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                  margin="0 0.5rem"
+                  cursor="pointer"
+                >
                   확인했습니다.
                 </FormLabel>
               </Flex>
@@ -175,7 +185,7 @@ const WaitingFormContainer: React.FC = () => {
               title="성함"
               value={userData.name}
               onChange={inputUserText}
-              fontSize="1.5rem"
+              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
               labelWidth="30%"
               inputWidth="70%"
               margin="2rem 0"
@@ -186,7 +196,7 @@ const WaitingFormContainer: React.FC = () => {
               title="연락처"
               value={userData.tel}
               onChange={inputUserText}
-              fontSize="1.5rem"
+              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
               labelWidth="30%"
               inputWidth="70%"
               margin="2rem 0"
@@ -198,7 +208,7 @@ const WaitingFormContainer: React.FC = () => {
               margin="2rem 0"
             >
               <FormLabel
-                fontSize="1.5rem"
+                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                 fontWeight="500"
                 width="30%"
                 margin="0"
@@ -220,7 +230,7 @@ const WaitingFormContainer: React.FC = () => {
                   flex="1 0 2.5rem"
                   margin="0 1rem 0 0"
                   background="#5ABFB7"
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   color="#FFFFFF"
                   padding={0}
                   borderRadius="4px"
@@ -232,7 +242,7 @@ const WaitingFormContainer: React.FC = () => {
                   justify="center"
                   align="center"
                   height="2.5rem"
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   color="#000000"
                   padding="0.5rem 0"
                   borderRadius="4px"
@@ -251,7 +261,7 @@ const WaitingFormContainer: React.FC = () => {
                   flex="1 0 2.5rem"
                   margin="0 0 0 1rem"
                   background="#5ABFB7"
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   color="#FFFFFF"
                   padding={0}
                   borderRadius="4px"
@@ -272,10 +282,12 @@ const WaitingFormContainer: React.FC = () => {
                   isChecked={userData.child === false ? false : true}
                 />
                 <FormLabel
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   fontWeight="500"
                   width="auto"
                   margin="0 0.5rem"
+                  htmlFor="child"
+                  cursor="pointer"
                 >
                   아이가 있어요.
                 </FormLabel>
@@ -290,10 +302,12 @@ const WaitingFormContainer: React.FC = () => {
                   isChecked={userData.pet === false ? false : true}
                 />
                 <FormLabel
-                  fontSize="1.5rem"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   fontWeight="500"
                   width="auto"
                   margin="0 0.5rem"
+                  htmlFor="pet"
+                  cursor="pointer"
                 >
                   반려 동물이 있어요.
                 </FormLabel>
@@ -304,7 +318,7 @@ const WaitingFormContainer: React.FC = () => {
               variant="solid"
               background="#5ABFB7"
               padding="0.5rem auto"
-              fontSize="1.5rem"
+              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
               borderRadius="0.25rem"
               color="#ffffff"
               width="90%"

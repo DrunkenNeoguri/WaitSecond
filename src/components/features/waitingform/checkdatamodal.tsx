@@ -12,11 +12,15 @@ import {
   UnorderedList,
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
+import { lowVisionState } from "../../../modules/atoms/atoms";
+import { useRecoilValue } from "recoil";
 
 const CheckDataModal: React.FC<{
   userInfo: UserData;
   close: Dispatch<SetStateAction<boolean>>;
 }> = ({ userInfo, close }) => {
+  const visionState = useRecoilValue<boolean>(lowVisionState);
+
   return (
     <Box
       background="rgba(38, 38, 38, 40%)"
@@ -26,6 +30,7 @@ const CheckDataModal: React.FC<{
       position="fixed"
       top="0"
       zIndex="5"
+      overflow="scroll"
     >
       <Flex
         direction="column"
@@ -37,11 +42,11 @@ const CheckDataModal: React.FC<{
       >
         <Heading
           as="h2"
-          fontSize="1.25rem"
+          fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           textAlign="center"
           marginBottom="1.5rem"
         >
-          작성 내용을 확인해주세요.
+          작성 내용을{visionState === false ? " " : <br />}확인해주세요.
         </Heading>
         <Flex direction="column">
           <Flex
@@ -51,14 +56,18 @@ const CheckDataModal: React.FC<{
             margin="0.5rem 0"
           >
             <FormLabel
-              fontSize="1.25rem"
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               fontWeight="500"
               width="30%"
               margin="0"
             >
               성함
             </FormLabel>
-            <Text fontSize="1.25rem" color="#58a6dc" fontWeight="600">
+            <Text
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              color="#58a6dc"
+              fontWeight="600"
+            >
               {userInfo.name}
             </Text>
           </Flex>
@@ -69,14 +78,18 @@ const CheckDataModal: React.FC<{
             margin="0.5rem 0"
           >
             <FormLabel
-              fontSize="1.25rem"
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               fontWeight="500"
               width="30%"
               margin="0"
             >
               연락처
             </FormLabel>
-            <Text fontSize="1.25rem" color="#58a6dc" fontWeight="600">
+            <Text
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              color="#58a6dc"
+              fontWeight="600"
+            >
               {" "}
               {userInfo.tel}
             </Text>
@@ -88,21 +101,25 @@ const CheckDataModal: React.FC<{
             margin="0.5rem 0"
           >
             <FormLabel
-              fontSize="1.25rem"
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               fontWeight="500"
               width="30%"
               margin="0"
             >
               인원
             </FormLabel>
-            <Text fontSize="1.25rem" color="#58a6dc" fontWeight="600">
+            <Text
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              color="#58a6dc"
+              fontWeight="600"
+            >
               {userInfo.member}명
             </Text>
           </Flex>
           {userInfo.pet === true || userInfo.child === true ? (
             <Flex direction="column" margin="0.5rem 0">
               <FormLabel
-                fontSize="1.25rem"
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
                 fontWeight="500"
                 width="30%"
                 margin="0"
@@ -116,7 +133,7 @@ const CheckDataModal: React.FC<{
                       display="flex"
                       flexDirection="row"
                       alignItems="center"
-                      fontSize="1.25rem"
+                      fontSize={visionState === false ? "1.25rem" : "1.625rem"}
                       margin="1rem 0"
                     >
                       <ListIcon as={CheckCircleIcon} />
@@ -133,7 +150,7 @@ const CheckDataModal: React.FC<{
                       display="flex"
                       flexDirection="row"
                       alignItems="center"
-                      fontSize="1.25rem"
+                      fontSize={visionState === false ? "1.25rem" : "1.625rem"}
                       margin="1rem 0"
                     >
                       <ListIcon as={CheckCircleIcon} />
@@ -159,7 +176,7 @@ const CheckDataModal: React.FC<{
             color="#ffffff"
             padding="1.5rem"
             borderRadius="0.25rem"
-            fontSize="1.25rem"
+            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >
             맞습니다
           </Button>
@@ -170,7 +187,7 @@ const CheckDataModal: React.FC<{
             padding="1.5rem"
             borderRadius="0.25rem"
             onClick={() => close(false)}
-            fontSize="1.25rem"
+            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >
             아니에요
           </Button>
