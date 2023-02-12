@@ -7,6 +7,7 @@ export type TypedCommonInput = {
   title: string;
   placeholder?: string;
   maxLength?: number;
+  direction?: "row" | "column";
   justify?: string;
   align?: string;
   margin?: string;
