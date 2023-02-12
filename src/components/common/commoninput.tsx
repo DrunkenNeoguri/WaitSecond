@@ -6,6 +6,7 @@ import { Flex, FormLabel, Input } from "@chakra-ui/react";
 export const CommonInput = (props: TypedCommonInput) => {
   return (
     <Flex
+      direction={props.direction}
       justify={props.justify}
       align={props.align}
       margin={props.margin}
