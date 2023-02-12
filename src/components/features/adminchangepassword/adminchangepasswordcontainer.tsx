@@ -1,17 +1,17 @@
-import { Button, Flex, FormControl, Heading } from "@chakra-ui/react";
+import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
-const AdminLoginContainer = () => {
-  const initialState = new AdminData("", "");
+const AdminChangePasswordContainer = () => {
+  const initialState = new AdminData("", "", "");
 
-  const [loginData, setLoginData] = useState<AdminData>(initialState);
+  const [passwordData, setPasswordData] = useState<AdminData>(initialState);
 
-  const inputLoginData = (e: React.ChangeEvent) => {
+  const inputPasswordData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
-    setLoginData({ ...loginData, [id]: value });
+    setPasswordData({ ...passwordData, [id]: value });
   };
 
   return (
@@ -31,26 +31,36 @@ const AdminLoginContainer = () => {
         웨잇세컨드
       </Heading>
       <Heading as="h2" fontSize="1.25rem">
-        관리자 로그인
+        비밀번호 변경
       </Heading>
+      <Text
+        fontSize="1rem"
+        lineHeight="1.5rem"
+        whiteSpace="pre-wrap"
+        textAlign="left"
+        letterSpacing="-1px"
+        margin="1rem 0"
+      >
+        새로 변경할 비밀번호를 입력해주세요.
+      </Text>
       <form>
         <FormControl>
-          <CommonInput
-            direction="column"
-            id="email"
-            title="이메일 아이디"
-            type="email"
-            value={loginData.email}
-            onChange={inputLoginData}
-            margin="1.25rem 0"
-          />
           <CommonInput
             direction="column"
             id="password"
             title="비밀번호"
             type="password"
-            value={loginData.password!}
-            onChange={inputLoginData}
+            value={passwordData.password!}
+            onChange={inputPasswordData}
+            margin="1.25rem 0"
+          />
+          <CommonInput
+            direction="column"
+            id="passwordcheck"
+            title="비밀번호 확인"
+            type="password"
+            value={passwordData.passwordcheck!}
+            onChange={inputPasswordData}
             margin="1.25rem 0"
           />
           <Button
@@ -63,23 +73,9 @@ const AdminLoginContainer = () => {
             color="#ffffff"
             width="100%"
             height="3rem"
-            margin="3rem 0 1rem 0"
+            marginTop="1rem"
           >
-            로그인
-          </Button>
-          <Button
-            type="button"
-            variant="solid"
-            background="#5A5A5A"
-            padding="0.5rem auto"
-            fontSize="1.25rem"
-            borderRadius="0.25rem"
-            color="#ffffff"
-            width="100%"
-            height="3rem"
-            margin="1rem 0"
-          >
-            회원가입
+            비밀번호 변경
           </Button>
         </FormControl>
       </form>
@@ -87,4 +83,4 @@ const AdminLoginContainer = () => {
   );
 };
 
-export default AdminLoginContainer;
+export default AdminChangePasswordContainer;
