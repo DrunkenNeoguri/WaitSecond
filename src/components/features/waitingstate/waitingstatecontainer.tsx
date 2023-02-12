@@ -9,11 +9,33 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
+
+  const db = getFirestore();
+  const waitingCol = collection(db, "testData");
+
+  function getWaitingData() {
+    return getDocs(waitingCol).then((data) => {
+      const list: any = [];
+      data.forEach((doc) => {
+        list.push(doc.data());
+      });
+      return list;
+    });
+  }
+
+  const waitingList = useQuery({
+    queryKey: ["waitingList"],
+    queryFn: () => getWaitingData(),
+  });
+
+  console.log(waitingList.data);
 
   return (
     <section style={{ background: "#EDEDED", padding: "1rem 0" }}>
@@ -39,9 +61,10 @@ const WaitingStateContainer = () => {
         >
           <Text fontWeight="600">현재 대기 팀</Text>
           <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-            4팀
+            {waitingList.data.length}팀
           </Text>
         </Flex>
+
         <Text
           borderRadius="0.25rem"
           fontSize={visionState === false ? "1.25rem" : "1.625rem"}
@@ -81,7 +104,7 @@ const WaitingStateContainer = () => {
           >
             <Text fontWeight="600">인원</Text>
             <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-              2명
+              {waitingList.data[0].member}명
             </Text>
           </Flex>
         </Flex>
@@ -94,30 +117,38 @@ const WaitingStateContainer = () => {
         <UnorderedList
           fontSize={visionState === false ? "1.25rem" : "1.625rem"}
         >
-          <ListItem
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            margin="1rem 0"
-          >
-            <ListIcon as={CheckCircleIcon} />
-            <Text color="#58a6dc" fontWeight="600">
-              아이
-            </Text>
-            가 있어요.
-          </ListItem>
-          <ListItem
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            margin="1rem 0"
-          >
-            <ListIcon as={CheckCircleIcon} />
-            <Text color="#58a6dc" fontWeight="600">
-              반려 동물
-            </Text>
-            이 있어요.
-          </ListItem>
+          {waitingList.data[0].child === true ? (
+            <ListItem
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              margin="1rem 0"
+            >
+              <ListIcon as={CheckCircleIcon} />
+              <Text color="#58a6dc" fontWeight="600">
+                아이
+              </Text>
+              가 있어요.
+            </ListItem>
+          ) : (
+            <></>
+          )}
+          {waitingList.data[0].pet === true ? (
+            <ListItem
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              margin="1rem 0"
+            >
+              <ListIcon as={CheckCircleIcon} />
+              <Text color="#58a6dc" fontWeight="600">
+                반려 동물
+              </Text>
+              이 있어요.
+            </ListItem>
+          ) : (
+            <></>
+          )}
         </UnorderedList>
         <Flex
           direction={visionState === false ? "row" : "column"}
