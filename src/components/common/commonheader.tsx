@@ -1,5 +1,5 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faLowVision } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useRecoilState } from "recoil";
@@ -41,13 +41,14 @@ const CommonHeader: React.FC<{
           <Button
             background="none"
             color="#ffffff"
-            fontSize="1.25rem"
+            fontSize="1.625rem"
             onClick={changeLowVisionState}
             _hover={{
               background: "#ffffff",
               color: "#000000",
             }}
           >
+            <FontAwesomeIcon icon={faLowVision} />
             저시력
           </Button>
           <Button
