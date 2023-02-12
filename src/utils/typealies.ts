@@ -26,6 +26,18 @@ export type Props = {
   page?: "user" | "admin";
 };
 
+export class AdminData {
+  email: string;
+  password?: string;
+  passwordcheck?: string;
+
+  constructor(email: string, password?: string, passwordcheck?: string) {
+    this.email = email;
+    this.password = password;
+    this.passwordcheck = passwordcheck;
+  }
+}
+
 export class UserData {
   name: string;
   tel: string;

@@ -1,17 +1,17 @@
 import { Button, Flex, FormControl, Heading } from "@chakra-ui/react";
 import { useState } from "react";
-import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
+import { AdminData, EventObject } from "../../../utils/typealies";
 
-const AdminLoginContainer = () => {
-  const initialState = new AdminData("", "");
+const AdminSignUpContainer: React.FC = () => {
+  const initialState = new AdminData("", "", "");
 
-  const [loginData, setLoginData] = useState<AdminData>(initialState);
+  const [signUpData, setSignUpData] = useState<AdminData>(initialState);
 
-  const inputLoginData = (e: React.ChangeEvent) => {
+  const inputSignUpData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
-    setLoginData({ ...loginData, [id]: value });
+    setSignUpData({ ...signUpData, [id]: value });
   };
 
   return (
@@ -31,7 +31,7 @@ const AdminLoginContainer = () => {
         웨잇세컨드
       </Heading>
       <Heading as="h2" fontSize="1.25rem">
-        관리자 로그인
+        회원가입
       </Heading>
       <form>
         <FormControl>
@@ -40,8 +40,8 @@ const AdminLoginContainer = () => {
             id="email"
             title="이메일 아이디"
             type="email"
-            value={loginData.email}
-            onChange={inputLoginData}
+            value={signUpData.email}
+            onChange={inputSignUpData}
             margin="1.25rem 0"
           />
           <CommonInput
@@ -49,8 +49,17 @@ const AdminLoginContainer = () => {
             id="password"
             title="비밀번호"
             type="password"
-            value={loginData.password!}
-            onChange={inputLoginData}
+            value={signUpData.password!}
+            onChange={inputSignUpData}
+            margin="1.25rem 0"
+          />
+          <CommonInput
+            direction="column"
+            id="passwordcheck"
+            title="비밀번호 확인"
+            type="password"
+            value={signUpData.passwordcheck!}
+            onChange={inputSignUpData}
             margin="1.25rem 0"
           />
           <Button
@@ -63,23 +72,9 @@ const AdminLoginContainer = () => {
             color="#ffffff"
             width="100%"
             height="3rem"
-            margin="3rem 0 1rem 0"
+            marginTop="1rem"
           >
-            로그인
-          </Button>
-          <Button
-            type="button"
-            variant="solid"
-            background="#5A5A5A"
-            padding="0.5rem auto"
-            fontSize="1.25rem"
-            borderRadius="0.25rem"
-            color="#ffffff"
-            width="100%"
-            height="3rem"
-            margin="1rem 0"
-          >
-            회원가입
+            다음으로
           </Button>
         </FormControl>
       </form>
@@ -87,4 +82,4 @@ const AdminLoginContainer = () => {
   );
 };
 
-export default AdminLoginContainer;
+export default AdminSignUpContainer;
