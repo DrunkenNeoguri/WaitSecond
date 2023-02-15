@@ -1,5 +1,13 @@
-import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
+import { emailRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
@@ -7,11 +15,27 @@ const AdminEmailCheckContainer = () => {
   const initialState = new AdminData("");
 
   const [emailCheckData, setEmailCheckData] = useState<AdminData>(initialState);
+  const [inputCheck, setInputCheck] = useState(false);
 
   const inputSignUpData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setEmailCheckData({ ...emailCheckData, [id]: value });
+    if (inputCheck === false) {
+      setInputCheck(true);
+    }
+  };
+
+  /// Toast 메시지를 띄워주게 할 것
+  const submitEmailData = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailCheckData.email.trim() === "") {
+      return alert("ㅁ");
+    } else if (emailRegex.test(emailCheckData.email) === false) {
+      return alert("ㄴ");
+    }
+
+    return console.log("성공");
   };
 
   return (
@@ -52,7 +76,7 @@ const AdminEmailCheckContainer = () => {
         </Text>
       </Flex>
 
-      <form>
+      <form onSubmit={submitEmailData}>
         <FormControl>
           <CommonInput
             direction="column"
@@ -61,8 +85,17 @@ const AdminEmailCheckContainer = () => {
             type="email"
             value={emailCheckData.email}
             onChange={inputSignUpData}
-            margin="1rem 0"
+            margin="1rem 0 0 0"
           />
+          <Text color="red" marginBottom="1rem">
+            {inputCheck === true
+              ? emailCheckData.email.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : emailRegex.test(emailCheckData.email) === false
+                ? "정확한 이메일을 입력해주십시오."
+                : "　"
+              : "　"}
+          </Text>
           <Button
             type="submit"
             variant="solid"
@@ -74,6 +107,7 @@ const AdminEmailCheckContainer = () => {
             width="100%"
             height="3rem"
             margin="1rem 0"
+            onClick={submitEmailData}
           >
             이메일 인증
           </Button>

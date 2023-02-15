@@ -1,5 +1,6 @@
 import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
 import { useState } from "react";
+import { passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
@@ -7,11 +8,45 @@ const AdminChangePasswordContainer = () => {
   const initialState = new AdminData("", "", "");
 
   const [passwordData, setPasswordData] = useState<AdminData>(initialState);
+  const [inputCheck, setInputCheck] = useState({
+    password: false,
+    passwordcheck: false,
+  });
 
   const inputPasswordData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setPasswordData({ ...passwordData, [id]: value });
+
+    if (e.target.id === "password" && inputCheck.password === false) {
+      setInputCheck({ ...inputCheck, password: true });
+    }
+
+    if (e.target.id === "passwordcheck" && inputCheck.passwordcheck === false) {
+      setInputCheck({ ...inputCheck, passwordcheck: true });
+    }
+  };
+
+  const submitPasswordData = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      passwordData.password?.trim() === "" ||
+      passwordData.passwordcheck?.trim() === ""
+    ) {
+      return alert("ㅁ");
+    } else if (
+      passwordData.password?.trim() !== passwordData.passwordcheck?.trim()
+    ) {
+      return alert("ㄴ");
+    } else if (
+      passwordRegex.test(passwordData.password!) === false ||
+      passwordRegex.test(passwordData.passwordcheck!) === false
+    ) {
+      return alert("ㅇ");
+    }
+
+    alert("그렇지");
   };
 
   return (
@@ -43,7 +78,7 @@ const AdminChangePasswordContainer = () => {
       >
         새로 변경할 비밀번호를 입력해주세요.
       </Text>
-      <form>
+      <form onSubmit={submitPasswordData}>
         <FormControl>
           <CommonInput
             direction="column"
@@ -52,8 +87,18 @@ const AdminChangePasswordContainer = () => {
             type="password"
             value={passwordData.password!}
             onChange={inputPasswordData}
-            margin="1.25rem 0"
+            margin="1.25rem 0 0 0 0"
           />
+          <Text color="red" marginBottom="1.25rem">
+            {inputCheck.password === true
+              ? passwordData.password!.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : passwordRegex.test(passwordData.password!) === false
+                ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
+                : "　"
+              : "　"}
+          </Text>
+
           <CommonInput
             direction="column"
             id="passwordcheck"
@@ -61,8 +106,20 @@ const AdminChangePasswordContainer = () => {
             type="password"
             value={passwordData.passwordcheck!}
             onChange={inputPasswordData}
-            margin="1.25rem 0"
+            margin="1.25rem 0 0 0"
           />
+          <Text color="red" marginBottom="1.25rem">
+            {inputCheck.passwordcheck === true
+              ? passwordData.passwordcheck!.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : passwordRegex.test(passwordData.passwordcheck!) === false
+                ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
+                : passwordData.password!.trim() !==
+                  passwordData.passwordcheck!.trim()
+                ? "비밀번호가 일치하지 않습니다."
+                : "　"
+              : "　"}
+          </Text>
           <Button
             type="submit"
             variant="solid"
@@ -74,6 +131,7 @@ const AdminChangePasswordContainer = () => {
             width="100%"
             height="3rem"
             marginTop="1rem"
+            onClick={submitPasswordData}
           >
             비밀번호 변경
           </Button>
