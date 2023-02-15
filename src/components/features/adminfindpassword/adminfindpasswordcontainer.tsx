@@ -1,5 +1,6 @@
 import { Flex, Heading, FormControl, Button, Text } from "@chakra-ui/react";
 import { useState } from "react";
+import { emailRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
@@ -7,11 +8,26 @@ const AdminFindPasswordContainer = () => {
   const initialState = new AdminData("");
 
   const [emailData, setEmailData] = useState<AdminData>(initialState);
+  const [inputCheck, setInputCheck] = useState(false);
 
   const inputEmailData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setEmailData({ ...emailData, [id]: value });
+    if (inputCheck === false) {
+      setInputCheck(true);
+    }
+  };
+
+  const submitEmailData = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailData.email.trim() === "") {
+      return alert("ㅁ");
+    } else if (emailRegex.test(emailData.email) === false) {
+      return alert("ㄴ");
+    }
+
+    return console.log("성공");
   };
 
   return (
@@ -43,7 +59,7 @@ const AdminFindPasswordContainer = () => {
       >
         등록하신 이메일 주소를 입력해주세요.
       </Text>
-      <form>
+      <form onSubmit={submitEmailData}>
         <FormControl>
           <CommonInput
             direction="column"
@@ -52,8 +68,17 @@ const AdminFindPasswordContainer = () => {
             type="email"
             value={emailData.email}
             onChange={inputEmailData}
-            margin="1rem 0"
+            margin="1.25rem 0 0 0"
           />
+          <Text color="red" marginBottom="1.25rem">
+            {inputCheck === true
+              ? emailData.email.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : emailRegex.test(emailData.email) === false
+                ? "정확한 이메일을 입력해주십시오."
+                : "　"
+              : "　"}
+          </Text>
           <Button
             type="submit"
             variant="solid"
@@ -65,6 +90,7 @@ const AdminFindPasswordContainer = () => {
             width="100%"
             height="3rem"
             margin="1rem 0"
+            onClick={submitEmailData}
           >
             이메일 전송
           </Button>

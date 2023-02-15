@@ -1,5 +1,6 @@
-import { Button, Flex, FormControl, Heading } from "@chakra-ui/react";
+import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
 import { useState } from "react";
+import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
@@ -7,11 +8,36 @@ const AdminLoginContainer = () => {
   const initialState = new AdminData("", "");
 
   const [loginData, setLoginData] = useState<AdminData>(initialState);
+  const [inputCheck, setInputCheck] = useState({
+    email: false,
+    password: false,
+  });
 
   const inputLoginData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setLoginData({ ...loginData, [id]: value });
+
+    if (e.target.id === "email" && inputCheck.email === false) {
+      setInputCheck({ ...inputCheck, email: true });
+    }
+
+    if (e.target.id === "password" && inputCheck.password === false) {
+      setInputCheck({ ...inputCheck, password: true });
+    }
+  };
+
+  const submitLoginData = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginData.email.trim() === "" || loginData.password?.trim() === "") {
+      return alert("ㅁ");
+    } else if (emailRegex.test(loginData.email) === false) {
+      return alert("ㄴ");
+    } else if (passwordRegex.test(loginData.password!) === false) {
+      return alert("ㅇ");
+    }
+
+    return console.log("성공");
   };
 
   return (
@@ -33,7 +59,7 @@ const AdminLoginContainer = () => {
       <Heading as="h2" fontSize="1.25rem">
         관리자 로그인
       </Heading>
-      <form>
+      <form onSubmit={submitLoginData}>
         <FormControl>
           <CommonInput
             direction="column"
@@ -42,8 +68,17 @@ const AdminLoginContainer = () => {
             type="email"
             value={loginData.email}
             onChange={inputLoginData}
-            margin="1.25rem 0"
+            margin="1.25rem 0 0 0"
           />
+          <Text color="red" marginBottom="1rem">
+            {inputCheck.email === true
+              ? loginData.email.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : emailRegex.test(loginData.email) === false
+                ? "정확한 이메일을 입력해주십시오."
+                : "　"
+              : "　"}
+          </Text>
           <CommonInput
             direction="column"
             id="password"
@@ -51,8 +86,17 @@ const AdminLoginContainer = () => {
             type="password"
             value={loginData.password!}
             onChange={inputLoginData}
-            margin="1.25rem 0"
+            margin="1.25rem 0 0 0"
           />
+          <Text color="red" marginBottom="1.25rem">
+            {inputCheck.password === true
+              ? loginData.password!.trim() === ""
+                ? "입력란을 빈칸으로 둘 수 없습니다."
+                : passwordRegex.test(loginData.password!) === false
+                ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
+                : "　"
+              : "　"}
+          </Text>
           <Button
             type="submit"
             variant="solid"
@@ -63,12 +107,12 @@ const AdminLoginContainer = () => {
             color="#ffffff"
             width="100%"
             height="3rem"
-            margin="3rem 0 1rem 0"
+            margin="1.5rem 0 1rem 0"
           >
             로그인
           </Button>
           <Button
-            type="button"
+            type="submit"
             variant="solid"
             background="#5A5A5A"
             padding="0.5rem auto"
@@ -78,6 +122,7 @@ const AdminLoginContainer = () => {
             width="100%"
             height="3rem"
             margin="1rem 0"
+            onClick={submitLoginData}
           >
             회원가입
           </Button>
