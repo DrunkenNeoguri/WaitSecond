@@ -1,11 +1,4 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { emailRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";

@@ -1,4 +1,6 @@
 import { Flex, Heading, FormControl, Button, Text } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { emailRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
@@ -9,6 +11,25 @@ const AdminFindPasswordContainer = () => {
 
   const [emailData, setEmailData] = useState<AdminData>(initialState);
   const [inputCheck, setInputCheck] = useState(false);
+
+  const firebaseAuth = getAuth();
+
+  const findPasswordAccount = async (userData: AdminData) => {
+    const findPasswordState = sendPasswordResetEmail(
+      firebaseAuth,
+      userData.email
+    )
+      .then((data) => data)
+      .catch((error) => error.message);
+    return findPasswordState;
+  };
+
+  const findPasswordMutation = useMutation(findPasswordAccount, {
+    onError: (error, variable) => console.log(error, variable),
+    onSuccess: (data, variable, context) => {
+      console.log(data);
+    },
+  });
 
   const inputEmailData = (e: React.ChangeEvent) => {
     e.preventDefault();
@@ -27,7 +48,7 @@ const AdminFindPasswordContainer = () => {
       return alert("ㄴ");
     }
 
-    return console.log("성공");
+    findPasswordMutation.mutate(emailData);
   };
 
   return (

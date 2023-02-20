@@ -1,4 +1,6 @@
 import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
@@ -11,6 +13,28 @@ const AdminLoginContainer = () => {
   const [inputCheck, setInputCheck] = useState({
     email: false,
     password: false,
+  });
+
+  const firebaseAuth = getAuth();
+
+  const loginAccount = async (userData: AdminData) => {
+    const loginState = signInWithEmailAndPassword(
+      firebaseAuth,
+      userData.email,
+      userData.password!
+    )
+      .then((cred) => console.log("로그인했습니다."))
+      .catch((error) => console.log("로그인에 실패했습니다."));
+
+    return loginState;
+  };
+
+  const loginMutation = useMutation(loginAccount, {
+    onError: (error, variable) => console.log(error),
+    onSuccess: (data, variable, context) => {
+      console.log(data);
+      // 회원 가입 완료하면 이메일 연동 페이지로 보내주기
+    },
   });
 
   const inputLoginData = (e: React.ChangeEvent) => {
@@ -37,7 +61,7 @@ const AdminLoginContainer = () => {
       return alert("ㅇ");
     }
 
-    return console.log("성공");
+    loginMutation.mutate(loginData);
   };
 
   return (

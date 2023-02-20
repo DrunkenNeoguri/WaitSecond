@@ -1,12 +1,11 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AdminChangePassword from "../pages/adminchangepassword";
-import AdminEmailCheck from "../pages/adminemailcheck";
 import AdminFindPassword from "../pages/adminfindpassword";
 import AdminLogin from "../pages/adminlogin";
 import AdminMain from "../pages/adminmain";
 import AdminSetting from "../pages/adminsetting";
 import AdminSignUp from "../pages/adminsignup";
+import AdminVerified from "../pages/adminverified";
 import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
 
@@ -21,9 +20,8 @@ const Router = () => {
         />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/adminsignup" element={<AdminSignUp />} />
-        <Route path="/adminemailcheck" element={<AdminEmailCheck />} />
+        <Route path="/adminverified" element={<AdminVerified />} />
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
-        <Route path="/adminchangepassword" element={<AdminChangePassword />} />
         <Route path="/:store/adminmain" element={<AdminMain />} />
         <Route path="/:store/adminsetting" element={<AdminSetting />} />
       </Routes>

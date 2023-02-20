@@ -1,5 +1,5 @@
 import CommonHeader from "../components/common/commonheader";
-import AdminEmailCheckContainer from "../components/features/adminemailcheck/adminemailcheckcontainer";
+import AdminEmailCheckContainer from "../components/features/nouse/adminemailcheckcontainer";
 import AdminPage from "../layouts/adminpage";
 
 const AdminEmailCheck: React.FC = () => {
