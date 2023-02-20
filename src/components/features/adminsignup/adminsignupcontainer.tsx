@@ -3,6 +3,12 @@ import { useState } from "react";
 import { CommonInput } from "../../common/commoninput";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { useMutation } from "@tanstack/react-query";
 
 const AdminSignUpContainer: React.FC = () => {
   const initialState = new AdminData("", "", "");
@@ -12,6 +18,35 @@ const AdminSignUpContainer: React.FC = () => {
     email: false,
     password: false,
     passwordcheck: false,
+  });
+
+  const firebaseAuth = getAuth();
+
+  const signUpAccount = async (userData: AdminData) => {
+    const createState = createUserWithEmailAndPassword(
+      firebaseAuth,
+      userData.email,
+      userData.password!
+    )
+      .then((cred) => cred.user)
+      .catch((error) => error.message);
+    return createState;
+  };
+
+  const signupMutation = useMutation(signUpAccount, {
+    onError: (error, variable) => console.log(error, variable),
+    onSuccess: (data, variable, context) => {
+      // Firebase auth에서 catch를 통해 받은 error Message도 onSuccess로 들어온다.
+      if (typeof data === "string") {
+        const errorType = data.substring(22, data.length - 2);
+        if (errorType === "email-already-in-use") {
+          // toast 메시지 띄워줄것 - 이미 존재하는 이메일 주소입니다.
+        }
+      } else if (typeof data === "object") {
+        sendEmailVerification(data);
+        // 회원 가입 완료하면 이메일 연동 페이지로 보내주기
+      }
+    },
   });
 
   const inputSignUpData = (e: React.ChangeEvent) => {
@@ -51,7 +86,7 @@ const AdminSignUpContainer: React.FC = () => {
       return alert("ㄹ");
     }
 
-    return console.log("성공");
+    signupMutation.mutate(signUpData);
   };
 
   return (
