@@ -8,7 +8,7 @@ import {
   verifyPasswordResetCode,
 } from "firebase/auth";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
@@ -25,14 +25,13 @@ const AdminVerifiedContainer = () => {
     password: false,
     passwordcheck: false,
   });
+  const [changeState, setChangeState] = useState(false);
 
-  // 이걸 이용해서 어떻게든 해결할 수 있을 것 같다.
   const [searchParams] = useSearchParams();
-
-  // const check = new URLSearchParams(window.location.search);
 
   const firebaseAuth = getAuth();
   const actionCode = searchParams.get("oobCode");
+  const navigate = useNavigate();
 
   const resetPasswordAccount = async (userData: AdminData) => {
     const resetPasswordState = verifyPasswordResetCode(
@@ -42,23 +41,15 @@ const AdminVerifiedContainer = () => {
       .then((data) =>
         confirmPasswordReset(firebaseAuth, actionCode!, userData.password!)
       )
-      .then((data) => console.log("수정된거에요?"))
-      .catch((error) => console.log(error.message));
-    // const resetPasswordState = verifyPasswordResetCode(
-    //   firebaseAuth,
-    //   actionCode!
-    // )
-    //   .then((user) =>
-    //     signInWithEmailLink(firebaseAuth, user, window.location.href)
-    //       .then((data) => console.log("로그인했어요!"))
-    //       .catch((error) => console.log(error.message))
-    //   )
-    //   .catch((error) => console.log(error.message));
+      .then((data) => "")
+      .catch((error) => error.message);
     return resetPasswordState;
   };
 
   const resetPasswordMutation = useMutation(resetPasswordAccount, {
-    onSuccess: (data) => console.log("수정 완료!"),
+    onSuccess: (data) => {
+      setChangeState(true);
+    },
     onError: (error) => console.log(error),
   });
 
@@ -130,9 +121,25 @@ const AdminVerifiedContainer = () => {
           gap="1rem"
         >
           <Text>
-            이메일 인증이 완료됐습니다. 로그인 페이지에서 로그인을 부탁드립니다.
+            이메일 인증이 완료됐습니다. <br />
+            로그인 페이지로 돌아가 가입하신 계정으로 로그인을 시도해주세요.
           </Text>
         </Flex>
+        <Button
+          type="submit"
+          variant="solid"
+          background="#5ABFB7"
+          padding="0.5rem auto"
+          fontSize="1.25rem"
+          borderRadius="0.25rem"
+          color="#ffffff"
+          width="100%"
+          height="3rem"
+          margin="1.5rem 0 1rem 0"
+          onClick={() => navigate("/adminlogin")}
+        >
+          로그인 페이지로 이동
+        </Button>
       </Flex>
     );
   } else if (searchParams.get("mode") === "resetPassword") {
@@ -149,64 +156,110 @@ const AdminVerifiedContainer = () => {
         top="5.5rem"
         boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
       >
-        <Heading as="h1" textAlign="center" marginBottom="2rem">
-          웨잇세컨드
-        </Heading>
-        <Heading as="h2" fontSize="1.25rem">
-          비밀번호 변경
-        </Heading>
-        <Text
-          fontSize="1rem"
-          lineHeight="1.5rem"
-          whiteSpace="pre-wrap"
-          textAlign="left"
-          letterSpacing="-1px"
-          margin="1rem 0"
-        >
-          새로 변경할 비밀번호를 입력해주세요.
-        </Text>
-        <form onSubmit={submitPasswordData}>
-          <FormControl>
-            <CommonInput
-              direction="column"
-              id="password"
-              title="비밀번호"
-              type="password"
-              value={passwordData.password!}
-              onChange={inputPasswordData}
-              margin="1.25rem 0 0 0 0"
-            />
-            <Text color="red" marginBottom="1.25rem">
-              {inputCheck.password === true
-                ? passwordData.password!.trim() === ""
-                  ? "입력란을 빈칸으로 둘 수 없습니다."
-                  : passwordRegex.test(passwordData.password!) === false
-                  ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                  : "　"
-                : "　"}
+        {!changeState ? (
+          <>
+            <Heading as="h1" textAlign="center" marginBottom="2rem">
+              웨잇세컨드
+            </Heading>
+            <Heading as="h2" fontSize="1.25rem">
+              비밀번호 변경
+            </Heading>
+            <Text
+              fontSize="1rem"
+              lineHeight="1.5rem"
+              whiteSpace="pre-wrap"
+              textAlign="left"
+              letterSpacing="-1px"
+              margin="1rem 0"
+            >
+              새로 변경할 비밀번호를 입력해주세요.
             </Text>
+            <form onSubmit={submitPasswordData}>
+              <FormControl>
+                <CommonInput
+                  direction="column"
+                  id="password"
+                  title="비밀번호"
+                  type="password"
+                  value={passwordData.password!}
+                  onChange={inputPasswordData}
+                  margin="1.25rem 0 0 0 0"
+                />
+                <Text color="red" marginBottom="1.25rem">
+                  {inputCheck.password === true
+                    ? passwordData.password!.trim() === ""
+                      ? "입력란을 빈칸으로 둘 수 없습니다."
+                      : passwordRegex.test(passwordData.password!) === false
+                      ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
+                      : "　"
+                    : "　"}
+                </Text>
 
-            <CommonInput
+                <CommonInput
+                  direction="column"
+                  id="passwordcheck"
+                  title="비밀번호 확인"
+                  type="password"
+                  value={passwordData.passwordcheck!}
+                  onChange={inputPasswordData}
+                  margin="1.25rem 0 0 0"
+                />
+                <Text color="red" marginBottom="1.25rem">
+                  {inputCheck.passwordcheck === true
+                    ? passwordData.passwordcheck!.trim() === ""
+                      ? "입력란을 빈칸으로 둘 수 없습니다."
+                      : passwordRegex.test(passwordData.passwordcheck!) ===
+                        false
+                      ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
+                      : passwordData.password!.trim() !==
+                        passwordData.passwordcheck!.trim()
+                      ? "비밀번호가 일치하지 않습니다."
+                      : "　"
+                    : "　"}
+                </Text>
+                <Button
+                  type="submit"
+                  variant="solid"
+                  background="#5ABFB7"
+                  padding="0.5rem auto"
+                  fontSize="1.25rem"
+                  borderRadius="0.25rem"
+                  color="#ffffff"
+                  width="100%"
+                  height="3rem"
+                  marginTop="1rem"
+                  onClick={submitPasswordData}
+                >
+                  비밀번호 변경
+                </Button>
+              </FormControl>
+            </form>{" "}
+          </>
+        ) : (
+          <>
+            <Heading as="h1" textAlign="center" marginBottom="2rem">
+              웨잇세컨드
+            </Heading>
+            <Heading as="h2" fontSize="1.25rem">
+              비밀번호 변경 완료
+            </Heading>
+            <Flex
               direction="column"
-              id="passwordcheck"
-              title="비밀번호 확인"
-              type="password"
-              value={passwordData.passwordcheck!}
-              onChange={inputPasswordData}
-              margin="1.25rem 0 0 0"
-            />
-            <Text color="red" marginBottom="1.25rem">
-              {inputCheck.passwordcheck === true
-                ? passwordData.passwordcheck!.trim() === ""
-                  ? "입력란을 빈칸으로 둘 수 없습니다."
-                  : passwordRegex.test(passwordData.passwordcheck!) === false
-                  ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                  : passwordData.password!.trim() !==
-                    passwordData.passwordcheck!.trim()
-                  ? "비밀번호가 일치하지 않습니다."
-                  : "　"
-                : "　"}
-            </Text>
+              fontSize="1rem"
+              lineHeight="1.5rem"
+              whiteSpace="pre-wrap"
+              textAlign="left"
+              letterSpacing="-1px"
+              margin="1rem 0"
+              gap="1rem"
+            >
+              <Text>
+                비밀번호가 변경됐습니다.
+                <br />
+                로그인 페이지로 돌아가 변경하신 비밀번호로 로그인을 다시
+                시도해주세요.
+              </Text>
+            </Flex>
             <Button
               type="submit"
               variant="solid"
@@ -217,13 +270,13 @@ const AdminVerifiedContainer = () => {
               color="#ffffff"
               width="100%"
               height="3rem"
-              marginTop="1rem"
-              onClick={submitPasswordData}
+              margin="1.5rem 0 1rem 0"
+              onClick={() => navigate("/adminlogin")}
             >
-              비밀번호 변경
+              로그인 페이지로 이동
             </Button>
-          </FormControl>
-        </form>
+          </>
+        )}
       </Flex>
     );
   } else {
