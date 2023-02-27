@@ -1,19 +1,33 @@
-import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 const AdminLoginContainer = () => {
   const initialState = new AdminData("", "");
 
   const [loginData, setLoginData] = useState<AdminData>(initialState);
+  const [autoLoginState, setAutoAgreeState] = useState(false);
   const [inputCheck, setInputCheck] = useState({
     email: false,
     password: false,
   });
+
+  const navigate = useNavigate();
 
   const firebaseAuth = getAuth();
 
@@ -121,6 +135,23 @@ const AdminLoginContainer = () => {
                 : "　"
               : "　"}
           </Text>
+          <Flex direction="row" justify="space-between" margin="0.75rem 0">
+            <Flex direction="row">
+              <Checkbox
+                size="lg"
+                id="autoLogin"
+                onChange={() => setAutoAgreeState(!autoLoginState)}
+                isChecked={autoLoginState ? true : false}
+              ></Checkbox>
+              <FormLabel htmlFor="autoLogin" margin="0 0.5rem" cursor="pointer">
+                자동 로그인
+              </FormLabel>
+            </Flex>
+
+            <Link as={ReactRouterLink} to="/adminfindpassword">
+              비밀번호 찾기
+            </Link>
+          </Flex>
           <Button
             type="submit"
             variant="solid"
@@ -132,6 +163,7 @@ const AdminLoginContainer = () => {
             width="100%"
             height="3rem"
             margin="1.5rem 0 1rem 0"
+            onClick={submitLoginData}
           >
             로그인
           </Button>
@@ -146,7 +178,7 @@ const AdminLoginContainer = () => {
             width="100%"
             height="3rem"
             margin="1rem 0"
-            onClick={submitLoginData}
+            onClick={() => navigate("/adminsignup")}
           >
             회원가입
           </Button>

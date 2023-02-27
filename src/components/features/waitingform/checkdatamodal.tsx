@@ -22,7 +22,7 @@ import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CheckDataModal: React.FC<{
   userInfo: UserData;
@@ -34,6 +34,7 @@ const CheckDataModal: React.FC<{
   const [time, setTime] = useState(3);
   const timeRef = useRef(time);
 
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { store } = useParams();
 
@@ -52,6 +53,7 @@ const CheckDataModal: React.FC<{
         clearInterval(timer);
         setRegisterState(false);
         close(false);
+        navigate(`/${store}/waitingstate/${userInfo.tel}`);
 
         // 해당 내용에서 react-router를 통한 페이지 이동 구현할 것.
         // 버튼 쪽에도 함수 넣을 것.
@@ -126,6 +128,7 @@ const CheckDataModal: React.FC<{
             onClick={() => {
               close(false);
               setRegisterState(false);
+              navigate(`/asgs/waitingstate/${userInfo.tel}`);
             }}
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >
