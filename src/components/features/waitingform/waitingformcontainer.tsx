@@ -21,6 +21,9 @@ import {
 } from "@chakra-ui/react";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
+import { useParams } from "react-router-dom";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData("", "", 1, false, false);
@@ -29,6 +32,29 @@ const WaitingFormContainer: React.FC = () => {
   const [agreeState, setAgreeState] = useState(false);
   const [modalState, setModalState] = useState(false);
   const visionState = useRecoilValue<boolean>(lowVisionState);
+  const { store } = useParams();
+
+  const db = getFirestore();
+  const waitingCol = collection(db, `${store}`);
+
+  const getWaitingData = async () => {
+    const waitingState = await getDocs(waitingCol).then((data) => {
+      const list: any = [];
+      data.forEach((doc) => {
+        list.push(doc.data());
+      });
+      list.sort(function (a: any, b: any) {
+        return a.createdAt - b.createdAt;
+      });
+      return list;
+    });
+    return waitingState;
+  };
+
+  const waitingList = useQuery({
+    queryKey: ["waitingList"],
+    queryFn: getWaitingData,
+  });
 
   // Func - Input User Data
   const inputUserText = (e: React.ChangeEvent) => {
@@ -74,7 +100,6 @@ const WaitingFormContainer: React.FC = () => {
     if (userData.tel === "" || telRegex.test(userData.tel) === false) {
       return alert("연락처를 정확하게 작성해주세요.");
     }
-    console.log("여기?");
     setModalState(true);
   };
 
@@ -115,7 +140,11 @@ const WaitingFormContainer: React.FC = () => {
         >
           <Text>현재 대기 팀</Text>
           <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-            4팀
+            {waitingList.data === undefined
+              ? "확인 중"
+              : waitingList.data === 0
+              ? "없음"
+              : `${waitingList.data.length} 팀`}
           </Text>
         </Flex>
         <form onSubmit={submitUserData}>
