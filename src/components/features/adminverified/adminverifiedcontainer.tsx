@@ -1,4 +1,11 @@
-import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  Heading,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import {
   confirmPasswordReset,
@@ -67,6 +74,8 @@ const AdminVerifiedContainer = () => {
     }
   };
 
+  const toastMsg = useToast();
+
   const submitPasswordData = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,16 +83,45 @@ const AdminVerifiedContainer = () => {
       passwordData.password?.trim() === "" ||
       passwordData.passwordcheck?.trim() === ""
     ) {
-      return alert("ㅁ");
+      return !toastMsg.isActive("error-blank")
+        ? toastMsg({
+            title: "입력란 확인",
+            id: "error-blank",
+            description:
+              "비밀번호와 비밀번호 확인란을 빈칸으로 둘 수 없습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (
       passwordData.password?.trim() !== passwordData.passwordcheck?.trim()
     ) {
-      return alert("ㄴ");
+      return !toastMsg.isActive("error-passwordDiscord")
+        ? toastMsg({
+            title: "비밀번호 불일치",
+            id: "error-passwordDiscord",
+            description:
+              "비밀번호와 비밀번호 확인란의 내용이 서로 일치하지 않습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (
       passwordRegex.test(passwordData.password!) === false ||
       passwordRegex.test(passwordData.passwordcheck!) === false
     ) {
-      return alert("ㅇ");
+      return !toastMsg.isActive("error-passwordCheck")
+        ? toastMsg({
+            title: "비밀번호 확인",
+            id: "error-passwordCheck",
+            description: "비밀번호를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     resetPasswordMutation.mutate(passwordData);
