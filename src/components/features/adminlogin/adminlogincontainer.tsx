@@ -7,6 +7,7 @@ import {
   Heading,
   Link,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -65,14 +66,42 @@ const AdminLoginContainer = () => {
     }
   };
 
+  const toastMsg = useToast();
   const submitLoginData = (e: React.FormEvent) => {
     e.preventDefault();
     if (loginData.email.trim() === "" || loginData.password?.trim() === "") {
-      return alert("ㅁ");
+      return !toastMsg.isActive("error-blank")
+        ? toastMsg({
+            title: "입력란 확인",
+            id: "error-blank",
+            description: "이메일 아이디나 비밀번호를 빈칸으로 둘 수 없습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (emailRegex.test(loginData.email) === false) {
-      return alert("ㄴ");
+      return !toastMsg.isActive("error-emailCheck")
+        ? toastMsg({
+            title: "이메일 확인",
+            id: "error-emailCheck",
+            description: "이메일을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (passwordRegex.test(loginData.password!) === false) {
-      return alert("ㅇ");
+      return !toastMsg.isActive("error-passwordCheck")
+        ? toastMsg({
+            title: "비밀번호 확인",
+            id: "error-passwordCheck",
+            description: "비밀번호를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     loginMutation.mutate(loginData);

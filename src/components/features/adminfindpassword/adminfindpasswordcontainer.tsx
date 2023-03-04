@@ -1,4 +1,11 @@
-import { Flex, Heading, FormControl, Button, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  FormControl,
+  Button,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
@@ -40,12 +47,24 @@ const AdminFindPasswordContainer = () => {
     }
   };
 
+  const toastMsg = useToast();
+
   const submitEmailData = (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailData.email.trim() === "") {
-      return alert("ㅁ");
-    } else if (emailRegex.test(emailData.email) === false) {
-      return alert("ㄴ");
+    if (
+      emailData.email.trim() === "" ||
+      emailRegex.test(emailData.email) === false
+    ) {
+      return !toastMsg.isActive("error-emailCheck")
+        ? toastMsg({
+            title: "이메일 확인",
+            id: "error-emailCheck",
+            description: "이메일을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     findPasswordMutation.mutate(emailData);

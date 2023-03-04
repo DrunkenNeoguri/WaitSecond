@@ -1,4 +1,11 @@
-import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  Heading,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { CommonInput } from "../../common/commoninput";
 import { AdminData, EventObject } from "../../../utils/typealies";
@@ -70,6 +77,8 @@ const AdminSignUpContainer: React.FC = () => {
     }
   };
 
+  const toastMsg = useToast();
+
   const submitSignUpData = (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -77,16 +86,53 @@ const AdminSignUpContainer: React.FC = () => {
       signUpData.password?.trim() === "" ||
       signUpData.passwordcheck?.trim() === ""
     ) {
-      return alert("ㅁ");
+      return !toastMsg.isActive("error-blank")
+        ? toastMsg({
+            title: "입력란 확인",
+            id: "error-blank",
+            description: "이메일 아이디나 비밀번호를 빈칸으로 둘 수 없습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (emailRegex.test(signUpData.email) === false) {
-      return alert("ㄴ");
+      return !toastMsg.isActive("error-emailCheck")
+        ? toastMsg({
+            title: "이메일 확인",
+            id: "error-emailCheck",
+            description: "이메일을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (
       passwordRegex.test(signUpData.password!) === false ||
       passwordRegex.test(signUpData.passwordcheck!) === false
     ) {
-      return alert("ㅇ");
+      return !toastMsg.isActive("error-passwordCheck")
+        ? toastMsg({
+            title: "비밀번호 확인",
+            id: "error-passwordCheck",
+            description: "비밀번호를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (signUpData.password! !== signUpData.passwordcheck!) {
-      return alert("ㄹ");
+      return !toastMsg.isActive("error-passwordDiscord")
+        ? toastMsg({
+            title: "비밀번호 불일치",
+            id: "error-passwordDiscord",
+            description:
+              "비밀번호와 비밀번호 확인란의 내용이 서로 일치하지 않습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     signupMutation.mutate(signUpData);

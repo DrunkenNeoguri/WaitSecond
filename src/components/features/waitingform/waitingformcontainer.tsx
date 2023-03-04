@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventObject, UserData } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
@@ -18,6 +18,7 @@ import {
   FormLabel,
   Heading,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
@@ -86,19 +87,48 @@ const WaitingFormContainer: React.FC = () => {
     setAgreeState(!agreeState);
   };
 
+  const toastMsg = useToast();
+
   // Func - send data when user submit the data
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
     if (agreeState === false) {
-      return alert("참고 사항을 읽어주시고 확인란에 체크해주세요.");
+      return !toastMsg.isActive("error-infoCheck")
+        ? toastMsg({
+            title: "참고 사항 확인",
+            id: "error-infoCheck",
+            description: "참고 사항을 읽어주시고 확인란에 체크해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     if (userData.name.trim() === "") {
-      return alert("성함을 입력해주세요.");
+      return !toastMsg.isActive("error-nameCheck")
+        ? toastMsg({
+            title: "성함 확인",
+            id: "error-nameCheck",
+            description: "성함을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     if (userData.tel === "" || telRegex.test(userData.tel) === false) {
-      return alert("연락처를 정확하게 작성해주세요.");
+      return !toastMsg.isActive("error-telCheck")
+        ? toastMsg({
+            title: "연락처 확인",
+            id: "error-telCheck",
+            description: "연락처를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
     setModalState(true);
   };
@@ -142,7 +172,7 @@ const WaitingFormContainer: React.FC = () => {
           <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
             {waitingList.data === undefined
               ? "확인 중"
-              : waitingList.data === 0
+              : waitingList.data.length === 0
               ? "없음"
               : `${waitingList.data.length} 팀`}
           </Text>
