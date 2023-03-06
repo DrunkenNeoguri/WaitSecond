@@ -1,4 +1,4 @@
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import React from "react";
 import {
   Box,
   Button,
@@ -9,8 +9,9 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 
-const AdminStoreManageContainer = () => {
+const AdminStoreManageContainer: React.FC = () => {
   return (
     <Flex
       as="article"
@@ -249,6 +250,20 @@ const AdminStoreManageContainer = () => {
               <Input />
             </Flex>
           </Flex>
+          <Button
+            type="submit"
+            variant="solid"
+            background="#5ABFB7"
+            padding="0.5rem auto"
+            fontSize="1.25rem"
+            borderRadius="0.25rem"
+            color="#ffffff"
+            width="100%"
+            height="3rem"
+            margin="1.5rem 0 1rem 0"
+          >
+            관리 내용 수정
+          </Button>
         </FormControl>
       </form>
     </Flex>
