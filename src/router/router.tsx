@@ -3,11 +3,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminFindPassword from "../pages/adminfindpassword";
 import AdminLogin from "../pages/adminlogin";
 import AdminWaitingList from "../pages/adminwaitinglist";
-import AdminSetting from "../pages/adminsetting";
 import AdminSignUp from "../pages/adminsignup";
 import AdminVerified from "../pages/adminverified";
 import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
+import AdminStoreManage from "../pages/adminstoremanage";
 
 const Router = () => {
   return (
@@ -23,7 +23,7 @@ const Router = () => {
         <Route path="/adminverified" element={<AdminVerified />} />
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
         <Route path="/:store/adminwaitinglist" element={<AdminWaitingList />} />
-        <Route path="/:store/adminsetting" element={<AdminSetting />} />
+        <Route path="/:store/adminstoremanage" element={<AdminStoreManage />} />
       </Routes>
     </BrowserRouter>
   );

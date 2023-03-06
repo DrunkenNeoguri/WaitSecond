@@ -1,8 +1,8 @@
 import CommonHeader from "../components/common/commonheader";
-import AdminSettingContainer from "../components/features/adminsetting/adminsettingcontainer";
+import AdminSettingContainer from "../components/features/adminsetting/adminstoremanagecontainer";
 import AdminPage from "../layouts/adminpage";
 
-function AdminSetting() {
+function AdminStoreManage() {
   return (
     <AdminPage>
       <CommonHeader page="admin" />
@@ -11,4 +11,4 @@ function AdminSetting() {
   );
 }
 
-export default AdminSetting;
+export default AdminStoreManage;

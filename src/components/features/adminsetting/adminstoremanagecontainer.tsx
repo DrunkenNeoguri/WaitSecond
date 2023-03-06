@@ -9,9 +9,8 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { CommonInput } from "../../common/commoninput";
 
-const AdminSettingContainer = () => {
+const AdminStoreManageContainer = () => {
   return (
     <Flex
       as="article"
@@ -256,4 +255,4 @@ const AdminSettingContainer = () => {
   );
 };
 
-export default AdminSettingContainer;
+export default AdminStoreManageContainer;
