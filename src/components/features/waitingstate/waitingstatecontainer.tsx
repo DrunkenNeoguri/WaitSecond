@@ -52,10 +52,9 @@ const WaitingStateContainer = () => {
   });
 
   // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
-  const currentUserIdx =
-    waitingList.data === undefined
-      ? undefined
-      : waitingList.data.findIndex((elem: UserData) => elem.tel === telnumber);
+  const currentUserIdx = waitingList.data?.findIndex(
+    (elem: UserData) => elem.tel === telnumber
+  );
 
   const currentUserData = waitingList.data?.[currentUserIdx];
 

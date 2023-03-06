@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminFindPassword from "../pages/adminfindpassword";
 import AdminLogin from "../pages/adminlogin";
-import AdminMain from "../pages/adminmain";
+import AdminWaitingList from "../pages/adminwaitinglist";
 import AdminSetting from "../pages/adminsetting";
 import AdminSignUp from "../pages/adminsignup";
 import AdminVerified from "../pages/adminverified";
@@ -22,7 +22,7 @@ const Router = () => {
         <Route path="/adminsignup" element={<AdminSignUp />} />
         <Route path="/adminverified" element={<AdminVerified />} />
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
-        <Route path="/:store/adminmain" element={<AdminMain />} />
+        <Route path="/:store/adminwaitinglist" element={<AdminWaitingList />} />
         <Route path="/:store/adminsetting" element={<AdminSetting />} />
       </Routes>
     </BrowserRouter>
