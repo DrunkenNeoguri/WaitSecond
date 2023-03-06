@@ -8,6 +8,7 @@ import AdminVerified from "../pages/adminverified";
 import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
 import AdminStoreManage from "../pages/adminstoremanage";
+import AdminSetting from "../pages/adminsetting";
 
 const Router = () => {
   return (
@@ -24,6 +25,7 @@ const Router = () => {
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
         <Route path="/:store/adminwaitinglist" element={<AdminWaitingList />} />
         <Route path="/:store/adminstoremanage" element={<AdminStoreManage />} />
+        <Route path="/adminsetting" element={<AdminSetting />} />
       </Routes>
     </BrowserRouter>
   );

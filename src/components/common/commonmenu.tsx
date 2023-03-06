@@ -48,7 +48,7 @@ const CommonMenu: React.FC<{
             fontWeight="semibold"
             color="#ffffff"
             as={ReactRouterLink}
-            to=""
+            to="/adminwaitinglist"
           >
             현재 대기 상황
           </Link>
@@ -58,9 +58,9 @@ const CommonMenu: React.FC<{
             fontWeight="semibold"
             color="#ffffff"
             as={ReactRouterLink}
-            to="/adminsetting"
+            to="/adminstoremanage"
           >
-            상점 관리
+            매장 관리
           </Link>
           <Box height="0.125rem" background="#FFFFFF" />
           <Link
@@ -68,7 +68,7 @@ const CommonMenu: React.FC<{
             fontWeight="semibold"
             color="#ffffff"
             as={ReactRouterLink}
-            to=""
+            to="/adminsetting"
           >
             설정
           </Link>

@@ -1,12 +1,12 @@
 import CommonHeader from "../components/common/commonheader";
-import AdminSettingContainer from "../components/features/adminsetting/adminstoremanagecontainer";
+import AdminStoreManageContainer from "../components/features/adminstoremanage/adminstoremanagecontainer";
 import AdminPage from "../layouts/adminpage";
 
 function AdminStoreManage() {
   return (
     <AdminPage>
       <CommonHeader page="admin" />
-      <AdminSettingContainer />
+      <AdminStoreManageContainer />
     </AdminPage>
   );
 }
