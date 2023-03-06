@@ -10,8 +10,6 @@ import { useMutation } from "@tanstack/react-query";
 import {
   confirmPasswordReset,
   getAuth,
-  signInWithEmailLink,
-  updatePassword,
   verifyPasswordResetCode,
 } from "firebase/auth";
 import { useState } from "react";

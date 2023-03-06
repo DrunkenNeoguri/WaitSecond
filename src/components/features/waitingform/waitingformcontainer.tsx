@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventObject, UserData } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
