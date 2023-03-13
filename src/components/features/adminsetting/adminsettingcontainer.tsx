@@ -1,15 +1,8 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { Flex, Text } from "@chakra-ui/react";
+import React from "react";
+import { Flex, Link } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 
-const AdminSettingContainer: React.FC<{
-  setPage: Dispatch<SetStateAction<string>>;
-}> = ({ setPage }) => {
-  const changePageState = (e: React.MouseEvent) => {
-    e.preventDefault();
-    console.log(e.currentTarget.id);
-    setPage(e.currentTarget.id);
-  };
-
+const AdminSettingContainer: React.FC = () => {
   return (
     <Flex
       as="article"
@@ -23,42 +16,42 @@ const AdminSettingContainer: React.FC<{
       height="100vh"
     >
       <Flex direction="column" padding="1rem 0" gap="2.5rem">
-        <Text
+        <Link
           id="notice"
           fontSize="1.5rem"
           fontWeight="semibold"
-          onClick={changePageState}
-          cursor="pointer"
+          as={ReactRouterLink}
+          to="/"
         >
           공지사항
-        </Text>
-        <Text
+        </Link>
+        <Link
           id="help"
           fontSize="1.5rem"
           fontWeight="semibold"
-          onClick={changePageState}
-          cursor="pointer"
+          as={ReactRouterLink}
+          to="/"
         >
           도움말 가이드
-        </Text>
-        <Text
+        </Link>
+        <Link
           id="changepassword"
           fontSize="1.5rem"
           fontWeight="semibold"
-          onClick={changePageState}
-          cursor="pointer"
+          as={ReactRouterLink}
+          to="/adminsetting/findpassword"
         >
           비밀번호 변경
-        </Text>
-        <Text
+        </Link>
+        <Link
           id="withdrawal"
           fontSize="1.5rem"
           fontWeight="semibold"
-          onClick={changePageState}
-          cursor="pointer"
+          as={ReactRouterLink}
+          to="/adminsetting/withdrawal"
         >
           회원 탈퇴
-        </Text>
+        </Link>
       </Flex>
     </Flex>
   );
