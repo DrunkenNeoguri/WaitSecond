@@ -10,35 +10,138 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  getFirestore,
+} from "firebase/firestore";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
+import { UserData } from "../../../utils/typealies";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
+  const [cancelState, setCancelState] = useState(false);
+  const { store, telnumber } = useParams();
 
   const db = getFirestore();
-  const waitingCol = collection(db, "testData");
+  const waitingCol = collection(db, `${store}`);
 
-  function getWaitingData() {
-    return getDocs(waitingCol).then((data) => {
+  const getWaitingData = async () => {
+    const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
         list.push(doc.data());
       });
+      list.sort(function (a: any, b: any) {
+        return a.createdAt - b.createdAt;
+      });
       return list;
     });
-  }
+    return waitingState;
+  };
 
   const waitingList = useQuery({
     queryKey: ["waitingList"],
-    queryFn: () => getWaitingData(),
+    queryFn: getWaitingData,
   });
 
-  // skeleton 구현해야함.
+  // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
+  const currentUserIdx = waitingList.data?.findIndex(
+    (elem: UserData) => elem.tel === telnumber
+  );
+
+  const currentUserData = waitingList.data?.[currentUserIdx];
+
+  const cancelWaitingAccount = async () => {
+    const calcelWaitingState = deleteDoc(
+      doc(db, `${store}`, currentUserData.tel)
+    )
+      .then((data) => true)
+      .catch((error) => error.message);
+    return calcelWaitingState;
+  };
+
+  const deleteMutation = useMutation(cancelWaitingAccount, {
+    onError: (error, variable) => console.log(error),
+    onSuccess: (data, variable, context) => {},
+  });
+
+  const deleteWaitingData = (e: React.MouseEvent) => {
+    e.preventDefault();
+    deleteMutation.mutate(currentUserData);
+  };
+
   return (
     <section style={{ background: "#EDEDED", padding: "1rem 0" }}>
+      {cancelState === true ? (
+        <Box
+          background="rgba(38, 38, 38, 40%)"
+          display="block"
+          width="100vw"
+          height="100vh"
+          position="fixed"
+          top="0"
+          zIndex="5"
+          overflow="scroll"
+        >
+          <Flex
+            direction="column"
+            background="#ffffff"
+            margin="10vh 1rem"
+            padding="3rem 1.5rem"
+            justify="center"
+            borderRadius="0.5rem"
+          >
+            <Heading as="h1" textAlign="center" fontSize="2rem">
+              정말로 대기 등록을 취소하시겠습니까?
+            </Heading>
+            <Text
+              textAlign="center"
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+            >
+              취소 시, 등록하신 정보는 삭제되며 재등록을 원하실 경우 처음부터
+              다시 등록해주셔야 합니다.
+            </Text>
+            <Flex
+              direction="row"
+              gap="1rem"
+              margin="1rem 0 0 0"
+              justify="center"
+            >
+              <Button
+                type="button"
+                background="#58a6dc"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                onClick={deleteWaitingData}
+              >
+                취소할게요
+              </Button>
+              <Button
+                type="button"
+                background="#5a5a5a"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                onClick={() => setCancelState(false)}
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              >
+                아니에요
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+      ) : (
+        <></>
+      )}
       {waitingList.data === undefined ? (
         <Flex
           direction="column"
@@ -128,9 +231,9 @@ const WaitingStateContainer = () => {
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             margin="1.5rem 0"
           >
-            <Text fontWeight="600">현재 대기 팀</Text>
+            <Text fontWeight="600">내 앞 대기팀</Text>
             <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-              {waitingList.data.length}팀
+              {currentUserIdx === 0 ? "없음" : `${currentUserIdx} 팀`}
             </Text>
           </Flex>
 
@@ -173,7 +276,7 @@ const WaitingStateContainer = () => {
             >
               <Text fontWeight="600">인원</Text>
               <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-                {waitingList.data[0].member}명
+                {currentUserData.member}명
               </Text>
             </Flex>
           </Flex>
@@ -186,7 +289,7 @@ const WaitingStateContainer = () => {
           <UnorderedList
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >
-            {waitingList.data[0].child === true ? (
+            {currentUserData.child === true ? (
               <ListItem
                 display="flex"
                 flexDirection="row"
@@ -202,7 +305,7 @@ const WaitingStateContainer = () => {
             ) : (
               <></>
             )}
-            {waitingList.data[0].pet === true ? (
+            {currentUserData.pet === true ? (
               <ListItem
                 display="flex"
                 flexDirection="row"
@@ -238,6 +341,7 @@ const WaitingStateContainer = () => {
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             fontWeight="500"
             size="lg"
+            onClick={() => setCancelState(true)}
           >
             대기 등록 취소
           </Button>

@@ -1,16 +1,55 @@
-import { Button, Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Link,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 const AdminLoginContainer = () => {
   const initialState = new AdminData("", "");
 
   const [loginData, setLoginData] = useState<AdminData>(initialState);
+  const [autoLoginState, setAutoAgreeState] = useState(false);
   const [inputCheck, setInputCheck] = useState({
     email: false,
     password: false,
+  });
+
+  const navigate = useNavigate();
+
+  const firebaseAuth = getAuth();
+
+  const loginAccount = async (userData: AdminData) => {
+    const loginState = signInWithEmailAndPassword(
+      firebaseAuth,
+      userData.email,
+      userData.password!
+    )
+      .then((cred) => console.log("로그인했습니다."))
+      .catch((error) => console.log("로그인에 실패했습니다."));
+
+    return loginState;
+  };
+
+  const loginMutation = useMutation(loginAccount, {
+    onError: (error, variable) => console.log(error),
+    onSuccess: (data, variable, context) => {
+      console.log(data);
+      // 회원 가입 완료하면 이메일 연동 페이지로 보내주기
+    },
   });
 
   const inputLoginData = (e: React.ChangeEvent) => {
@@ -27,17 +66,45 @@ const AdminLoginContainer = () => {
     }
   };
 
+  const toastMsg = useToast();
   const submitLoginData = (e: React.FormEvent) => {
     e.preventDefault();
     if (loginData.email.trim() === "" || loginData.password?.trim() === "") {
-      return alert("ㅁ");
+      return !toastMsg.isActive("error-blank")
+        ? toastMsg({
+            title: "입력란 확인",
+            id: "error-blank",
+            description: "이메일 아이디나 비밀번호를 빈칸으로 둘 수 없습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (emailRegex.test(loginData.email) === false) {
-      return alert("ㄴ");
+      return !toastMsg.isActive("error-emailCheck")
+        ? toastMsg({
+            title: "이메일 확인",
+            id: "error-emailCheck",
+            description: "이메일을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (passwordRegex.test(loginData.password!) === false) {
-      return alert("ㅇ");
+      return !toastMsg.isActive("error-passwordCheck")
+        ? toastMsg({
+            title: "비밀번호 확인",
+            id: "error-passwordCheck",
+            description: "비밀번호를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
-    return console.log("성공");
+    loginMutation.mutate(loginData);
   };
 
   return (
@@ -97,6 +164,23 @@ const AdminLoginContainer = () => {
                 : "　"
               : "　"}
           </Text>
+          <Flex direction="row" justify="space-between" margin="0.75rem 0">
+            <Flex direction="row">
+              <Checkbox
+                size="lg"
+                id="autoLogin"
+                onChange={() => setAutoAgreeState(!autoLoginState)}
+                isChecked={autoLoginState ? true : false}
+              ></Checkbox>
+              <FormLabel htmlFor="autoLogin" margin="0 0.5rem" cursor="pointer">
+                자동 로그인
+              </FormLabel>
+            </Flex>
+
+            <Link as={ReactRouterLink} to="/adminfindpassword">
+              비밀번호 찾기
+            </Link>
+          </Flex>
           <Button
             type="submit"
             variant="solid"
@@ -108,6 +192,7 @@ const AdminLoginContainer = () => {
             width="100%"
             height="3rem"
             margin="1.5rem 0 1rem 0"
+            onClick={submitLoginData}
           >
             로그인
           </Button>
@@ -122,7 +207,7 @@ const AdminLoginContainer = () => {
             width="100%"
             height="3rem"
             margin="1rem 0"
-            onClick={submitLoginData}
+            onClick={() => navigate("/adminsignup")}
           >
             회원가입
           </Button>

@@ -18,9 +18,13 @@ import {
   FormLabel,
   Heading,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
+import { useParams } from "react-router-dom";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData("", "", 1, false, false);
@@ -29,6 +33,29 @@ const WaitingFormContainer: React.FC = () => {
   const [agreeState, setAgreeState] = useState(false);
   const [modalState, setModalState] = useState(false);
   const visionState = useRecoilValue<boolean>(lowVisionState);
+  const { store } = useParams();
+
+  const db = getFirestore();
+  const waitingCol = collection(db, `${store}`);
+
+  const getWaitingData = async () => {
+    const waitingState = await getDocs(waitingCol).then((data) => {
+      const list: any = [];
+      data.forEach((doc) => {
+        list.push(doc.data());
+      });
+      list.sort(function (a: any, b: any) {
+        return a.createdAt - b.createdAt;
+      });
+      return list;
+    });
+    return waitingState;
+  };
+
+  const waitingList = useQuery({
+    queryKey: ["waitingList"],
+    queryFn: getWaitingData,
+  });
 
   // Func - Input User Data
   const inputUserText = (e: React.ChangeEvent) => {
@@ -60,21 +87,49 @@ const WaitingFormContainer: React.FC = () => {
     setAgreeState(!agreeState);
   };
 
+  const toastMsg = useToast();
+
   // Func - send data when user submit the data
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
     if (agreeState === false) {
-      return alert("참고 사항을 읽어주시고 확인란에 체크해주세요.");
+      return !toastMsg.isActive("error-infoCheck")
+        ? toastMsg({
+            title: "참고 사항 확인",
+            id: "error-infoCheck",
+            description: "참고 사항을 읽어주시고 확인란에 체크해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     if (userData.name.trim() === "") {
-      return alert("성함을 입력해주세요.");
+      return !toastMsg.isActive("error-nameCheck")
+        ? toastMsg({
+            title: "성함 확인",
+            id: "error-nameCheck",
+            description: "성함을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
     if (userData.tel === "" || telRegex.test(userData.tel) === false) {
-      return alert("연락처를 정확하게 작성해주세요.");
+      return !toastMsg.isActive("error-telCheck")
+        ? toastMsg({
+            title: "연락처 확인",
+            id: "error-telCheck",
+            description: "연락처를 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
-    console.log("여기?");
     setModalState(true);
   };
 
@@ -115,7 +170,11 @@ const WaitingFormContainer: React.FC = () => {
         >
           <Text>현재 대기 팀</Text>
           <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-            4팀
+            {waitingList.data === undefined
+              ? "확인 중"
+              : waitingList.data.length === 0
+              ? "없음"
+              : `${waitingList.data.length} 팀`}
           </Text>
         </Flex>
         <form onSubmit={submitUserData}>

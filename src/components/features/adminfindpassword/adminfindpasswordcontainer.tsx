@@ -1,4 +1,13 @@
-import { Flex, Heading, FormControl, Button, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  FormControl,
+  Button,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { emailRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
@@ -10,6 +19,25 @@ const AdminFindPasswordContainer = () => {
   const [emailData, setEmailData] = useState<AdminData>(initialState);
   const [inputCheck, setInputCheck] = useState(false);
 
+  const firebaseAuth = getAuth();
+
+  const findPasswordAccount = async (userData: AdminData) => {
+    const findPasswordState = sendPasswordResetEmail(
+      firebaseAuth,
+      userData.email
+    )
+      .then((data) => data)
+      .catch((error) => error.message);
+    return findPasswordState;
+  };
+
+  const findPasswordMutation = useMutation(findPasswordAccount, {
+    onError: (error, variable) => console.log(error, variable),
+    onSuccess: (data, variable, context) => {
+      console.log(data);
+    },
+  });
+
   const inputEmailData = (e: React.ChangeEvent) => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
@@ -19,15 +47,27 @@ const AdminFindPasswordContainer = () => {
     }
   };
 
+  const toastMsg = useToast();
+
   const submitEmailData = (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailData.email.trim() === "") {
-      return alert("ㅁ");
-    } else if (emailRegex.test(emailData.email) === false) {
-      return alert("ㄴ");
+    if (
+      emailData.email.trim() === "" ||
+      emailRegex.test(emailData.email) === false
+    ) {
+      return !toastMsg.isActive("error-emailCheck")
+        ? toastMsg({
+            title: "이메일 확인",
+            id: "error-emailCheck",
+            description: "이메일을 제대로 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     }
 
-    return console.log("성공");
+    findPasswordMutation.mutate(emailData);
   };
 
   return (

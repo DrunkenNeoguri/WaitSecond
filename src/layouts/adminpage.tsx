@@ -2,7 +2,7 @@ import { Props } from "../utils/typealies";
 
 function AdminPage(props: Props) {
   return (
-    <section style={{ background: "#EDEDED", height: "100vh" }}>
+    <section style={{ background: "#F2F2F2", height: "100vh" }}>
       {props.children}
     </section>
   );
