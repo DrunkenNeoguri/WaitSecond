@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -10,8 +10,90 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { getAuth } from "firebase/auth";
+import { StoreOption } from "../../../utils/typealies";
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+} from "firebase/firestore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AdminStoreManageContainer: React.FC = () => {
+  const db = getFirestore();
+  const firebaseAuth = getAuth();
+  const queryClient = useQueryClient();
+  const currentUser = firebaseAuth.currentUser?.uid;
+  console.log(currentUser);
+
+  // interface에서 class로 바꿀 수 있는지 확인해보기
+  const initialState = {
+    uid: "",
+    storeName: "",
+    storeId: "",
+    storebg: "",
+    waitingState: false,
+    maximumTeamMemberCount: 1,
+    maximumWaitingTeamCount: 1,
+    petAllow: false,
+    teamSeparate: false,
+    customOption1Name: "",
+    customOption1State: false,
+    customOption2Name: "",
+    customOption2State: false,
+    customOption3Name: "",
+    customOption3State: false,
+  };
+
+  const [storeData, setStoreData] = useState<StoreOption>(initialState);
+
+  // 관리자의 설정 정보 가져오기
+  const getStoreSettingData = async () => {
+    const storeDataState: StoreOption | undefined = await getDocs(
+      collection(db, "adminList")
+    ).then((data) => {
+      let adminData: any;
+      data.forEach((doc) => {
+        if (doc.data().uid === currentUser) {
+          return (adminData = doc.data());
+        }
+      });
+      return adminData!;
+    });
+    return storeDataState;
+  };
+
+  const currentStoreOption = useQuery({
+    queryKey: ["currentStoreOption"],
+    queryFn: getStoreSettingData,
+  });
+
+  // 관리자의 설정 저장하기
+  const updateStoreDataToDatabase = async (storeData: StoreOption) => {
+    const updateDataState = await setDoc(
+      doc(db, "adminData", `${currentUser}`),
+      storeData
+    )
+      .then((data) => data)
+      .catch((error) => error.message);
+    return updateDataState;
+  };
+
+  const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
+    onError: (error, variable) => console.log(error, variable),
+    onSuccess: (data, variable, context) => {
+      queryClient.invalidateQueries(["storeData"]);
+    },
+  });
+
+  const submitUserWaitingData = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateStoreDataMutation.mutate(storeData);
+  };
+
   return (
     <Flex
       as="article"
@@ -26,7 +108,7 @@ const AdminStoreManageContainer: React.FC = () => {
       <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
         매장 관리
       </Heading>
-      <form>
+      <form onSubmit={submitUserWaitingData}>
         <FormControl>
           <Flex direction="column" padding="0.5rem 0">
             <FormLabel fontSize="1rem" fontWeight="semibold">

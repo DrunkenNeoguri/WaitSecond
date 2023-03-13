@@ -47,6 +47,7 @@ const AdminSignUpContainer: React.FC = () => {
         return cred.user.uid;
       })
       .then((uid) => {
+        // interface에서 class로 바꿀 수 있는지 확인해보기
         const adminData: StoreOption = {
           uid: uid,
           storeName: "",
