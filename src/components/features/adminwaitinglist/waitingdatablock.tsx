@@ -1,8 +1,43 @@
 import { Button, Flex, Link, Text } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 import { useState } from "react";
+import { UserData } from "../../../utils/typealies";
 
-const WaitingDataBlock: React.FC = () => {
+const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
+  admin,
+  userData,
+}) => {
   const [openState, setOpenState] = useState(false);
+
+  // 등록된 손님 정보 지우기
+  const db = getFirestore();
+
+  const deleteGuestData = async (userData: UserData) => {
+    const calcelWaitingState = deleteDoc(
+      doc(db, `storeList/${admin}/waitingList`, `${userData.uid}`)
+    )
+      .then((data) => "delete-success")
+      .catch((error) => error.message);
+    return calcelWaitingState;
+  };
+
+  const deleteMutation = useMutation(deleteGuestData, {
+    onError: (error, variable) => console.log(error),
+    onSuccess: (data, variable, context) => {
+      if (data === "signup-success") {
+        return;
+      }
+    },
+  });
+
+  const deleteGuestDataByEntered = (
+    e: React.MouseEvent,
+    userData: UserData
+  ) => {
+    e.preventDefault();
+    deleteMutation.mutate(userData);
+  };
 
   return (
     <>
@@ -56,6 +91,7 @@ const WaitingDataBlock: React.FC = () => {
               fontSize="0.5rem"
               color="#ffffff"
               fontWeight="normal"
+              onClick={(e) => deleteGuestDataByEntered(e, userData)}
             >
               전화
             </Button>

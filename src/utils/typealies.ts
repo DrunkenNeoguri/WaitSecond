@@ -44,19 +44,34 @@ export class UserData {
   member: number;
   child?: boolean;
   pet?: boolean;
+  custom1?: boolean;
+  custom2?: boolean;
+  custom3?: boolean;
+  createdAt?: string;
+  uid?: string;
 
   constructor(
     name: string,
     tel: string,
     member: number,
     child: boolean,
-    pet: boolean
+    pet: boolean,
+    custom1?: boolean,
+    custom2?: boolean,
+    custom3?: boolean,
+    createdAt?: string,
+    uid?: string
   ) {
     this.name = name;
     this.tel = tel;
     this.member = member;
     this.child = child;
     this.pet = pet;
+    this.custom1 = custom1;
+    this.custom2 = custom2;
+    this.custom3 = custom3;
+    this.createdAt = createdAt;
+    this.uid = uid;
   }
 }
 
