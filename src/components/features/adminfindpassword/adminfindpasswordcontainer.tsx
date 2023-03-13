@@ -26,7 +26,7 @@ const AdminFindPasswordContainer = () => {
       firebaseAuth,
       userData.email
     )
-      .then((data) => data)
+      .then((data) => "send-email-success")
       .catch((error) => error.message);
     return findPasswordState;
   };
@@ -34,7 +34,23 @@ const AdminFindPasswordContainer = () => {
   const findPasswordMutation = useMutation(findPasswordAccount, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
-      console.log(data);
+      if (data === "send-email-success") {
+        return "asdg";
+      } else {
+        if (data.indexOf("user-not-found") === -1) {
+          return !toastMsg.isActive("error-userNotFound")
+            ? toastMsg({
+                title: "존재하지 않는 계정",
+                id: "error-userNotFound",
+                description:
+                  "해당 이메일로 가입한 아이디가 존재하지 않습니다. 이메일을 다시 확인해주세요. ",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+      }
     },
   });
 

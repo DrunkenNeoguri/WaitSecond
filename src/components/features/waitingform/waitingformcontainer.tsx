@@ -18,6 +18,7 @@ import {
   FormLabel,
   Heading,
   Text,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { lowVisionState } from "../../../modules/atoms/atoms";
@@ -31,7 +32,7 @@ const WaitingFormContainer: React.FC = () => {
 
   const [userData, setUserData] = useState<UserData>(initialState);
   const [agreeState, setAgreeState] = useState(false);
-  const [modalState, setModalState] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const { storeuid } = useParams();
 
@@ -150,7 +151,7 @@ const WaitingFormContainer: React.FC = () => {
           })
         : null;
     }
-    setModalState(true);
+    return onOpen();
   };
 
   return (
@@ -161,11 +162,7 @@ const WaitingFormContainer: React.FC = () => {
         height="13rem"
         marginTop="3.5rem"
       />
-      {modalState === true ? (
-        <CheckDataModal userInfo={userData} close={setModalState} />
-      ) : (
-        <></>
-      )}
+      <CheckDataModal isOpen={isOpen} onClose={onClose} userInfo={userData} />
       <Flex
         as="article"
         direction="column"

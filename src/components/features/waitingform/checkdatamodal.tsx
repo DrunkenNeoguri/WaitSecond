@@ -1,67 +1,40 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useState } from "react";
 import { UserData } from "../../../utils/typealies";
 import {
-  Box,
   Flex,
   FormLabel,
-  Heading,
   Text,
   Button,
   ListItem,
   ListIcon,
   UnorderedList,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
-import { getFirestore, addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 const CheckDataModal: React.FC<{
   userInfo: UserData;
-  close: Dispatch<SetStateAction<boolean>>;
-}> = ({ userInfo, close }) => {
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ userInfo, isOpen, onClose }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
-
-  const [time, setTime] = useState(3);
-  const timeRef = useRef(time);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { storeuid } = useParams();
 
   const db = getFirestore();
-
-  useEffect(() => {
-    // setInterval 속에서 useState를 사용하는 경우, state의 값이 변경되지 않고 초기값을 유지하게 됨을 알 수 있다.
-    // 데이터가 갱신되지만, useEffect 안의 내용은 의존성 배열에 포함되지 않는다면 변화되지 않기 때문이다.
-    // 이때를 위해서 변화된 값을 참고하게 만들기 위해 useRef를 사용하도록 한다.
-
-    const timer = setInterval(() => {
-      setTime((timeRef.current -= 1));
-      // 위와 같이 작성해두면, timeRef의 현재값이 계속해서 setState를 통해서 적용될 것이다.
-      // 렌더링이 일어나도, timeRef가 계속해서 현재의 값을 참조하게 되므로 useEffect 속에 변화된 값을 받아올 수 있게 된다.
-      if (timeRef.current < 1) {
-        clearInterval(timer);
-        setRegisterState(false);
-        close(false);
-        navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
-
-        // 해당 내용에서 react-router를 통한 페이지 이동 구현할 것.
-        // 버튼 쪽에도 함수 넣을 것.
-        // https://bsnn.tistory.com/50
-      }
-    }, 1000);
-    // }
-  }, []);
 
   const sendWaitingDataToDatabase = async (userInfo: UserData) => {
     const sendUserData = {
@@ -92,68 +65,51 @@ const CheckDataModal: React.FC<{
   };
 
   return (
-    <Box
-      background="rgba(38, 38, 38, 40%)"
-      display="block"
-      width="100vw"
-      height="100vh"
-      position="fixed"
-      top="0"
-      zIndex="5"
-      overflow="scroll"
-    >
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+
       {registerState === true ? (
-        <Flex
-          direction="column"
-          background="#ffffff"
-          margin="10vh 1rem"
-          padding="3rem 1.5rem"
-          justify="center"
-          borderRadius="0.5rem"
-        >
-          <Heading as="h1" textAlign="center" fontSize="2rem">
+        <ModalContent wordBreak="keep-all" padding="2rem 0">
+          <ModalHeader as="h1" textAlign="center" fontSize="1.5rem">
             등록이 완료되었습니다!
-          </Heading>
-          <Text
+          </ModalHeader>
+          <ModalBody
             textAlign="center"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+            fontSize={visionState === false ? "1rem" : "1.625rem"}
           >
-            5초 뒤에 자동으로 대기 상황 페이지로 이동합니다.
-          </Text>
-          <Button
-            type="button"
-            background="#5a5a5a"
-            color="#ffffff"
-            padding="1.5rem"
-            borderRadius="0.25rem"
-            onClick={() => {
-              close(false);
-              setRegisterState(false);
-              navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
-            }}
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          >
-            바로 이동하기 ({time})
-          </Button>
-        </Flex>
+            <Text margin="1rem 0">
+              5초 뒤에 자동으로 대기 상황 페이지로 이동합니다.
+            </Text>
+            <ModalFooter justifyContent="center">
+              <Button
+                type="button"
+                background="#5a5a5a"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                onClick={() => {
+                  onClose();
+                  setRegisterState(false);
+                  navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
+                }}
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              >
+                바로 이동하기
+              </Button>
+            </ModalFooter>
+          </ModalBody>
+        </ModalContent>
       ) : (
-        <Flex
-          direction="column"
-          background="#ffffff"
-          margin="10vh 1rem"
-          padding="3rem 1.5rem"
-          justify="center"
-          borderRadius="0.5rem"
-        >
-          <Heading
+        <ModalContent padding="2rem 0">
+          <ModalHeader
             as="h2"
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             textAlign="center"
             marginBottom="1.5rem"
           >
             작성 내용을{visionState === false ? " " : <br />}확인해주세요.
-          </Heading>
-          <Flex direction="column">
+          </ModalHeader>
+          <ModalBody>
             <Flex
               direction="row"
               justifyContent="space-between"
@@ -277,35 +233,49 @@ const CheckDataModal: React.FC<{
             ) : (
               <></>
             )}
-          </Flex>
-          <Flex direction="row" gap="1rem" margin="1rem 0 0 0" justify="center">
-            <Button
-              type="button"
-              background="#58a6dc"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              onClick={(e) => submitUserWaitingData(e, userInfo)}
+            <Flex
+              direction="row"
+              gap="1rem"
+              margin="2rem 0 0 0"
+              justify="center"
             >
-              맞습니다
-            </Button>
-            <Button
-              type="button"
-              background="#5a5a5a"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              onClick={() => close(false)}
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-            >
-              아니에요
-            </Button>
-          </Flex>
-        </Flex>
+              <Button
+                type="button"
+                background="#58a6dc"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                onClick={(e) => submitUserWaitingData(e, userInfo)}
+              >
+                맞습니다
+              </Button>
+              <Button
+                type="button"
+                background="#5a5a5a"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                onClick={onClose}
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              >
+                아니에요
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
       )}
-    </Box>
+    </Modal>
   );
 };
 
 export default CheckDataModal;
+
+// <Flex
+// direction="column"
+// background="#ffffff"
+// margin="10vh 1rem"
+// padding="3rem 1.5rem"
+// justify="center"
+// borderRadius="0.5rem"
+// >
