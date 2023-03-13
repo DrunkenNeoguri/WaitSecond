@@ -1,30 +1,41 @@
 import { Flex, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { collection, getDocs, getFirestore, query } from "firebase/firestore";
+import { UserData } from "../../../utils/typealies";
 import WaitingDataBlock from "./waitingdatablock";
 
 const AdminWaitingListContainer = () => {
-  // const db = getFirestore();
-  // const waitingCol = collection(db, "adg");
+  const db = getFirestore();
+  const firebaseAuth = getAuth();
+  const currentUser = firebaseAuth.currentUser?.uid;
 
-  // const getWaitingData = async () => {
-  //   const waitingState = await getDocs(waitingCol).then((data) => {
-  //     const list: any = [];
-  //     data.forEach((doc) => {
-  //       list.push(doc.data());
-  //     });
-  //     list.sort(function (a: any, b: any) {
-  //       return a.createdAt - b.createdAt;
-  //     });
-  //     return list;
-  //   });
-  //   return waitingState;
-  // };
+  // 현재 가게 대기 정보 가져오기
+  const waitingCol = query(
+    collection(db, `storeList/${currentUser}/waitingList`)
+  );
 
-  // const waitingList = useQuery({
-  //   queryKey: ["waitingList"],
-  //   queryFn: getWaitingData,
-  // });
+  const getWaitingData = async () => {
+    const waitingState = await getDocs(waitingCol).then((data) => {
+      const list: any = [];
+      data.forEach((doc) => {
+        const userData = doc.data();
+        list.push({ ...userData, uid: doc.id });
+      });
+      list.sort(function (a: any, b: any) {
+        return a.createdAt - b.createdAt;
+      });
+      return list;
+    });
+    return waitingState;
+  };
+
+  const currentWaitingState = useQuery({
+    queryKey: ["currentWaitingState"],
+    queryFn: getWaitingData,
+  });
+
+  console.log(currentWaitingState.data);
 
   return (
     <Flex
@@ -49,11 +60,15 @@ const AdminWaitingListContainer = () => {
         </Text>
       </Flex>
       <Flex direction="column" align="center" fontSize="1.25rem">
-        <WaitingDataBlock />
-        <WaitingDataBlock />
-        <WaitingDataBlock />
-        <WaitingDataBlock />
-        <WaitingDataBlock />
+        {currentWaitingState.data?.map((elem: UserData) => {
+          return (
+            <WaitingDataBlock
+              key={elem.uid!}
+              userData={elem}
+              admin={currentUser!}
+            />
+          );
+        })}
       </Flex>
     </Flex>
   );

@@ -38,8 +38,10 @@ const AdminLoginContainer = () => {
       userData.email,
       userData.password!
     )
-      .then((cred) => console.log("로그인했습니다."))
-      .catch((error) => console.log("로그인에 실패했습니다."));
+      .then((cred) => {
+        return "login-success";
+      })
+      .catch((error) => error.message);
 
     return loginState;
   };
@@ -47,8 +49,65 @@ const AdminLoginContainer = () => {
   const loginMutation = useMutation(loginAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
-      console.log(data);
-      // 회원 가입 완료하면 이메일 연동 페이지로 보내주기
+      if (data === "login-success") {
+        return navigate("/adminwaitinglist");
+      } else {
+        if (data.indexOf("user-not-found") === -1) {
+          return !toastMsg.isActive("error-userNotFound")
+            ? toastMsg({
+                title: "존재하지 않는 계정",
+                id: "error-userNotFound",
+                description:
+                  "해당 이메일로 가입한 아이디가 존재하지 않습니다. 이메일을 다시 확인해주세요. ",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+
+        if (data.indexOf("wrong-password") === -1) {
+          return !toastMsg.isActive("error-wrongPassword")
+            ? toastMsg({
+                title: "잘못된 비밀번호",
+                id: "error-wrongPassword",
+                description:
+                  "해당 계정의 비밀번호가 일치하지 않습니다. 다시 시도해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+
+        if (data.indexOf("user-disabled") !== -1) {
+          return !toastMsg.isActive("error-userDisabled")
+            ? toastMsg({
+                title: "탈퇴한 계정",
+                id: "error-duplicate",
+                description:
+                  "해당 이메일로 가입된 계정은 탈퇴되어 더 이상 이용하실 수 없습니다.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+
+        if (data.indexOf("too-many-requests") === -1) {
+          return !toastMsg.isActive("error-tooManyRequest")
+            ? toastMsg({
+                title: "로그인 시도 횟수 초과",
+                id: "error-tooManyRequest",
+                description:
+                  "로그인 시도 횟수를 초과하셨습니다. 잠시 후, 다시 시도해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+      }
     },
   });
 
