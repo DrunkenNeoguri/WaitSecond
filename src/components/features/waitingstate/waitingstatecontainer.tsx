@@ -6,9 +6,16 @@ import {
   Heading,
   ListIcon,
   ListItem,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Skeleton,
   Text,
   UnorderedList,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -19,7 +26,6 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
@@ -27,7 +33,7 @@ import { StoreOption, UserData } from "../../../utils/typealies";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
-  const [cancelState, setCancelState] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
 
   const db = getFirestore();
@@ -100,70 +106,47 @@ const WaitingStateContainer = () => {
 
   return (
     <section style={{ background: "#EDEDED", padding: "1rem 0" }}>
-      {cancelState === true ? (
-        <Box
-          background="rgba(38, 38, 38, 40%)"
-          display="block"
-          width="100vw"
-          height="100vh"
-          position="fixed"
-          top="0"
-          zIndex="5"
-          overflow="scroll"
-        >
-          <Flex
-            direction="column"
-            background="#ffffff"
-            margin="10vh 1rem"
-            padding="3rem 1.5rem"
-            justify="center"
-            borderRadius="0.5rem"
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent padding="2rem 0">
+          <ModalHeader as="h1" textAlign="center" fontSize="1.5rem">
+            정말로 대기 등록을 취소하시겠습니까?
+          </ModalHeader>
+          <ModalBody
+            textAlign="center"
+            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >
-            <Heading as="h1" textAlign="center" fontSize="2rem">
-              정말로 대기 등록을 취소하시겠습니까?
-            </Heading>
-            <Text
-              textAlign="center"
+            취소 시, 등록하신 정보는 삭제되며 재등록을 원하실 경우 처음부터 다시
+            등록해주셔야 합니다.
+          </ModalBody>
+          <Flex direction="row" gap="1rem" margin="1rem 0 0 0" justify="center">
+            <Button
+              type="button"
+              background="#58a6dc"
+              color="#ffffff"
+              padding="1.5rem"
+              borderRadius="0.25rem"
+              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              onClick={deleteWaitingData}
+            >
+              취소할게요
+            </Button>
+            <Button
+              type="button"
+              background="#5a5a5a"
+              color="#ffffff"
+              padding="1.5rem"
+              borderRadius="0.25rem"
+              onClick={onClose}
               fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             >
-              취소 시, 등록하신 정보는 삭제되며 재등록을 원하실 경우 처음부터
-              다시 등록해주셔야 합니다.
-            </Text>
-            <Flex
-              direction="row"
-              gap="1rem"
-              margin="1rem 0 0 0"
-              justify="center"
-            >
-              <Button
-                type="button"
-                background="#58a6dc"
-                color="#ffffff"
-                padding="1.5rem"
-                borderRadius="0.25rem"
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                onClick={deleteWaitingData}
-              >
-                취소할게요
-              </Button>
-              <Button
-                type="button"
-                background="#5a5a5a"
-                color="#ffffff"
-                padding="1.5rem"
-                borderRadius="0.25rem"
-                onClick={() => setCancelState(false)}
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              >
-                아니에요
-              </Button>
-            </Flex>
+              아니에요
+            </Button>
           </Flex>
-        </Box>
-      ) : (
-        <></>
-      )}
-      {waitingList.data === undefined ? (
+        </ModalContent>
+      </Modal>
+
+      {waitingList.data === undefined || storeData.data === undefined ? (
         <Flex
           direction="column"
           align="center"
@@ -364,7 +347,7 @@ const WaitingStateContainer = () => {
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             fontWeight="500"
             size="lg"
-            onClick={() => setCancelState(true)}
+            onClick={onOpen}
           >
             대기 등록 취소
           </Button>

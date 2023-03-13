@@ -9,6 +9,13 @@ import {
   Text,
   Link,
   useToast,
+  Modal,
+  useDisclosure,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import {
@@ -19,7 +26,7 @@ import {
 } from "firebase/auth";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { useMutation } from "@tanstack/react-query";
-import { passwordRegex } from "../../../utils/reqlist";
+import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 
 const AdminChangePasswordContainer: React.FC = () => {
   const firebaseAuth = getAuth();
@@ -27,6 +34,8 @@ const AdminChangePasswordContainer: React.FC = () => {
 
   const initialState = new AdminData(currentUser.email!, "", "");
   const [userData, setUserData] = useState(initialState);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
 
   const inputUserData = (e: React.ChangeEvent) => {
     e.preventDefault();
@@ -39,7 +48,7 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordAccount = async (userData: AdminData) => {
     const credential = EmailAuthProvider.credential(
       currentUser.email!,
-      "password"
+      "#ekswk0813"
     );
 
     const withdrawalState = reauthenticateWithCredential(
@@ -60,6 +69,7 @@ const AdminChangePasswordContainer: React.FC = () => {
     onSuccess: (data, variable, context) => {
       console.log(data);
       if (data === "change-success") {
+        onOpen();
       } else {
         if (data.indexOf("email-already-in-use") !== -1) {
           return !toastMsg.isActive("error-duplicate")
@@ -126,6 +136,18 @@ const AdminChangePasswordContainer: React.FC = () => {
 
   return (
     <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>비밀번호 변경 완료</ModalHeader>
+          <ModalBody>정상적으로 비밀번호가 변경됐습니다.</ModalBody>
+
+          <ModalFooter>
+            <Button onClick={() => navigate("/adminsetting")}>닫기</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Flex
         as="article"
         direction="column"
