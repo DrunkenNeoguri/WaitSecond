@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CommonInput } from "../../common/commoninput";
-import { AdminData, EventObject } from "../../../utils/typealies";
+import { AdminData, EventObject, StoreOption } from "../../../utils/typealies";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import {
   getAuth,
@@ -17,6 +17,7 @@ import {
 } from "firebase/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 
 const AdminSignUpContainer: React.FC = () => {
   const initialState = new AdminData("", "", "");
@@ -31,6 +32,8 @@ const AdminSignUpContainer: React.FC = () => {
   const navigate = useNavigate();
 
   const firebaseAuth = getAuth();
+  const db = getFirestore();
+  const adminList = collection(db, "adminList");
 
   const signUpAccount = async (userData: AdminData) => {
     const createState = createUserWithEmailAndPassword(
@@ -38,7 +41,31 @@ const AdminSignUpContainer: React.FC = () => {
       userData.email,
       userData.password!
     )
-      .then((cred) => sendEmailVerification(cred.user).then(() => true))
+      .then((cred) => {
+        sendEmailVerification(cred.user);
+        return cred.user.uid;
+      })
+      .then((uid) => {
+        const adminData: StoreOption = {
+          uid: uid,
+          storeName: "",
+          storebg: "",
+          waitingState: false,
+          maximumTeamMemberCount: 4,
+          maximumWaitingTeamCount: 10,
+          petAllow: false,
+          teamSeparate: false,
+          customOption1Name: "",
+          customOption1State: false,
+          customOption2Name: "",
+          customOption2State: false,
+          customOption3Name: "",
+          customOption3State: false,
+        };
+        addDoc(adminList, adminData);
+        return uid;
+      })
+      .then(() => "signup-success")
       .catch((error) => error.message);
     return createState;
   };

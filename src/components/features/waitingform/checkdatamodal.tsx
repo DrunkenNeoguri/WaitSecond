@@ -20,7 +20,7 @@ import {
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { getFirestore, addDoc, collection } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -36,7 +36,7 @@ const CheckDataModal: React.FC<{
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { store } = useParams();
+  const { storeuid } = useParams();
 
   const db = getFirestore();
 
@@ -53,7 +53,7 @@ const CheckDataModal: React.FC<{
         clearInterval(timer);
         setRegisterState(false);
         close(false);
-        navigate(`/${store}/waitingstate/${userInfo.tel}`);
+        navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
 
         // 해당 내용에서 react-router를 통한 페이지 이동 구현할 것.
         // 버튼 쪽에도 함수 넣을 것.
@@ -68,8 +68,8 @@ const CheckDataModal: React.FC<{
       ...userInfo,
       createdAt: new Date().getTime(),
     };
-    const addWaitingData = await setDoc(
-      doc(db, `${store}`, userInfo.tel),
+    const addWaitingData = await addDoc(
+      collection(db, `storeList/${storeuid}/waitingList`),
       sendUserData
     )
       .then((data) => data)
@@ -81,6 +81,7 @@ const CheckDataModal: React.FC<{
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
       queryClient.invalidateQueries(["waitingList"]);
+      queryClient.invalidateQueries(["storeData"]);
       setRegisterState(true);
     },
   });
@@ -128,7 +129,7 @@ const CheckDataModal: React.FC<{
             onClick={() => {
               close(false);
               setRegisterState(false);
-              navigate(`/asgs/waitingstate/${userInfo.tel}`);
+              navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
             }}
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
           >

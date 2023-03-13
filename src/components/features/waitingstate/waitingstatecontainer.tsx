@@ -17,20 +17,21 @@ import {
   doc,
   getDocs,
   getFirestore,
+  query,
 } from "firebase/firestore";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
-import { UserData } from "../../../utils/typealies";
+import { StoreOption, UserData } from "../../../utils/typealies";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [cancelState, setCancelState] = useState(false);
-  const { store, telnumber } = useParams();
+  const { storeuid, telnumber } = useParams();
 
   const db = getFirestore();
-  const waitingCol = collection(db, `${store}`);
+  const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
@@ -51,6 +52,26 @@ const WaitingStateContainer = () => {
     queryFn: getWaitingData,
   });
 
+  const getStoreSettingData = async () => {
+    const storeDataState: StoreOption | undefined = await getDocs(
+      collection(db, "adminList")
+    ).then((data) => {
+      let adminData: any;
+      data.forEach((doc) => {
+        if (doc.data().uid === storeuid) {
+          return (adminData = doc.data());
+        }
+      });
+      return adminData!;
+    });
+    return storeDataState;
+  };
+
+  const storeData = useQuery({
+    queryKey: ["storeData"],
+    queryFn: getStoreSettingData,
+  });
+
   // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
   const currentUserIdx = waitingList.data?.findIndex(
     (elem: UserData) => elem.tel === telnumber
@@ -60,7 +81,7 @@ const WaitingStateContainer = () => {
 
   const cancelWaitingAccount = async () => {
     const calcelWaitingState = deleteDoc(
-      doc(db, `${store}`, currentUserData.tel)
+      doc(db, `${storeuid}`, currentUserData.tel)
     )
       .then((data) => true)
       .catch((error) => error.message);
@@ -222,7 +243,9 @@ const WaitingStateContainer = () => {
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
           <Heading as="h1" textAlign="center">
-            너굴 상점
+            {storeData.data === undefined
+              ? "불러오는중불러오는중불러오는중불러오는중"
+              : storeData.data.storeName}
           </Heading>
           <Flex
             direction="row"
