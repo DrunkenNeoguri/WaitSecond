@@ -1,14 +1,14 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AdminChangePassword from "../pages/adminchangepassword";
-import AdminEmailCheck from "../pages/adminemailcheck";
 import AdminFindPassword from "../pages/adminfindpassword";
 import AdminLogin from "../pages/adminlogin";
-import AdminMain from "../pages/adminmain";
-import AdminSetting from "../pages/adminsetting";
+import AdminWaitingList from "../pages/adminwaitinglist";
 import AdminSignUp from "../pages/adminsignup";
+import AdminVerified from "../pages/adminverified";
 import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
+import AdminStoreManage from "../pages/adminstoremanage";
+import AdminSetting from "../pages/adminsetting";
 
 const Router = () => {
   return (
@@ -21,11 +21,11 @@ const Router = () => {
         />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/adminsignup" element={<AdminSignUp />} />
-        <Route path="/adminemailcheck" element={<AdminEmailCheck />} />
+        <Route path="/adminverified" element={<AdminVerified />} />
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
-        <Route path="/adminchangepassword" element={<AdminChangePassword />} />
-        <Route path="/:store/adminmain" element={<AdminMain />} />
-        <Route path="/:store/adminsetting" element={<AdminSetting />} />
+        <Route path="/:store/adminwaitinglist" element={<AdminWaitingList />} />
+        <Route path="/:store/adminstoremanage" element={<AdminStoreManage />} />
+        <Route path="/adminsetting" element={<AdminSetting />} />
       </Routes>
     </BrowserRouter>
   );
