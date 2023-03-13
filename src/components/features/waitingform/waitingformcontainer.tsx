@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EventObject, UserData } from "../../../utils/typealies";
+import { EventObject, StoreOption, UserData } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 import {
   faMinus,
@@ -23,7 +23,7 @@ import {
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 
 const WaitingFormContainer: React.FC = () => {
@@ -33,10 +33,10 @@ const WaitingFormContainer: React.FC = () => {
   const [agreeState, setAgreeState] = useState(false);
   const [modalState, setModalState] = useState(false);
   const visionState = useRecoilValue<boolean>(lowVisionState);
-  const { store } = useParams();
+  const { storeuid } = useParams();
 
   const db = getFirestore();
-  const waitingCol = collection(db, `${store}`);
+  const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
@@ -55,6 +55,26 @@ const WaitingFormContainer: React.FC = () => {
   const waitingList = useQuery({
     queryKey: ["waitingList"],
     queryFn: getWaitingData,
+  });
+
+  const getStoreSettingData = async () => {
+    const storeDataState: StoreOption | undefined = await getDocs(
+      collection(db, "adminList")
+    ).then((data) => {
+      let adminData: any;
+      data.forEach((doc) => {
+        if (doc.data().uid === storeuid) {
+          return (adminData = doc.data());
+        }
+      });
+      return adminData!;
+    });
+    return storeDataState;
+  };
+
+  const storeData = useQuery({
+    queryKey: ["storeData"],
+    queryFn: getStoreSettingData,
   });
 
   // Func - Input User Data
@@ -159,7 +179,9 @@ const WaitingFormContainer: React.FC = () => {
         boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
       >
         <Heading as="h1" textAlign="center">
-          너굴 상점
+          {storeData.data === undefined
+            ? "불러오는중불러오는중불러오는중불러오는중"
+            : storeData.data.storeName}
         </Heading>
         <Flex
           direction="row"
