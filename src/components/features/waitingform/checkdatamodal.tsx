@@ -41,6 +41,7 @@ const CheckDataModal: React.FC<{
       ...userInfo,
       createdAt: new Date().getTime(),
     };
+
     const addWaitingData = await addDoc(
       collection(db, `storeList/${storeuid}/waitingList`),
       sendUserData

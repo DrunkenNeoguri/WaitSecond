@@ -28,7 +28,18 @@ import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 
 const WaitingFormContainer: React.FC = () => {
-  const initialState = new UserData("", "", 1, false, false);
+  const initialState = new UserData(
+    "",
+    "",
+    1,
+    false,
+    false,
+    false,
+    false,
+    false,
+    0,
+    ""
+  );
 
   const [userData, setUserData] = useState<UserData>(initialState);
   const [agreeState, setAgreeState] = useState(false);

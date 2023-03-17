@@ -18,10 +18,6 @@ import { passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 
-// 해야 할 작업
-// 라우터를 받아와서 값이 resetEmail인지, emailverify인지 확인하기
-// mode 여부에 따라 페이지 출력 여부를 다르게 할 것.
-
 const AdminVerifiedContainer = () => {
   const initialState = new AdminData("", "", "");
 
