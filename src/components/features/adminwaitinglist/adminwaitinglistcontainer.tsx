@@ -35,8 +35,6 @@ const AdminWaitingListContainer = () => {
     queryFn: getWaitingData,
   });
 
-  console.log(currentWaitingState.data);
-
   return (
     <Flex
       as="article"

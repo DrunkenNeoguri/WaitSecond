@@ -1,5 +1,5 @@
 import { Button, Flex, Link, Text } from "@chakra-ui/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 import { useState } from "react";
 import { UserData } from "../../../utils/typealies";
@@ -12,6 +12,7 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
 
   // 등록된 손님 정보 지우기
   const db = getFirestore();
+  const queryClient = useQueryClient();
 
   const deleteGuestData = async (userData: UserData) => {
     const calcelWaitingState = deleteDoc(
@@ -25,8 +26,9 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
   const deleteMutation = useMutation(deleteGuestData, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
-      if (data === "signup-success") {
-        return;
+      if (data === "delete-success") {
+        queryClient.invalidateQueries(["currentWaitingState"]);
+      } else {
       }
     },
   });
@@ -36,6 +38,7 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
     userData: UserData
   ) => {
     e.preventDefault();
+    e.stopPropagation();
     deleteMutation.mutate(userData);
   };
 
@@ -59,7 +62,7 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
             fontSize="1rem"
             pointerEvents="none"
           >
-            <Text fontWeight="bold">Thornton F. Butterfield</Text> 님
+            <Text fontWeight="bold">{userData.name}</Text> 님
           </Flex>
           <Flex
             direction="row"
@@ -73,7 +76,7 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
               11:59
             </Text>
             <Flex direction="row" gap="0.25rem">
-              성인 <Text fontWeight="bold">5명</Text>
+              성인 <Text fontWeight="bold">{userData.member}명</Text>
             </Flex>
             <Flex direction="row" gap="0.25rem">
               유아 <Text fontWeight="bold">2명</Text>
@@ -91,7 +94,6 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
               fontSize="0.5rem"
               color="#ffffff"
               fontWeight="normal"
-              onClick={(e) => deleteGuestDataByEntered(e, userData)}
             >
               전화
             </Button>
@@ -104,7 +106,7 @@ const WaitingDataBlock: React.FC<{ admin: string; userData: UserData }> = ({
             fontSize="0.5rem"
             color="#ffffff"
             fontWeight="normal"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => deleteGuestDataByEntered(e, userData)}
           >
             입장 완료
           </Button>
