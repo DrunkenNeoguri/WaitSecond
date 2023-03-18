@@ -25,7 +25,7 @@ const CommonHeader: React.FC<{
       {menuState ? <CommonMenu close={setMenuState} /> : <></>}
       <Flex
         as="nav"
-        background="#5a5a5a"
+        background="subBlue"
         width="100vw"
         height="3.5rem"
         display="flex"

@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventObject, StoreOption, UserData } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
-import {
-  faMinus,
-  faPlus,
-  faTriangleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBell, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { telRegex } from "../../../utils/reqlist";
 import CheckDataModal from "./checkdatamodal";
 import {
@@ -50,6 +46,7 @@ const WaitingFormContainer: React.FC = () => {
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
+  // 현재 대기열 가져오기
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
@@ -64,6 +61,7 @@ const WaitingFormContainer: React.FC = () => {
     return waitingState;
   };
 
+  // 관리자가 설정한 매장 관리 정보 가져오기
   const waitingList = useQuery({
     queryKey: ["waitingList"],
     queryFn: getWaitingData,
@@ -177,16 +175,17 @@ const WaitingFormContainer: React.FC = () => {
       <Flex
         as="article"
         direction="column"
-        position="relative"
         background="#ffffff"
-        padding="2rem 1rem"
-        margin="0 1rem"
+        padding="1rem"
         border="none"
-        borderRadius="1rem 1rem 0 0"
         top="-4rem"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
       >
-        <Heading as="h1" textAlign="center">
+        <Heading
+          as="h1"
+          textAlign="center"
+          letterSpacing="-0.05rem"
+          padding="1rem 0"
+        >
           {storeData.data === undefined
             ? "불러오는중불러오는중불러오는중불러오는중"
             : storeData.data.storeName}
@@ -195,11 +194,13 @@ const WaitingFormContainer: React.FC = () => {
           direction="row"
           justify="space-between"
           align="center"
-          fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          margin="1.5rem 0"
+          fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+          fontWeight="semibold"
+          letterSpacing="-0.1rem"
+          margin="0.5rem 0 1rem 0"
         >
           <Text>현재 대기 팀</Text>
-          <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
+          <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
             {waitingList.data === undefined
               ? "확인 중"
               : waitingList.data.length === 0
@@ -210,31 +211,31 @@ const WaitingFormContainer: React.FC = () => {
         <form onSubmit={submitUserData}>
           <FormControl textAlign="center">
             <Flex direction="column">
-              <Flex direction="row" align="center">
+              <Flex direction="column" align="center" margin="1rem 0">
                 <FontAwesomeIcon
-                  icon={faTriangleExclamation}
+                  icon={faBell}
                   style={{
-                    color: "red",
+                    color: "orange",
                     fontSize: visionState === false ? "1.5rem" : "1.625rem",
                   }}
                 />
                 <Text
-                  margin="0 0.5rem"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#58a6dc"
-                  fontWeight="600"
+                  margin="0.5rem"
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  textAlign="center"
+                  color="subBlue"
+                  fontWeight="bold"
                 >
                   참고해주세요!
                 </Text>
               </Flex>
               <Text
-                border="2px solid #4E95FF"
+                background="#F9F9F9"
                 borderRadius="0.25rem"
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                letterSpacing="-2%"
+                fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                letterSpacing="-0.05rem"
                 lineHeight={visionState === false ? "1.5rem" : "2.25rem"}
-                margin="1.5rem 0"
-                padding="0.25rem"
+                padding="0.5rem"
                 whiteSpace="pre-wrap"
                 textAlign="left"
               >
@@ -243,16 +244,21 @@ const WaitingFormContainer: React.FC = () => {
                 수집한 정보는 가게에 입장하거나, 대기 취소 시 자동으로
                 삭제됩니다.
               </Text>
-              <Flex direction="row" align="center">
+              <Flex
+                direction="row"
+                align="center"
+                justifyContent="flex-end"
+                margin="0.5rem 0"
+              >
                 <Checkbox
-                  size="lg"
+                  size="md"
                   id="agree"
                   onChange={changeAgreeState}
                   isChecked={agreeState === false ? false : true}
                 />
                 <FormLabel
                   htmlFor="agree"
-                  fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                   margin="0 0.5rem"
                   cursor="pointer"
                 >
@@ -271,12 +277,10 @@ const WaitingFormContainer: React.FC = () => {
             <CommonInput
               id="name"
               type="text"
-              title="성함"
+              title="성　함"
               value={userData.name}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-              labelWidth="30%"
-              inputWidth="70%"
+              fontSize={visionState === false ? "1rem" : "1.625rem"}
               margin="2rem 0"
             />
             <CommonInput
@@ -285,132 +289,152 @@ const WaitingFormContainer: React.FC = () => {
               title="연락처"
               value={userData.tel}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-              labelWidth="30%"
-              inputWidth="70%"
+              fontSize={visionState === false ? "1rem" : "1.625rem"}
               margin="2rem 0"
             />
-            <Flex
-              direction="row"
-              align="center"
-              justify="space-between"
-              margin="2rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
+            <Flex direction="column" margin="2rem 0">
+              <Text
+                fontWeight="bold"
+                color="subBlue"
+                textAlign="left"
+                margin="0.5rem 0"
               >
-                인원
-              </FormLabel>
-              <Flex
-                width="70%"
-                justifyContent="space-between"
-                flex="1 0 2.5rem"
-              >
-                <Button
-                  id="countMinus"
-                  onClick={changeMemberCount}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="2.5rem"
-                  flex="1 0 2.5rem"
-                  margin="0 1rem 0 0"
-                  background="#5ABFB7"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#FFFFFF"
-                  padding={0}
-                  borderRadius="4px"
-                  border="1px solid gray"
+                인원을 선택하세요.
+              </Text>
+              <Flex justify="space-between" align="center" margin="0.5rem 0">
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="semibold"
+                  margin="0"
                 >
-                  <FontAwesomeIcon icon={faMinus} />
-                </Button>
-                <Flex
-                  justify="center"
-                  align="center"
-                  height="2.5rem"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#000000"
-                  padding="0.5rem 0"
-                  borderRadius="4px"
-                  border="1px solid gray"
-                  width="100%"
-                >
-                  {userData.member}명
+                  성　인
+                </FormLabel>
+                <Flex justify="space-between" align="cneter">
+                  <Button
+                    size="sm"
+                    id="countMinus"
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "0.875rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </Button>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    height="auto"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#000000"
+                    padding="0 1rem"
+                    width="5rem"
+                  >
+                    {userData.member}명
+                  </Flex>
+
+                  <Button
+                    size="sm"
+                    id="countPlus"
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
                 </Flex>
-                <Button
-                  id="countPlus"
-                  onClick={changeMemberCount}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="2.5rem"
-                  flex="1 0 2.5rem"
-                  margin="0 0 0 1rem"
-                  background="#5ABFB7"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#FFFFFF"
-                  padding={0}
-                  borderRadius="4px"
-                  border="1px solid gray"
+              </Flex>
+              <Flex justify="space-between" align="center" margin="0.5rem 0">
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="semibold"
+                  margin="0"
                 >
-                  <FontAwesomeIcon icon={faPlus} />
-                </Button>
+                  유　아
+                </FormLabel>
+                <Flex justify="space-between" align="cneter">
+                  <Button
+                    size="sm"
+                    id="countMinus"
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "0.875rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </Button>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    height="auto"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#000000"
+                    padding="0 1rem"
+                    width="5rem"
+                  >
+                    {userData.member}명
+                  </Flex>
+
+                  <Button
+                    size="sm"
+                    id="countPlus"
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
+                </Flex>
               </Flex>
             </Flex>
-            <Box>
-              <Flex align="center" margin="1rem 0">
+            <Flex direction="column" background="#F9F9F9" padding="0.75rem">
+              <Flex
+                align="center"
+                margin="0.25rem 0"
+                fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                letterSpacing="-0.05rem"
+              >
                 <Checkbox
-                  size="lg"
-                  id="child"
-                  onChange={(e: React.ChangeEvent) =>
-                    changeCheckState(e, userData.child!)
-                  }
-                  isChecked={userData.child === false ? false : true}
-                />
-                <FormLabel
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  fontWeight="500"
-                  width="auto"
-                  margin="0 0.5rem"
-                  htmlFor="child"
-                  cursor="pointer"
-                >
-                  아이가 있어요.
-                </FormLabel>
-              </Flex>
-              <Flex align="center" margin="1rem 0">
-                <Checkbox
-                  size="lg"
+                  size="md"
                   id="pet"
                   onChange={(e: React.ChangeEvent) =>
                     changeCheckState(e, userData.pet!)
                   }
+                  borderRadius="0.5rem"
                   isChecked={userData.pet === false ? false : true}
+                  variant="customBlue"
                 />
                 <FormLabel
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
                   fontWeight="500"
                   width="auto"
                   margin="0 0.5rem"
                   htmlFor="pet"
                   cursor="pointer"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                 >
                   반려 동물이 있어요.
                 </FormLabel>
               </Flex>
-            </Box>
+            </Flex>
             <Button
               type="submit"
-              variant="solid"
-              background="#5ABFB7"
-              padding="0.5rem auto"
+              background="subBlue"
               fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+              color="#FFFFFF"
+              padding="0.5rem auto"
+              margin="1rem 0"
               borderRadius="0.25rem"
-              color="#ffffff"
-              width="90%"
+              height="3rem"
+              width="100%"
             >
               대기 등록
             </Button>

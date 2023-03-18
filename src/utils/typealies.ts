@@ -47,7 +47,7 @@ export class UserData {
   custom1?: boolean;
   custom2?: boolean;
   custom3?: boolean;
-  createdAt?: string;
+  createdAt?: number;
   uid?: string;
 
   constructor(
@@ -59,7 +59,7 @@ export class UserData {
     custom1?: boolean,
     custom2?: boolean,
     custom3?: boolean,
-    createdAt?: string,
+    createdAt?: number,
     uid?: string
   ) {
     this.name = name;
