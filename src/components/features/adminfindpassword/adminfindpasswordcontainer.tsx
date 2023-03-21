@@ -31,10 +31,11 @@ const AdminFindPasswordContainer = () => {
   const findPasswordMutation = useMutation(findPasswordAccount, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
+      console.log(data);
       if (data === "send-email-success") {
         return "asdg";
       } else {
-        if (data.indexOf("user-not-found") === -1) {
+        if (data.indexOf("user-not-found") !== -1) {
           return !toastMsg.isActive("error-userNotFound")
             ? toastMsg({
                 title: "존재하지 않는 계정",
@@ -65,10 +66,7 @@ const AdminFindPasswordContainer = () => {
 
   const submitEmailData = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      emailData.email.trim() === "" ||
-      emailRegex.test(emailData.email) === false
-    ) {
+    if (emailData.trim() === "" || emailRegex.test(emailData) === false) {
       return !toastMsg.isActive("error-emailCheck")
         ? toastMsg({
             title: "이메일 확인",

@@ -1,11 +1,9 @@
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Flex,
   FormLabel,
   Heading,
-  ListIcon,
   ListItem,
   Modal,
   ModalBody,

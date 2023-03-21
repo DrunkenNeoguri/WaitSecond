@@ -113,7 +113,11 @@ const AdminChangePasswordContainer: React.FC = () => {
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (userData.email.trim() === "" || userData.password?.trim() === "") {
+    if (
+      userData.password?.trim() === "" ||
+      userData.passwordcheck?.trim() === "" ||
+      userData.currentpassword?.trim() === ""
+    ) {
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -137,15 +141,16 @@ const AdminChangePasswordContainer: React.FC = () => {
           })
         : null;
     } else if (
-      passwordRegex.test(userData.password!) === false ||
-      passwordRegex.test(userData.passwordcheck!) === false
+      !passwordRegex.test(userData.password!) ||
+      !passwordRegex.test(userData.passwordcheck!) ||
+      !passwordRegex.test(userData.currentpassword!)
     ) {
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
             id: "error-passwordCheck",
             description:
-              "비밀번호를 양식에 맞게   제대로 입력했는지 확인해주세요.",
+              "비밀번호를 양식에 맞게 제대로 입력했는지 확인해주세요.",
             status: "error",
             duration: 5000,
             isClosable: true,
