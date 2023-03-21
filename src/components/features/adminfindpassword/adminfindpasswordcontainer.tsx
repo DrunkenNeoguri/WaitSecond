@@ -10,22 +10,19 @@ import { useMutation } from "@tanstack/react-query";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { emailRegex } from "../../../utils/reqlist";
-import { AdminData, EventObject } from "../../../utils/typealies";
+import { EventObject } from "../../../utils/typealies";
+import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
 
 const AdminFindPasswordContainer = () => {
-  const initialState = new AdminData("");
-
-  const [emailData, setEmailData] = useState<AdminData>(initialState);
+  const [emailData, setEmailData] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
 
   const firebaseAuth = getAuth();
 
-  const findPasswordAccount = async (userData: AdminData) => {
-    const findPasswordState = sendPasswordResetEmail(
-      firebaseAuth,
-      userData.email
-    )
+  const findPasswordAccount = async (emailData: string) => {
+    console.log(emailData);
+    const findPasswordState = sendPasswordResetEmail(firebaseAuth, emailData)
       .then((data) => "send-email-success")
       .catch((error) => error.message);
     return findPasswordState;
@@ -56,8 +53,9 @@ const AdminFindPasswordContainer = () => {
 
   const inputEmailData = (e: React.ChangeEvent) => {
     e.preventDefault();
-    const { id, value }: EventObject = e.target;
-    setEmailData({ ...emailData, [id]: value });
+    const { value }: EventObject = e.currentTarget;
+    setEmailData(value!);
+
     if (inputCheck === false) {
       setInputCheck(true);
     }
@@ -99,46 +97,34 @@ const AdminFindPasswordContainer = () => {
       top="5.5rem"
       boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
     >
-      <Heading as="h1" textAlign="center" marginBottom="2rem">
+      <Heading as="h1" textAlign="center">
         웨잇세컨드
       </Heading>
-      <Heading as="h2" fontSize="1.25rem">
+      <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
         비밀번호 찾기
       </Heading>
-      <Text
-        fontSize="1rem"
-        lineHeight="1.5rem"
-        whiteSpace="pre-wrap"
-        textAlign="left"
-        letterSpacing="-1px"
-        margin="1rem 0"
-      >
-        등록하신 이메일 주소를 입력해주세요.
-      </Text>
+      <Text fontSize="0.75rem">가입하신 이메일 아이디를 입력해주세요.</Text>
       <form onSubmit={submitEmailData}>
         <FormControl>
-          <CommonInput
-            direction="column"
-            id="email"
-            title="가입한 이메일 주소"
-            type="email"
-            value={emailData.email}
-            onChange={inputEmailData}
-            margin="1.25rem 0 0 0"
-          />
-          <Text color="red" marginBottom="1.25rem">
-            {inputCheck === true
-              ? emailData.email.trim() === ""
-                ? "입력란을 빈칸으로 둘 수 없습니다."
-                : emailRegex.test(emailData.email) === false
-                ? "정확한 이메일을 입력해주십시오."
-                : "　"
-              : "　"}
-          </Text>
+          <Flex direction="column" margin="1.5rem 0 0.5rem 0">
+            <CommonInput
+              id="email"
+              title="가입하신 이메일 아이디"
+              type="email"
+              value={emailData}
+              onChange={inputEmailData}
+              margin="0.25rem 0"
+            />
+            <CommonErrorMsg
+              type="email"
+              value1={emailData}
+              inputCheck={{ email: inputCheck }}
+            />
+          </Flex>
           <Button
             type="submit"
             variant="solid"
-            background="#5ABFB7"
+            background="subBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"

@@ -22,6 +22,7 @@ import { useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
 import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData(
@@ -38,6 +39,10 @@ const WaitingFormContainer: React.FC = () => {
   );
 
   const [userData, setUserData] = useState<UserData>(initialState);
+  const [inputCheck, setInputCheck] = useState({
+    customername: false,
+    tel: false,
+  });
   const [agreeState, setAgreeState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const visionState = useRecoilValue<boolean>(lowVisionState);
@@ -92,6 +97,13 @@ const WaitingFormContainer: React.FC = () => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setUserData({ ...userData, [id]: value });
+
+    if (e.target.id === "name" && inputCheck.customername === false) {
+      setInputCheck({ ...inputCheck, customername: true });
+    }
+    if (e.target.id === "tel" && inputCheck.tel === false) {
+      setInputCheck({ ...inputCheck, tel: true });
+    }
   };
 
   // Func - change state when user clicked checkbox
@@ -209,7 +221,7 @@ const WaitingFormContainer: React.FC = () => {
           </Text>
         </Flex>
         <form onSubmit={submitUserData}>
-          <FormControl textAlign="center">
+          <FormControl>
             <Flex direction="column">
               <Flex direction="column" align="center" margin="1rem 0">
                 <FontAwesomeIcon
@@ -272,27 +284,35 @@ const WaitingFormContainer: React.FC = () => {
               height="0.125rem"
               borderRadius="1rem"
               boxSizing="border-box"
-              margin="2rem 1rem"
+              margin="2rem 1rem 2.5rem 1rem"
             />
             <CommonInput
               id="name"
+              title="예약자명"
               type="text"
-              title="성　함"
               value={userData.name}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1rem" : "1.625rem"}
-              margin="2rem 0"
+              margin="0.25rem 0"
+            />
+            <CommonErrorMsg
+              type="customername"
+              value1={userData.name!}
+              inputCheck={inputCheck}
             />
             <CommonInput
               id="tel"
-              type="tel"
               title="연락처"
+              type="tel"
               value={userData.tel}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1rem" : "1.625rem"}
-              margin="2rem 0"
+              margin="0.25rem 0"
             />
-            <Flex direction="column" margin="2rem 0">
+            <CommonErrorMsg
+              type="tel"
+              value1={userData.tel}
+              inputCheck={inputCheck}
+            />
+            <Flex direction="column" margin="1.5rem 0 0.5rem 0">
               <Text
                 fontWeight="bold"
                 color="subBlue"

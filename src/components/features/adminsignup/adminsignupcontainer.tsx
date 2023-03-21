@@ -18,6 +18,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
+import ErrorMsg from "../../common/commonerrormsg";
 
 const AdminSignUpContainer: React.FC = () => {
   const initialState = new AdminData("", "", "");
@@ -30,6 +31,7 @@ const AdminSignUpContainer: React.FC = () => {
     email: false,
     password: false,
     passwordcheck: false,
+    storename: false,
   });
 
   const firebaseAuth = getAuth();
@@ -102,17 +104,22 @@ const AdminSignUpContainer: React.FC = () => {
     setSignUpData({ ...signUpData, [id]: value });
 
     if (e.target.id === "email" && inputCheck.email === false) {
-      setInputCheck({ ...inputCheck, email: true });
+      setInputCheck({ ...inputCheck, [id]: true });
     }
 
     if (e.target.id === "password" && inputCheck.password === false) {
-      setInputCheck({ ...inputCheck, password: true });
+      setInputCheck({ ...inputCheck, [id]: true });
     }
 
     if (e.target.id === "passwordcheck" && inputCheck.passwordcheck === false) {
-      setInputCheck({ ...inputCheck, passwordcheck: true });
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
+
+    if (e.target.id === "storename" && inputCheck.storename === false) {
+      setInputCheck({ ...inputCheck, [id]: true });
     }
   };
+
   const submitSignUpData = (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -185,12 +192,12 @@ const AdminSignUpContainer: React.FC = () => {
       top="5.5rem"
       boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
     >
-      <Heading as="h1" textAlign="center" marginBottom="2rem">
+      <Heading as="h1" textAlign="center">
         웨잇세컨드
       </Heading>
       {!signUpState ? (
         <>
-          <Heading as="h2" fontSize="1.25rem">
+          <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
             회원가입
           </Heading>
           <form onSubmit={submitSignUpData}>
@@ -202,63 +209,61 @@ const AdminSignUpContainer: React.FC = () => {
                 type="email"
                 value={signUpData.email}
                 onChange={inputSignUpData}
-                margin="1.25rem 0 0 0"
+                margin="0.25rem 0"
               />
-              <Text color="red" marginBottom="1.25rem">
-                {inputCheck.email === true
-                  ? signUpData.email.trim() === ""
-                    ? "입력란을 빈칸으로 둘 수 없습니다."
-                    : emailRegex.test(signUpData.email) === false
-                    ? "정확한 이메일을 입력해주십시오."
-                    : "　"
-                  : "　"}
-              </Text>
+              <ErrorMsg
+                type="email"
+                value1={signUpData.email!}
+                inputCheck={inputCheck}
+              />
 
               <CommonInput
-                direction="column"
                 id="password"
                 title="비밀번호"
                 type="password"
                 value={signUpData.password!}
                 onChange={inputSignUpData}
-                margin="1.25rem 0 0 0"
+                margin="0.25rem 0"
               />
-              <Text color="red" marginBottom="1.25rem">
-                {inputCheck.password === true
-                  ? signUpData.password!.trim() === ""
-                    ? "입력란을 빈칸으로 둘 수 없습니다."
-                    : passwordRegex.test(signUpData.password!) === false
-                    ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                    : "　"
-                  : "　"}
-              </Text>
+              <ErrorMsg
+                type="password"
+                value1={signUpData.password!}
+                inputCheck={inputCheck}
+              />
 
               <CommonInput
-                direction="column"
                 id="passwordcheck"
                 title="비밀번호 확인"
                 type="password"
                 value={signUpData.passwordcheck!}
                 onChange={inputSignUpData}
-                margin="1.25rem 0 0 0"
+                margin="0.25rem 0"
               />
-              <Text color="red" marginBottom="1.25rem">
-                {inputCheck.passwordcheck === true
-                  ? signUpData.passwordcheck!.trim() === ""
-                    ? "입력란을 빈칸으로 둘 수 없습니다."
-                    : passwordRegex.test(signUpData.passwordcheck!) === false
-                    ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                    : signUpData.password!.trim() !==
-                      signUpData.passwordcheck!.trim()
-                    ? "비밀번호가 일치하지 않습니다."
-                    : "　"
-                  : "　"}
-              </Text>
+              <ErrorMsg
+                type="passwordcheck"
+                value1={signUpData.passwordcheck!}
+                value2={signUpData.password!}
+                inputCheck={inputCheck}
+              />
+
+              <CommonInput
+                id="storename"
+                title="가게명"
+                type="text"
+                value={signUpData.storename!}
+                onChange={inputSignUpData}
+                margin="0.25rem 0"
+              />
+              <ErrorMsg
+                type="storename"
+                value1={signUpData.storename!}
+                inputCheck={inputCheck}
+              />
 
               <Button
                 type="submit"
                 variant="solid"
-                background="#5ABFB7"
+                background="subBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"
@@ -299,7 +304,7 @@ const AdminSignUpContainer: React.FC = () => {
           <Button
             type="submit"
             variant="solid"
-            background="#5ABFB7"
+            background="subBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"

@@ -1,9 +1,11 @@
 import { TypedCommonInput } from "../../utils/typealies";
 import { Flex, FormLabel, Input } from "@chakra-ui/react";
-
-//</Flex><Flex justify="space-between" margin="2rem 0">
+import { useRecoilValue } from "recoil";
+import { lowVisionState } from "../../modules/atoms/atoms";
 
 export const CommonInput = (props: TypedCommonInput) => {
+  const visionState = useRecoilValue<boolean>(lowVisionState);
+
   return (
     <Flex
       direction="column"
@@ -12,7 +14,11 @@ export const CommonInput = (props: TypedCommonInput) => {
       margin={props.margin}
       padding={props.padding}
     >
-      <FormLabel htmlFor={props.id} fontSize={props.fontSize} fontWeight="bold">
+      <FormLabel
+        htmlFor={props.id}
+        fontSize={!visionState ? "1rem" : "1.625rem"}
+        fontWeight="semibold"
+      >
         {props.title}
       </FormLabel>
       <Input

@@ -17,6 +17,7 @@ import { EventObject, StoreOption, UserData } from "../../../utils/typealies";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { CommonInput } from "../../common/commoninput";
 import { telRegex } from "../../../utils/reqlist";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const WaitingMainContainer: React.FC = () => {
   const { storeuid } = useParams();
@@ -25,6 +26,7 @@ const WaitingMainContainer: React.FC = () => {
   const toastMsg = useToast();
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [telInput, setTelInput] = useState("");
+  const [inputCheck, setInputCheck] = useState(false);
 
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
@@ -74,6 +76,10 @@ const WaitingMainContainer: React.FC = () => {
     e.preventDefault();
     const { value }: EventObject = e.currentTarget;
     setTelInput(value!);
+
+    if (inputCheck === false) {
+      setInputCheck(true);
+    }
   };
 
   const moveToWaitingStatePage = (e: React.FormEvent) => {
@@ -181,15 +187,21 @@ const WaitingMainContainer: React.FC = () => {
         <Flex direction="column" fontSize="1rem" margin="1rem 0">
           <Text>이미 대기 등록을 하셨다면</Text>
           <form onSubmit={moveToWaitingStatePage}>
-            <CommonInput
-              id="tel"
-              type="tel"
-              title="연락처"
-              value={telInput}
-              onChange={inputUserTelNumber}
-              fontSize={visionState === false ? "1rem" : "1.625rem"}
-              margin="1rem 0"
-            />
+            <Flex direction="column" margin="1.5rem 0">
+              <CommonInput
+                id="tel"
+                title="등록하신 연락처"
+                type="tel"
+                value={telInput}
+                onChange={inputUserTelNumber}
+                margin="0.25rem 0"
+              />
+              <CommonErrorMsg
+                type="email"
+                value1={telInput}
+                inputCheck={{ tel: inputCheck }}
+              />
+            </Flex>
             <Button
               type="submit"
               background="subBlue"

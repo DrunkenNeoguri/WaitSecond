@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
+import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
 
 const AdminVerifiedContainer = () => {
@@ -191,65 +192,47 @@ const AdminVerifiedContainer = () => {
         >
           {!changeState ? (
             <>
-              <Heading as="h1" textAlign="center" marginBottom="2rem">
+              <Heading as="h1" textAlign="center">
                 웨잇세컨드
               </Heading>
-              <Heading as="h2" fontSize="1.25rem">
+              <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
                 비밀번호 변경
               </Heading>
-              <Text
-                fontSize="1rem"
-                lineHeight="1.5rem"
-                whiteSpace="pre-wrap"
-                textAlign="left"
-                letterSpacing="-1px"
-                margin="1rem 0"
-              >
-                새로 변경할 비밀번호를 입력해주세요.
+              <Text fontSize="0.75rem">
+                새로 등록할 비밀번호를 입력해주세요.
               </Text>
               <form onSubmit={submitPasswordData}>
                 <FormControl>
-                  <CommonInput
-                    direction="column"
-                    id="password"
-                    title="비밀번호"
-                    type="password"
-                    value={passwordData.password!}
-                    onChange={inputPasswordData}
-                    margin="1.25rem 0 0 0 0"
-                  />
-                  <Text color="red" marginBottom="1.25rem">
-                    {inputCheck.password === true
-                      ? passwordData.password!.trim() === ""
-                        ? "입력란을 빈칸으로 둘 수 없습니다."
-                        : passwordRegex.test(passwordData.password!) === false
-                        ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                        : "　"
-                      : "　"}
-                  </Text>
+                  <Flex direction="column" margin="1.5rem 0">
+                    <CommonInput
+                      id="password"
+                      title="비밀번호"
+                      type="password"
+                      value={passwordData.password!}
+                      onChange={inputPasswordData}
+                      margin="0.25rem 0"
+                    />
+                    <CommonErrorMsg
+                      type="password"
+                      value1={passwordData.password!}
+                      inputCheck={inputCheck}
+                    />
 
-                  <CommonInput
-                    direction="column"
-                    id="passwordcheck"
-                    title="비밀번호 확인"
-                    type="password"
-                    value={passwordData.passwordcheck!}
-                    onChange={inputPasswordData}
-                    margin="1.25rem 0 0 0"
-                  />
-                  <Text color="red" marginBottom="1.25rem">
-                    {inputCheck.passwordcheck === true
-                      ? passwordData.passwordcheck!.trim() === ""
-                        ? "입력란을 빈칸으로 둘 수 없습니다."
-                        : passwordRegex.test(passwordData.passwordcheck!) ===
-                          false
-                        ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                        : passwordData.password!.trim() !==
-                          passwordData.passwordcheck!.trim()
-                        ? "비밀번호가 일치하지 않습니다."
-                        : "　"
-                      : "　"}
-                  </Text>
+                    <CommonInput
+                      id="passwordcheck"
+                      title="비밀번호 확인"
+                      type="password"
+                      value={passwordData.passwordcheck!}
+                      onChange={inputPasswordData}
+                      margin="0.25rem 0"
+                    />
+                    <CommonErrorMsg
+                      type="passwordcheck"
+                      value1={passwordData.passwordcheck!}
+                      value2={passwordData.password!}
+                      inputCheck={inputCheck}
+                    />
+                  </Flex>
                   <Button
                     type="submit"
                     variant="solid"
