@@ -21,7 +21,6 @@ const AdminFindPasswordContainer = () => {
   const firebaseAuth = getAuth();
 
   const findPasswordAccount = async (emailData: string) => {
-    console.log(emailData);
     const findPasswordState = sendPasswordResetEmail(firebaseAuth, emailData)
       .then((data) => "send-email-success")
       .catch((error) => error.message);
@@ -31,7 +30,6 @@ const AdminFindPasswordContainer = () => {
   const findPasswordMutation = useMutation(findPasswordAccount, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
-      console.log(data);
       if (data === "send-email-success") {
         return "asdg";
       } else {

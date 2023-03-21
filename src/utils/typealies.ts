@@ -51,9 +51,10 @@ export class AdminData {
 export class UserData {
   name: string;
   tel: string;
-  member: number;
-  child?: number;
+  adult: number;
+  child: number;
   pet?: boolean;
+  separate?: boolean;
   custom1?: boolean;
   custom2?: boolean;
   custom3?: boolean;
@@ -63,9 +64,10 @@ export class UserData {
   constructor(
     name: string,
     tel: string,
-    member: number,
+    adult: number,
     child: number,
     pet: boolean,
+    seperate: boolean,
     custom1?: boolean,
     custom2?: boolean,
     custom3?: boolean,
@@ -74,9 +76,10 @@ export class UserData {
   ) {
     this.name = name;
     this.tel = tel;
-    this.member = member;
+    this.adult = adult;
     this.child = child;
     this.pet = pet;
+    this.separate = seperate;
     this.custom1 = custom1;
     this.custom2 = custom2;
     this.custom3 = custom3;

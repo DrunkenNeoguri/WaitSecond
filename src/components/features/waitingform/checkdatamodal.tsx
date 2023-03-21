@@ -24,7 +24,8 @@ const CheckDataModal: React.FC<{
   userInfo: UserData;
   isOpen: boolean;
   onClose: () => void;
-}> = ({ userInfo, isOpen, onClose }) => {
+  custom: string[];
+}> = ({ userInfo, isOpen, onClose, custom }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
 
@@ -131,7 +132,7 @@ const CheckDataModal: React.FC<{
                 width="30%"
                 margin="0"
               >
-                성함
+                예약자명
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
@@ -176,14 +177,36 @@ const CheckDataModal: React.FC<{
                 width="30%"
                 margin="0"
               >
-                인원
+                성인
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
                 color="mainBlue"
                 fontWeight="600"
               >
-                {userInfo.member}명
+                {userInfo.adult}명
+              </Text>
+            </Flex>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
+            >
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="500"
+                width="30%"
+                margin="0"
+              >
+                유아
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="600"
+              >
+                {userInfo.child}명
               </Text>
             </Flex>
             {userInfo.pet === true ? (
@@ -203,7 +226,7 @@ const CheckDataModal: React.FC<{
                   padding="0.5rem"
                 >
                   <UnorderedList>
-                    {userInfo.pet === true ? (
+                    {userInfo.pet ? (
                       <ListItem
                         display="block"
                         fontSize={
@@ -213,6 +236,62 @@ const CheckDataModal: React.FC<{
                         color="subBlue"
                       >
                         반려 동물이 있어요.
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.separate ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        자리가 나면 따로 앉아도 괜찮아요.
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom1 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[0]}
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom2 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[1]}
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom3 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[2]}
                       </ListItem>
                     ) : (
                       <></>
