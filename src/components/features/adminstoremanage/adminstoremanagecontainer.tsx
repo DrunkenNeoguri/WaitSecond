@@ -149,6 +149,18 @@ const AdminStoreManageContainer: React.FC = () => {
   const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
+      if (data === "option-setting-success") {
+        return !toastMsg.isActive("option-setting-success")
+          ? toastMsg({
+              title: "변경 사항 적용 완료",
+              id: "option-setting-success",
+              description: "설정하신 사항이 적용됐습니다.",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
       queryClient.invalidateQueries(["currentStoreOption"]);
     },
   });

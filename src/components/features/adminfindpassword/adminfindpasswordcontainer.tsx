@@ -31,7 +31,17 @@ const AdminFindPasswordContainer = () => {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
       if (data === "send-email-success") {
-        return "asdg";
+        if (!toastMsg.isActive("send-email-success")) {
+          toastMsg({
+            title: "이메일 전송 완료",
+            id: "send-email-success",
+            description:
+              "입력하신 이메일 아이디로 비밀번호 변경 관련 메일을 전송했습니다. 메일함에서 확인해주세요.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
       } else {
         if (data.indexOf("user-not-found") !== -1) {
           return !toastMsg.isActive("error-userNotFound")
