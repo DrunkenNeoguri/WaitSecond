@@ -24,7 +24,7 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
@@ -33,15 +33,18 @@ const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
+  const navigate = useNavigate();
 
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
+  // 현재 대기열 가져오기
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
-        list.push(doc.data());
+        const userData = doc.data();
+        list.push({ ...userData, uid: doc.id });
       });
       list.sort(function (a: any, b: any) {
         return a.createdAt - b.createdAt;
@@ -56,7 +59,8 @@ const WaitingStateContainer = () => {
     queryFn: getWaitingData,
   });
 
-  const getStoreSettingData = async () => {
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
     const storeDataState: StoreOption | undefined = await getDocs(
       collection(db, "adminList")
     ).then((data) => {
@@ -71,9 +75,9 @@ const WaitingStateContainer = () => {
     return storeDataState;
   };
 
-  const storeData = useQuery({
+  const storeOption = useQuery({
     queryKey: ["storeData"],
-    queryFn: getStoreSettingData,
+    queryFn: getStoreOption,
   });
 
   // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
@@ -83,18 +87,20 @@ const WaitingStateContainer = () => {
 
   const currentUserData = waitingList.data?.[currentUserIdx];
 
-  const cancelWaitingAccount = async () => {
-    const calcelWaitingState = deleteDoc(
-      doc(db, `${storeuid}`, currentUserData.tel)
+  const deleteWaitingQueryFn = async (userData: UserData) => {
+    const deleteWaitingState = deleteDoc(
+      doc(db, `storeList/${storeuid}/waitingList`, `${currentUserData.uid}`)
     )
       .then((data) => true)
       .catch((error) => error.message);
-    return calcelWaitingState;
+    return deleteWaitingState;
   };
 
-  const deleteMutation = useMutation(cancelWaitingAccount, {
+  const deleteMutation = useMutation(deleteWaitingQueryFn, {
     onError: (error, variable) => console.log(error),
-    onSuccess: (data, variable, context) => {},
+    onSuccess: (data, variable, context) => {
+      navigate(`/ ${storeuid}`);
+    },
   });
 
   const deleteWaitingData = (e: React.MouseEvent) => {
@@ -144,7 +150,7 @@ const WaitingStateContainer = () => {
         </ModalContent>
       </Modal>
 
-      {waitingList.data === undefined || storeData.data === undefined ? (
+      {waitingList.data === undefined || storeOption.data === undefined ? (
         <Flex
           direction="column"
           align="center"
@@ -229,9 +235,9 @@ const WaitingStateContainer = () => {
             letterSpacing="-0.05rem"
             padding="1rem 0"
           >
-            {storeData.data === undefined
+            {storeOption.data === undefined
               ? "불러오는중불러오는중불러오는중불러오는중"
-              : storeData.data.storeName}
+              : storeOption.data.storeName}
           </Heading>
           <Flex
             direction="row"
@@ -342,7 +348,7 @@ const WaitingStateContainer = () => {
                 color="mainBlue"
                 fontWeight="bold"
               >
-                {currentUserData.member}명
+                {currentUserData.adult}명
               </Text>
             </Flex>
             <Flex
@@ -364,7 +370,7 @@ const WaitingStateContainer = () => {
                 color="mainBlue"
                 fontWeight="bold"
               >
-                {currentUserData.member}명
+                {currentUserData.child}명
               </Text>
             </Flex>
           </Flex>
@@ -386,7 +392,7 @@ const WaitingStateContainer = () => {
               <UnorderedList
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
               >
-                {currentUserData.pet === true ? (
+                {currentUserData.pet ? (
                   <ListItem
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
@@ -394,6 +400,54 @@ const WaitingStateContainer = () => {
                     color="subBlue"
                   >
                     반려 동물이 있어요.
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.separate ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    자리가 나면 따로 앉아도 괜찮아요.
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom1 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption1Name}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom2 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption2Name}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom3 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption3Name}
                   </ListItem>
                 ) : (
                   <></>

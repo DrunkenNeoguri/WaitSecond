@@ -89,7 +89,6 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordMutation = useMutation(changePasswordAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
-      console.log(data);
       if (data === "change-success") {
         onOpen();
       } else {

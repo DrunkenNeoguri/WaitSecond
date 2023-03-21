@@ -6,13 +6,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 import { useState } from "react";
-import { UserData } from "../../../utils/typealies";
+import { StoreOption, UserData } from "../../../utils/typealies";
 
 const WaitingDataBlock: React.FC<{
   admin: string;
   userData: UserData;
   background: string;
-}> = ({ admin, userData, background }) => {
+  storeOption: StoreOption;
+}> = ({ admin, userData, background, storeOption }) => {
   const [openState, setOpenState] = useState(false);
 
   // 등록된 손님 정보 지우기
@@ -20,12 +21,12 @@ const WaitingDataBlock: React.FC<{
   const queryClient = useQueryClient();
 
   const deleteGuestData = async (userData: UserData) => {
-    const calcelWaitingState = deleteDoc(
+    const deleteWaitingState = deleteDoc(
       doc(db, `storeList/${admin}/waitingList`, `${userData.uid}`)
     )
       .then((data) => "delete-success")
       .catch((error) => error.message);
-    return calcelWaitingState;
+    return deleteWaitingState;
   };
 
   const deleteMutation = useMutation(deleteGuestData, {
@@ -88,7 +89,7 @@ const WaitingDataBlock: React.FC<{
             pointerEvents="none"
           >
             <Flex direction="row" gap="0.25rem">
-              성인 <Text fontWeight="bold">{userData.member}명</Text>
+              성인 <Text fontWeight="bold">{userData.adult}명</Text>
             </Flex>
             <Flex direction="row" gap="0.25rem">
               유아 <Text fontWeight="bold">{userData.child}명</Text>
@@ -162,9 +163,31 @@ const WaitingDataBlock: React.FC<{
             {`${createDataTime.getFullYear()}년 ${createDataTime.getMonth()}월 ${createDataTime.getDate()}일 ${createDataTime.getHours()}시 ${createDataTime.getMinutes()}분`}
           </Text>
           <Text color="#ffffff">옵션 사항</Text>
-          <Text color="mainBlue">반려 동물</Text>
-          <Text color="mainBlue">반려 동물</Text>
-          <Text color="mainBlue">반려 동물</Text>
+          {userData.pet ? (
+            <Text color="mainBlue">반려 동물이 있어요.</Text>
+          ) : (
+            <></>
+          )}
+          {userData.separate ? (
+            <Text color="mainBlue">자리가 나면 따로 앉아도 괜찮아요.</Text>
+          ) : (
+            <></>
+          )}
+          {userData.custom1 ? (
+            <Text color="mainBlue">{storeOption.customOption1Name}</Text>
+          ) : (
+            <></>
+          )}
+          {userData.custom2 ? (
+            <Text color="mainBlue">{storeOption.customOption2Name}</Text>
+          ) : (
+            <></>
+          )}
+          {userData.custom3 ? (
+            <Text color="mainBlue">{storeOption.customOption3Name}</Text>
+          ) : (
+            <></>
+          )}
         </Flex>
       ) : (
         <></>

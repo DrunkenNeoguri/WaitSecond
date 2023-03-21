@@ -8,6 +8,7 @@ import {
   Heading,
   Input,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { getAuth } from "firebase/auth";
@@ -27,6 +28,7 @@ const AdminStoreManageContainer: React.FC = () => {
   const db = getFirestore();
   const firebaseAuth = getAuth();
   const queryClient = useQueryClient();
+  const toastMsg = useToast();
   const currentUser = firebaseAuth.currentUser?.uid;
 
   // interface에서 class로 바꿀 수 있는지 확인해보기
@@ -133,15 +135,13 @@ const AdminStoreManageContainer: React.FC = () => {
     },
   });
 
-  console.log(storeData, documentUID);
-
   // 관리자의 설정 저장하기
   const updateStoreDataToDatabase = async (storeData: StoreOption) => {
     const updateDataState = await setDoc(
       doc(db, "adminList", documentUID),
       storeData
     )
-      .then((data) => data)
+      .then((data) => "option-setting-success")
       .catch((error) => error.message);
     return updateDataState;
   };

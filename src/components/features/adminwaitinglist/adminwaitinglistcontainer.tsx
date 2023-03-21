@@ -2,7 +2,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAuth } from "firebase/auth";
 import { collection, getDocs, getFirestore, query } from "firebase/firestore";
-import { UserData } from "../../../utils/typealies";
+import { StoreOption, UserData } from "../../../utils/typealies";
 import WaitingDataBlock from "./waitingdatablock";
 
 const AdminWaitingListContainer = () => {
@@ -35,6 +35,27 @@ const AdminWaitingListContainer = () => {
     queryFn: getWaitingData,
   });
 
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
+    const storeDataState: StoreOption | undefined = await getDocs(
+      collection(db, "adminList")
+    ).then((data) => {
+      let adminData: any;
+      data.forEach((doc) => {
+        if (doc.data().uid === currentUser) {
+          return (adminData = doc.data());
+        }
+      });
+      return adminData!;
+    });
+    return storeDataState;
+  };
+
+  const storeOption = useQuery({
+    queryKey: ["storeData"],
+    queryFn: getStoreOption,
+  });
+
   return (
     <Flex
       as="article"
@@ -61,9 +82,10 @@ const AdminWaitingListContainer = () => {
         {currentWaitingState.data?.map((elem: UserData, index: number) => {
           return (
             <WaitingDataBlock
-              key={elem.uid!}
+              key={index}
               userData={elem}
               admin={currentUser!}
+              storeOption={storeOption.data!}
               background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
             />
           );
