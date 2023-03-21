@@ -52,7 +52,7 @@ const AdminLoginContainer = () => {
       if (data === "login-success") {
         return navigate("/adminwaitinglist");
       } else {
-        if (data.indexOf("user-not-found") === -1) {
+        if (data.indexOf("user-not-found") !== -1) {
           return !toastMsg.isActive("error-userNotFound")
             ? toastMsg({
                 title: "존재하지 않는 계정",
@@ -66,7 +66,7 @@ const AdminLoginContainer = () => {
             : null;
         }
 
-        if (data.indexOf("wrong-password") === -1) {
+        if (data.indexOf("wrong-password") !== -1) {
           return !toastMsg.isActive("error-wrongPassword")
             ? toastMsg({
                 title: "잘못된 비밀번호",
@@ -94,7 +94,7 @@ const AdminLoginContainer = () => {
             : null;
         }
 
-        if (data.indexOf("too-many-requests") === -1) {
+        if (data.indexOf("too-many-requests") !== -1) {
           return !toastMsg.isActive("error-tooManyRequest")
             ? toastMsg({
                 title: "로그인 시도 횟수 초과",
