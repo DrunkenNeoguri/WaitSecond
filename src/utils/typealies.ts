@@ -30,11 +30,21 @@ export class AdminData {
   email: string;
   password?: string;
   passwordcheck?: string;
+  currentpassword?: string;
+  storename?: string;
 
-  constructor(email: string, password?: string, passwordcheck?: string) {
+  constructor(
+    email: string,
+    password?: string,
+    passwordcheck?: string,
+    currentpassword?: string,
+    storename?: string
+  ) {
     this.email = email;
     this.password = password;
     this.passwordcheck = passwordcheck;
+    this.currentpassword = currentpassword;
+    this.storename = storename;
   }
 }
 
@@ -75,7 +85,7 @@ export class UserData {
   }
 }
 
-export interface StoreOption {
+export type StoreOption = {
   uid: string;
   storeName: string;
   storebg: string;
@@ -90,7 +100,7 @@ export interface StoreOption {
   customOption2State: boolean;
   customOption3Name: string;
   customOption3State: boolean;
-}
+};
 
 // export class StoreOption {
 //   uid: string;

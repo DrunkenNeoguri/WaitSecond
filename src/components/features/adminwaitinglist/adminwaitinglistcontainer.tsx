@@ -73,12 +73,3 @@ const AdminWaitingListContainer = () => {
 };
 
 export default AdminWaitingListContainer;
-
-// <Text>현재 대기 팀</Text>
-// <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-//   {waitingList.data === undefined
-//     ? "확인 중"
-//     : waitingList.data.length === 0
-//     ? "없음"
-//     : `${waitingList.data.length} 팀`}
-// </Text>

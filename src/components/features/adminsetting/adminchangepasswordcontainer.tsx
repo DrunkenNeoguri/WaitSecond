@@ -26,7 +26,9 @@ import {
 } from "firebase/auth";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { useMutation } from "@tanstack/react-query";
-import { emailRegex, passwordRegex } from "../../../utils/reqlist";
+import { passwordRegex } from "../../../utils/reqlist";
+import CommonErrorMsg from "../../common/commonerrormsg";
+import { CommonInput } from "../../common/commoninput";
 
 const AdminChangePasswordContainer: React.FC = () => {
   const firebaseAuth = getAuth();
@@ -34,6 +36,11 @@ const AdminChangePasswordContainer: React.FC = () => {
 
   const initialState = new AdminData(currentUser.email!, "", "");
   const [userData, setUserData] = useState(initialState);
+  const [inputCheck, setInputCheck] = useState({
+    currentpassword: false,
+    password: false,
+    passwordcheck: false,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -41,6 +48,21 @@ const AdminChangePasswordContainer: React.FC = () => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setUserData({ ...userData, [id]: value });
+
+    if (
+      e.target.id === "currentpassword" &&
+      inputCheck.currentpassword === false
+    ) {
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
+
+    if (e.target.id === "password" && inputCheck.password === false) {
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
+
+    if (e.target.id === "passwordcheck" && inputCheck.passwordcheck === false) {
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
   };
 
   const toastMsg = useToast();
@@ -48,7 +70,7 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordAccount = async (userData: AdminData) => {
     const credential = EmailAuthProvider.credential(
       currentUser.email!,
-      "#ekswk0813"
+      userData.currentpassword!
     );
 
     const withdrawalState = reauthenticateWithCredential(
@@ -166,46 +188,55 @@ const AdminChangePasswordContainer: React.FC = () => {
         <form onSubmit={submitUserData}>
           <FormControl padding="1.5rem 0">
             <Flex direction="column" padding="0.25rem 0">
-              <FormLabel
-                htmlFor="password"
+              <CommonInput
+                id="currentpassword"
+                title="기존 비밀번호"
+                type="password"
+                value={userData.currentpassword!}
+                onChange={inputUserData}
+                margin="0.25rem 0"
                 fontSize="1rem"
-                fontWeight="semibold"
-              >
-                새 비밀번호
-              </FormLabel>
-              <Input
+              />
+              <CommonErrorMsg
+                type="password"
+                value1={userData.passwordcheck!}
+                inputCheck={inputCheck}
+              />
+              <CommonInput
                 id="password"
+                title="새 비밀번호"
                 type="password"
+                value={userData.password!}
                 onChange={inputUserData}
-                value={userData.password}
-              />
-              <Text fontSize="0.625rem" padding="0.25rem 0">
-                잘못된 비밀번호 양식입니다.
-              </Text>
-            </Flex>
-            <Flex direction="column" padding="0.25rem 0">
-              <FormLabel
-                htmlFor="passwordCheck"
+                margin="0.25rem 0"
                 fontSize="1rem"
-                fontWeight="semibold"
-              >
-                새 비밀번호 확인
-              </FormLabel>
-              <Input
-                id="passwordcheck"
-                type="password"
-                onChange={inputUserData}
-                value={userData.passwordcheck}
               />
-              <Text fontSize="0.625rem" padding="0.25rem 0">
-                잘못된 비밀번호 양식입니다.
-              </Text>
+              <CommonErrorMsg
+                type="password"
+                value1={userData.password!}
+                inputCheck={inputCheck}
+              />
+              <CommonInput
+                id="passwordcheck"
+                title="새 비밀번호 확인"
+                type="password"
+                value={userData.passwordcheck!}
+                onChange={inputUserData}
+                margin="0.25rem 0"
+                fontSize="1rem"
+              />
+              <CommonErrorMsg
+                type="password"
+                value1={userData.passwordcheck!}
+                inputCheck={inputCheck}
+              />
             </Flex>
+
             <Flex direction="column" margin="1.5rem 0">
               <Button
                 type="submit"
                 variant="solid"
-                background="#5ABFB7"
+                background="subBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"
