@@ -52,18 +52,19 @@ const AdminWaitingListContainer = () => {
         padding="1rem"
         backgroundColor="#ffffff"
       >
-        <Text letterSpacing="-0.1rem">현재 대기중인 팀</Text>
+        <Text letterSpacing="-0.1rem">현재 대기팀</Text>
         <Text fontWeight="bold" color="#58a6dc">
           4팀
         </Text>
       </Flex>
       <Flex direction="column" align="center" fontSize="1.25rem">
-        {currentWaitingState.data?.map((elem: UserData) => {
+        {currentWaitingState.data?.map((elem: UserData, index: number) => {
           return (
             <WaitingDataBlock
               key={elem.uid!}
               userData={elem}
               admin={currentUser!}
+              background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
             />
           );
         })}

@@ -186,7 +186,7 @@ const CheckDataModal: React.FC<{
                 {userInfo.member}명
               </Text>
             </Flex>
-            {userInfo.pet === true || userInfo.child === true ? (
+            {userInfo.pet === true ? (
               <Flex direction="column" margin="0.5rem 0">
                 <FormLabel
                   fontSize={visionState === false ? "1rem" : "1.625rem"}

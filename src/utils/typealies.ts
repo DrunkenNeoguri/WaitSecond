@@ -52,7 +52,7 @@ export class UserData {
   name: string;
   tel: string;
   member: number;
-  child?: boolean;
+  child?: number;
   pet?: boolean;
   custom1?: boolean;
   custom2?: boolean;
@@ -64,7 +64,7 @@ export class UserData {
     name: string,
     tel: string,
     member: number,
-    child: boolean,
+    child: number,
     pet: boolean,
     custom1?: boolean,
     custom2?: boolean,
