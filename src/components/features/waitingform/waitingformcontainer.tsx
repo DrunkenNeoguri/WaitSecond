@@ -29,7 +29,7 @@ const WaitingFormContainer: React.FC = () => {
     "",
     "",
     1,
-    false,
+    1,
     false,
     false,
     false,
@@ -211,7 +211,7 @@ const WaitingFormContainer: React.FC = () => {
           letterSpacing="-0.1rem"
           margin="0.5rem 0 1rem 0"
         >
-          <Text>현재 대기 팀</Text>
+          <Text>현재 대기팀</Text>
           <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
             {waitingList.data === undefined
               ? "확인 중"
