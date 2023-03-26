@@ -4,7 +4,7 @@ import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteDoc, doc, getFirestore } from "firebase/firestore";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { StoreOption, UserData } from "../../../utils/typealies";
 
@@ -13,39 +13,45 @@ const WaitingDataBlock: React.FC<{
   userData: UserData;
   background: string;
   storeOption: StoreOption;
-}> = ({ admin, userData, background, storeOption }) => {
+  waitingSetting: string;
+}> = ({ admin, userData, background, storeOption, waitingSetting }) => {
   const [openState, setOpenState] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
+  console.log(storeOption);
 
   // 등록된 손님 정보 지우기
   const db = getFirestore();
   const queryClient = useQueryClient();
 
-  const deleteGuestData = async (userData: UserData) => {
-    const deleteWaitingState = deleteDoc(
-      doc(db, `storeList/${admin}/waitingList`, `${userData.uid}`)
+  const chnageGuestEnterOption = async (userData: UserData) => {
+    const changeWaitingState = await setDoc(
+      doc(db, `storeList/${admin}/waitingList`, `${userData.uid}`),
+      { ...userData, isentered: !userData.isentered }
     )
-      .then((data) => "delete-success")
-      .catch((error) => error.message);
-    return deleteWaitingState;
+      .then((data) => {
+        console.log(data);
+        return "delete-success";
+      })
+      .catch((error) => console.log(error.message));
+    return changeWaitingState;
   };
 
-  const deleteMutation = useMutation(deleteGuestData, {
+  const enteredMutation = useMutation(chnageGuestEnterOption, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       if (data === "delete-success") {
-        queryClient.invalidateQueries(["currentWaitingState"]);
+        queryClient.invalidateQueries(["currentWaitingState", waitingSetting]);
       } else {
       }
     },
   });
 
-  const deleteGuestDataByEntered = (
-    e: React.MouseEvent,
-    userData: UserData
-  ) => {
+  const changeEnteredGuestState = (e: React.MouseEvent, userData: UserData) => {
     e.preventDefault();
     e.stopPropagation();
-    deleteMutation.mutate(userData);
+    setLoadingState(true);
+    enteredMutation.mutate(userData);
   };
 
   const createDataTime = new Date(userData.createdAt!);
@@ -94,18 +100,20 @@ const WaitingDataBlock: React.FC<{
             <Flex direction="row" gap="0.25rem">
               유아 <Text fontWeight="bold">{userData.child}명</Text>
             </Flex>
-            {!userData.pet ||
-            !userData.custom1 ||
-            !userData.custom2 ||
+            {!userData.pet &&
+            !userData.separate &&
+            !userData.custom1 &&
+            !userData.custom2 &&
             !userData.custom3 ? (
+              <> </>
+            ) : (
               <>
+                {" "}
                 <Box height="0.75rem  " width="2px" background="accentGray" />
-                <Text color="subBlue">
+                <Text color="mainBlue">
                   옵션 <TriangleDownIcon />
                 </Text>
               </>
-            ) : (
-              <></>
             )}
           </Flex>
         </Flex>
@@ -140,7 +148,8 @@ const WaitingDataBlock: React.FC<{
             color="#ffffff"
             fontWeight="normal"
             gap="0.25rem"
-            onClick={(e) => deleteGuestDataByEntered(e, userData)}
+            onClick={(e) => changeEnteredGuestState(e, userData)}
+            isLoading={loadingState}
           >
             <FontAwesomeIcon icon={faCircleCheck} fontSize="1.25rem" />
             입장 완료
@@ -162,31 +171,41 @@ const WaitingDataBlock: React.FC<{
             대기 등록 시간:{" "}
             {`${createDataTime.getFullYear()}년 ${createDataTime.getMonth()}월 ${createDataTime.getDate()}일 ${createDataTime.getHours()}시 ${createDataTime.getMinutes()}분`}
           </Text>
-          <Text color="#ffffff">옵션 사항</Text>
-          {userData.pet ? (
-            <Text color="mainBlue">반려 동물이 있어요.</Text>
-          ) : (
+          {!userData.pet &&
+          !userData.separate &&
+          !userData.custom1 &&
+          !userData.custom2 &&
+          !userData.custom3 ? (
             <></>
-          )}
-          {userData.separate ? (
-            <Text color="mainBlue">자리가 나면 따로 앉아도 괜찮아요.</Text>
           ) : (
-            <></>
-          )}
-          {userData.custom1 ? (
-            <Text color="mainBlue">{storeOption.customOption1Name}</Text>
-          ) : (
-            <></>
-          )}
-          {userData.custom2 ? (
-            <Text color="mainBlue">{storeOption.customOption2Name}</Text>
-          ) : (
-            <></>
-          )}
-          {userData.custom3 ? (
-            <Text color="mainBlue">{storeOption.customOption3Name}</Text>
-          ) : (
-            <></>
+            <>
+              <Text color="#ffffff">옵션 사항</Text>
+              {userData.pet ? (
+                <Text color="subBlue">반려 동물이 있어요.</Text>
+              ) : (
+                <></>
+              )}
+              {userData.separate ? (
+                <Text color="subBlue">자리가 나면 따로 앉아도 괜찮아요.</Text>
+              ) : (
+                <></>
+              )}
+              {userData.custom1 ? (
+                <Text color="subBlue">{storeOption.customOption1Name}</Text>
+              ) : (
+                <></>
+              )}
+              {userData.custom2 ? (
+                <Text color="subBlue">{storeOption.customOption2Name}</Text>
+              ) : (
+                <></>
+              )}
+              {userData.custom3 ? (
+                <Text color="subBlue">{storeOption.customOption3Name}</Text>
+              ) : (
+                <></>
+              )}
+            </>
           )}
         </Flex>
       ) : (
