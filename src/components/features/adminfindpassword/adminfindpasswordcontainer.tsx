@@ -17,6 +17,7 @@ import { CommonInput } from "../../common/commoninput";
 const AdminFindPasswordContainer = () => {
   const [emailData, setEmailData] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
 
   const firebaseAuth = getAuth();
 
@@ -30,6 +31,7 @@ const AdminFindPasswordContainer = () => {
   const findPasswordMutation = useMutation(findPasswordAccount, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       if (data === "send-email-success") {
         if (!toastMsg.isActive("send-email-success")) {
           toastMsg({
@@ -74,7 +76,9 @@ const AdminFindPasswordContainer = () => {
 
   const submitEmailData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     if (emailData.trim() === "" || emailRegex.test(emailData) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-emailCheck")
         ? toastMsg({
             title: "이메일 확인",
@@ -109,7 +113,7 @@ const AdminFindPasswordContainer = () => {
       <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
         비밀번호 찾기
       </Heading>
-      <Text fontSize="0.75rem">가입하신 이메일 아이디를 입력해주세요.</Text>
+      <Text fontSize="1rem">가입하신 이메일 아이디를 입력해주세요.</Text>
       <form onSubmit={submitEmailData}>
         <FormControl>
           <Flex direction="column" margin="1.5rem 0 0.5rem 0">
@@ -130,7 +134,7 @@ const AdminFindPasswordContainer = () => {
           <Button
             type="submit"
             variant="solid"
-            background="subBlue"
+            background="mainBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"
@@ -139,6 +143,7 @@ const AdminFindPasswordContainer = () => {
             height="3rem"
             margin="1rem 0"
             onClick={submitEmailData}
+            isLoading={loadingState}
           >
             이메일 전송
           </Button>

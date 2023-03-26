@@ -27,6 +27,7 @@ const AdminLoginContainer = () => {
     email: false,
     password: false,
   });
+  const [loadingState, setLoadingState] = useState(false);
 
   const navigate = useNavigate();
 
@@ -49,6 +50,7 @@ const AdminLoginContainer = () => {
   const loginMutation = useMutation(loginAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       if (data === "login-success") {
         return navigate("/adminwaitinglist");
       } else {
@@ -128,7 +130,9 @@ const AdminLoginContainer = () => {
   const toastMsg = useToast();
   const submitLoginData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     if (loginData.email.trim() === "" || loginData.password?.trim() === "") {
+      setLoadingState(false);
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -140,6 +144,7 @@ const AdminLoginContainer = () => {
           })
         : null;
     } else if (emailRegex.test(loginData.email) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-emailCheck")
         ? toastMsg({
             title: "이메일 확인",
@@ -151,6 +156,7 @@ const AdminLoginContainer = () => {
           })
         : null;
     } else if (passwordRegex.test(loginData.password!) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
@@ -235,7 +241,7 @@ const AdminLoginContainer = () => {
           <Button
             type="submit"
             variant="solid"
-            background="subBlue"
+            background="mainBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"
@@ -244,6 +250,7 @@ const AdminLoginContainer = () => {
             height="3rem"
             margin="1.5rem 0 1rem 0"
             onClick={submitLoginData}
+            isLoading={loadingState}
           >
             로그인
           </Button>

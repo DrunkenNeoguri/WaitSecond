@@ -4,9 +4,7 @@ import {
   Button,
   Flex,
   FormControl,
-  FormLabel,
   Heading,
-  Input,
   List,
   ListItem,
   Text,
@@ -42,6 +40,7 @@ const AdminWithdrawalContainer: React.FC = () => {
     email: false,
     password: false,
   });
+  const [loadingState, setLoadingState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -66,6 +65,7 @@ const AdminWithdrawalContainer: React.FC = () => {
   const withdrawalMutation = useMutation(withdrawalAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       setWithdrawalState(true);
     },
   });
@@ -87,8 +87,9 @@ const AdminWithdrawalContainer: React.FC = () => {
   const toastMsg = useToast();
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoadingState(true);
     if (userData.email.trim() === "" || userData.password?.trim() === "") {
+      setLoadingState(false);
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -100,6 +101,7 @@ const AdminWithdrawalContainer: React.FC = () => {
           })
         : null;
     } else if (emailRegex.test(userData.email) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-emailCheck")
         ? toastMsg({
             title: "이메일 확인",
@@ -111,6 +113,7 @@ const AdminWithdrawalContainer: React.FC = () => {
           })
         : null;
     } else if (passwordRegex.test(userData.password!) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
@@ -167,7 +170,7 @@ const AdminWithdrawalContainer: React.FC = () => {
                       fontSize="1rem"
                     />
                     <CommonErrorMsg
-                      type="password"
+                      type="email"
                       value1={userData.email!}
                       inputCheck={inputCheck}
                     />
@@ -182,20 +185,21 @@ const AdminWithdrawalContainer: React.FC = () => {
                     />
                     <CommonErrorMsg
                       type="password"
-                      value1={userData.email!}
+                      value1={userData.password!}
                       inputCheck={inputCheck}
                     />
                   </Flex>
                   <Flex direction="column">
                     <Button
                       type="submit"
-                      background="subBlue"
+                      background="mainBlue"
                       fontSize="1.25rem"
                       borderRadius="0.25rem"
                       color="#ffffff"
                       width="100%"
                       height="3rem"
                       margin="0.5rem 0"
+                      isLoading={loadingState}
                     >
                       탈퇴 신청
                     </Button>
@@ -280,7 +284,7 @@ const AdminWithdrawalContainer: React.FC = () => {
         <Button
           type="button"
           display="block"
-          background="subBlue"
+          background="mainBlue"
           fontSize="1.25rem"
           borderRadius="0.25rem"
           color="#ffffff"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { UserData } from "../../../utils/typealies";
 import {
   Flex,
@@ -23,9 +23,10 @@ import { useNavigate, useParams } from "react-router-dom";
 const CheckDataModal: React.FC<{
   userInfo: UserData;
   isOpen: boolean;
+  loadingState: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   custom: string[];
-}> = ({ userInfo, isOpen, onClose, custom }) => {
+}> = ({ userInfo, isOpen, onClose, custom, loadingState }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
 
@@ -54,7 +55,7 @@ const CheckDataModal: React.FC<{
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
       queryClient.invalidateQueries(["waitingList"]);
-      queryClient.invalidateQueries(["storeData"]);
+      queryClient.invalidateQueries(["storeOption"]);
       setRegisterState(true);
     },
   });
@@ -62,6 +63,12 @@ const CheckDataModal: React.FC<{
   const submitUserWaitingData = (e: React.MouseEvent, userData: UserData) => {
     e.preventDefault();
     waitingMutation.mutate(userData);
+  };
+
+  const closeModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    loadingState(false);
   };
 
   return (
@@ -75,7 +82,7 @@ const CheckDataModal: React.FC<{
             textAlign="center"
             fontSize="1rem"
             letterSpacing="-0.05rem"
-            color="subBlue"
+            color="mainBlue"
           >
             등록이 완료되었습니다!
           </ModalHeader>
@@ -136,7 +143,7 @@ const CheckDataModal: React.FC<{
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="600"
               >
                 {userInfo.name}
@@ -158,7 +165,7 @@ const CheckDataModal: React.FC<{
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="600"
               >
                 {" "}
@@ -181,7 +188,7 @@ const CheckDataModal: React.FC<{
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="600"
               >
                 {userInfo.adult}명
@@ -203,7 +210,7 @@ const CheckDataModal: React.FC<{
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="600"
               >
                 {userInfo.child}명
@@ -233,7 +240,7 @@ const CheckDataModal: React.FC<{
                           visionState === false ? "0.75rem" : "1.625rem"
                         }
                         margin="0.5rem 0"
-                        color="subBlue"
+                        color="mainBlue"
                       >
                         반려 동물이 있어요.
                       </ListItem>
@@ -247,7 +254,7 @@ const CheckDataModal: React.FC<{
                           visionState === false ? "0.75rem" : "1.625rem"
                         }
                         margin="0.5rem 0"
-                        color="subBlue"
+                        color="mainBlue"
                       >
                         자리가 나면 따로 앉아도 괜찮아요.
                       </ListItem>
@@ -261,7 +268,7 @@ const CheckDataModal: React.FC<{
                           visionState === false ? "0.75rem" : "1.625rem"
                         }
                         margin="0.5rem 0"
-                        color="subBlue"
+                        color="mainBlue"
                       >
                         {custom[0]}
                       </ListItem>
@@ -275,7 +282,7 @@ const CheckDataModal: React.FC<{
                           visionState === false ? "0.75rem" : "1.625rem"
                         }
                         margin="0.5rem 0"
-                        color="subBlue"
+                        color="mainBlue"
                       >
                         {custom[1]}
                       </ListItem>
@@ -289,7 +296,7 @@ const CheckDataModal: React.FC<{
                           visionState === false ? "0.75rem" : "1.625rem"
                         }
                         margin="0.5rem 0"
-                        color="subBlue"
+                        color="mainBlue"
                       >
                         {custom[2]}
                       </ListItem>
@@ -327,7 +334,7 @@ const CheckDataModal: React.FC<{
                 padding="1.5rem"
                 borderRadius="0.25rem"
                 width="100%"
-                onClick={onClose}
+                onClick={closeModal}
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               >
                 아니에요

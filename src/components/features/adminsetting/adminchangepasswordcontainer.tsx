@@ -41,6 +41,7 @@ const AdminChangePasswordContainer: React.FC = () => {
     password: false,
     passwordcheck: false,
   });
+  const [loadingState, setLoadingState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -89,6 +90,7 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordMutation = useMutation(changePasswordAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       if (data === "change-success") {
         onOpen();
       } else {
@@ -111,12 +113,14 @@ const AdminChangePasswordContainer: React.FC = () => {
 
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
 
     if (
       userData.password?.trim() === "" ||
       userData.passwordcheck?.trim() === "" ||
       userData.currentpassword?.trim() === ""
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -128,6 +132,7 @@ const AdminChangePasswordContainer: React.FC = () => {
           })
         : null;
     } else if (userData.password?.trim() !== userData.passwordcheck?.trim()) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordDiscord")
         ? toastMsg({
             title: "비밀번호 불일치",
@@ -144,6 +149,7 @@ const AdminChangePasswordContainer: React.FC = () => {
       !passwordRegex.test(userData.passwordcheck!) ||
       !passwordRegex.test(userData.currentpassword!)
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
@@ -203,9 +209,11 @@ const AdminChangePasswordContainer: React.FC = () => {
               />
               <CommonErrorMsg
                 type="password"
-                value1={userData.passwordcheck!}
+                value1={userData.currentpassword!}
                 inputCheck={inputCheck}
               />
+            </Flex>
+            <Flex direction="column" padding="0.25rem 0">
               <CommonInput
                 id="password"
                 title="새 비밀번호"
@@ -220,6 +228,8 @@ const AdminChangePasswordContainer: React.FC = () => {
                 value1={userData.password!}
                 inputCheck={inputCheck}
               />
+            </Flex>
+            <Flex direction="column" padding="0.25rem 0">
               <CommonInput
                 id="passwordcheck"
                 title="새 비밀번호 확인"
@@ -236,11 +246,11 @@ const AdminChangePasswordContainer: React.FC = () => {
               />
             </Flex>
 
-            <Flex direction="column" margin="1.5rem 0">
+            <Flex direction="column" margin="0.5rem 0 1.5rem 0">
               <Button
                 type="submit"
                 variant="solid"
-                background="subBlue"
+                background="mainBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"
@@ -248,6 +258,7 @@ const AdminChangePasswordContainer: React.FC = () => {
                 width="100%"
                 height="3rem"
                 margin="0.5rem 0"
+                isLoading={loadingState}
               >
                 비밀번호 변경
               </Button>

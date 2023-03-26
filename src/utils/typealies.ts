@@ -49,6 +49,7 @@ export class AdminData {
 }
 
 export class UserData {
+  isentered: boolean;
   name: string;
   tel: string;
   adult: number;
@@ -62,6 +63,7 @@ export class UserData {
   uid?: string;
 
   constructor(
+    isentered: boolean,
     name: string,
     tel: string,
     adult: number,
@@ -74,6 +76,7 @@ export class UserData {
     createdAt?: number,
     uid?: string
   ) {
+    this.isentered = isentered;
     this.name = name;
     this.tel = tel;
     this.adult = adult;

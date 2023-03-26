@@ -7,8 +7,8 @@ const theme = extendTheme({
         customBlue: {
           control: {
             _checked: {
-              bg: "mainBlue",
-              borderColor: "mainBlue",
+              bg: "subBlue",
+              borderColor: "subBlue",
             },
           },
         },
@@ -16,8 +16,8 @@ const theme = extendTheme({
     },
   },
   colors: {
-    mainBlue: "#87CEEB",
-    subBlue: "#4169E1",
+    mainBlue: "#4169E1",
+    subBlue: "#87CEEB",
     accentBlue: "#00008B",
     mainGray: "#A6A6A6",
     accentGray: "#424242",
