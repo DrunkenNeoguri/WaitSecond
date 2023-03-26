@@ -52,6 +52,7 @@ const AdminStoreManageContainer: React.FC = () => {
   const [storeData, setStoreData] = useState<StoreOption>(initialState);
   const [documentUID, setDocumentUID] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
 
   // 설정 적용하기 (입력값)
   const inputStoreOptionData = (e: React.ChangeEvent) => {
@@ -149,6 +150,7 @@ const AdminStoreManageContainer: React.FC = () => {
   const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
+      setLoadingState(false);
       if (data === "option-setting-success") {
         return !toastMsg.isActive("option-setting-success")
           ? toastMsg({
@@ -161,12 +163,14 @@ const AdminStoreManageContainer: React.FC = () => {
             })
           : null;
       }
+      queryClient.invalidateQueries(["storeOption"]);
       queryClient.invalidateQueries(["currentStoreOption"]);
     },
   });
 
   const submitUserWaitingData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     updateStoreDataMutation.mutate(storeData);
   };
 
@@ -211,7 +215,7 @@ const AdminStoreManageContainer: React.FC = () => {
               <Button
                 type="submit"
                 variant="solid"
-                background="subBlue"
+                background="mainBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"
@@ -235,7 +239,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="waitingState"
                     borderRadius="0.25rem 0 0 0.25rem"
                     padding="0px 1.5rem"
-                    background={storeData.waitingState ? "subBlue" : "#FFFFFF"}
+                    background={storeData.waitingState ? "mainBlue" : "#FFFFFF"}
                     color={storeData.waitingState ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -247,7 +251,9 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="waitingState"
                     borderRadius="0 0.25rem 0.25rem 0"
                     padding="0 1.5rem"
-                    background={!storeData.waitingState ? "subBlue" : "#FFFFFF"}
+                    background={
+                      !storeData.waitingState ? "mainBlue" : "#FFFFFF"
+                    }
                     color={!storeData.waitingState ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -262,7 +268,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 <Flex justify="space-between" align="center" width="8.5rem">
                   <Button
                     id="maximumTeamMemberCount"
-                    background="subBlue"
+                    background="mainBlue"
                     color="#FFFFFF"
                     padding="0"
                     size="sm"
@@ -274,7 +280,7 @@ const AdminStoreManageContainer: React.FC = () => {
                   <Text>{storeData.maximumTeamMemberCount}명</Text>
                   <Button
                     id="maximumTeamMemberCount"
-                    background="subBlue"
+                    background="mainBlue"
                     color="#FFFFFF"
                     padding="0"
                     size="sm"
@@ -290,7 +296,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 <Flex justify="space-between" align="center" width="8.5rem">
                   <Button
                     id="maximumWaitingTeamCount"
-                    background="subBlue"
+                    background="mainBlue"
                     color="#FFFFFF"
                     padding="0"
                     size="sm"
@@ -302,7 +308,7 @@ const AdminStoreManageContainer: React.FC = () => {
                   <Text>{storeData.maximumWaitingTeamCount}팀</Text>
                   <Button
                     id="maximumWaitingTeamCount"
-                    background="subBlue"
+                    background="mainBlue"
                     color="#FFFFFF"
                     padding="0"
                     size="sm"
@@ -320,7 +326,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="petAllow"
                     borderRadius="0.25rem 0 0 0.25rem"
                     padding="0px 1.5rem"
-                    background={storeData.petAllow ? "subBlue" : "#FFFFFF"}
+                    background={storeData.petAllow ? "mainBlue" : "#FFFFFF"}
                     color={storeData.petAllow ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -332,7 +338,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="petAllow"
                     borderRadius="0 0.25rem 0.25rem 0"
                     padding="0px 1.5rem"
-                    background={!storeData.petAllow ? "subBlue" : "#FFFFFF"}
+                    background={!storeData.petAllow ? "mainBlue" : "#FFFFFF"}
                     color={!storeData.petAllow ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -349,7 +355,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="teamSeparate"
                     borderRadius="0.25rem 0 0 0.25rem"
                     padding="0px 1.5rem"
-                    background={storeData.teamSeparate ? "subBlue" : "#FFFFFF"}
+                    background={storeData.teamSeparate ? "mainBlue" : "#FFFFFF"}
                     color={storeData.teamSeparate ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -361,7 +367,9 @@ const AdminStoreManageContainer: React.FC = () => {
                     id="teamSeparate"
                     borderRadius="0 0.25rem 0.25rem 0"
                     padding="0px 1.5rem"
-                    background={!storeData.teamSeparate ? "subBlue" : "#FFFFFF"}
+                    background={
+                      !storeData.teamSeparate ? "mainBlue" : "#FFFFFF"
+                    }
                     color={!storeData.teamSeparate ? "#FFFFFF" : "#3333333"}
                     fontSize="0.75rem"
                     size="sm"
@@ -388,7 +396,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0.25rem 0 0 0.25rem"
                       padding="0px 1.5rem"
                       background={
-                        storeData.customOption1State ? "subBlue" : "#FFFFFF"
+                        storeData.customOption1State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         storeData.customOption1State ? "#FFFFFF" : "#3333333"
@@ -404,7 +412,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0 0.25rem 0.25rem 0"
                       padding="0px 1.5rem"
                       background={
-                        !storeData.customOption1State ? "subBlue" : "#FFFFFF"
+                        !storeData.customOption1State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         !storeData.customOption1State ? "#FFFFFF" : "#3333333"
@@ -445,7 +453,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0.25rem 0 0 0.25rem"
                       padding="0px 1.5rem"
                       background={
-                        storeData.customOption2State ? "subBlue" : "#FFFFFF"
+                        storeData.customOption2State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         storeData.customOption2State ? "#FFFFFF" : "#3333333"
@@ -461,7 +469,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0 0.25rem 0.25rem 0"
                       padding="0px 1.5rem"
                       background={
-                        !storeData.customOption2State ? "subBlue" : "#FFFFFF"
+                        !storeData.customOption2State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         !storeData.customOption2State ? "#FFFFFF" : "#3333333"
@@ -502,7 +510,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0.25rem 0 0 0.25rem"
                       padding="0px 1.5rem"
                       background={
-                        storeData.customOption3State ? "subBlue" : "#FFFFFF"
+                        storeData.customOption3State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         storeData.customOption3State ? "#FFFFFF" : "#3333333"
@@ -518,7 +526,7 @@ const AdminStoreManageContainer: React.FC = () => {
                       borderRadius="0 0.25rem 0.25rem 0"
                       padding="0px 1.5rem"
                       background={
-                        !storeData.customOption3State ? "subBlue" : "#FFFFFF"
+                        !storeData.customOption3State ? "mainBlue" : "#FFFFFF"
                       }
                       color={
                         !storeData.customOption3State ? "#FFFFFF" : "#3333333"
@@ -552,7 +560,7 @@ const AdminStoreManageContainer: React.FC = () => {
             <Button
               type="submit"
               variant="solid"
-              background="subBlue"
+              background="mainBlue"
               padding="0.5rem auto"
               fontSize="1.25rem"
               borderRadius="0.25rem"
@@ -560,6 +568,7 @@ const AdminStoreManageContainer: React.FC = () => {
               width="100%"
               height="3rem"
               margin="1.5rem 0 1rem 0"
+              isLoading={loadingState}
             >
               변경 사항 적용
             </Button>

@@ -1,18 +1,22 @@
 import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
 import { faLanguage, faLowVision } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { lowVisionState } from "../../modules/atoms/atoms";
+import AdminRegisterModal from "../features/adminwaitinglist/adminregistermodal";
 import CommonMenu from "./commonmenu";
 
 const CommonHeader: React.FC<{
   children?: React.ReactNode;
-  page: "admin" | "user";
+  page: "admin" | "user" | "none";
 }> = (props) => {
   const [visionState, setVisionState] = useRecoilState<boolean>(lowVisionState);
   const [menuState, setMenuState] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const location = useLocation();
 
   //Func - change font size when user clicked low vision button
   const changeLowVisionState = (e: React.MouseEvent) => {
@@ -25,7 +29,7 @@ const CommonHeader: React.FC<{
       {menuState ? <CommonMenu close={setMenuState} /> : <></>}
       <Flex
         as="nav"
-        background="subBlue"
+        background="mainBlue"
         width="100vw"
         height="3.5rem"
         display="flex"
@@ -39,6 +43,7 @@ const CommonHeader: React.FC<{
       >
         {props.page === "admin" ? (
           <>
+            <AdminRegisterModal isOpen={isOpen} onClose={onClose} />
             <Flex gap="0.5rem" align="center">
               <Button
                 background="none"
@@ -49,11 +54,15 @@ const CommonHeader: React.FC<{
               </Button>
               <Text fontSize="1rem">김천재의 육회바른연어</Text>
             </Flex>
-            <Button background="none" padding="0">
-              <AddIcon fontSize="xl" />
-            </Button>
+            {location.pathname === "/adminwaitinglist" ? (
+              <Button background="none" padding="0" onClick={onOpen}>
+                <AddIcon fontSize="xl" />
+              </Button>
+            ) : (
+              <></>
+            )}
           </>
-        ) : (
+        ) : props.page === "user" ? (
           <>
             <Button
               background="none"
@@ -83,6 +92,8 @@ const CommonHeader: React.FC<{
               />
             </Button>
           </>
+        ) : (
+          <></>
         )}
       </Flex>
     </>

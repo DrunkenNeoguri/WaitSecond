@@ -21,7 +21,7 @@ import { addDoc, collection, getFirestore } from "firebase/firestore";
 import ErrorMsg from "../../common/commonerrormsg";
 
 const AdminSignUpContainer: React.FC = () => {
-  const initialState = new AdminData("", "", "");
+  const initialState = new AdminData("", "", "", "", "");
 
   const navigate = useNavigate();
   const toastMsg = useToast();
@@ -33,13 +33,14 @@ const AdminSignUpContainer: React.FC = () => {
     passwordcheck: false,
     storename: false,
   });
+  const [loadingState, setLoadingState] = useState(false);
 
   const firebaseAuth = getAuth();
   const db = getFirestore();
   const adminList = collection(db, "adminList");
 
   const signUpAccount = async (userData: AdminData) => {
-    const createState = createUserWithEmailAndPassword(
+    const createState = await createUserWithEmailAndPassword(
       firebaseAuth,
       userData.email,
       userData.password!
@@ -52,7 +53,7 @@ const AdminSignUpContainer: React.FC = () => {
         // interface에서 class로 바꿀 수 있는지 확인해보기
         const adminData: StoreOption = {
           uid: uid,
-          storeName: "",
+          storeName: userData.storename!,
           storebg: "",
           waitingState: false,
           maximumTeamMemberCount: 4,
@@ -66,10 +67,11 @@ const AdminSignUpContainer: React.FC = () => {
           customOption3Name: "",
           customOption3State: false,
         };
-        addDoc(adminList, adminData);
-        return uid;
+        addDoc(adminList, adminData)
+          .then((data) => data)
+          .catch((error) => error);
       })
-      .then(() => "signup-success")
+      .then((data) => "signup-success")
       .catch((error) => error.message);
     return createState;
   };
@@ -77,7 +79,7 @@ const AdminSignUpContainer: React.FC = () => {
   const signupMutation = useMutation(signUpAccount, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
-      // Firebase auth에서 catch를 통해 받은 error Message도 onSuccess로 들어온다.
+      setLoadingState(false);
       if (data === "signup-success") {
         setSignUpState(true);
       } else {
@@ -122,11 +124,13 @@ const AdminSignUpContainer: React.FC = () => {
 
   const submitSignUpData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     if (
       signUpData.email.trim() === "" ||
       signUpData.password?.trim() === "" ||
       signUpData.passwordcheck?.trim() === ""
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -138,6 +142,7 @@ const AdminSignUpContainer: React.FC = () => {
           })
         : null;
     } else if (emailRegex.test(signUpData.email) === false) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-emailCheck")
         ? toastMsg({
             title: "이메일 확인",
@@ -152,6 +157,7 @@ const AdminSignUpContainer: React.FC = () => {
       passwordRegex.test(signUpData.password!) === false ||
       passwordRegex.test(signUpData.passwordcheck!) === false
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
@@ -163,6 +169,7 @@ const AdminSignUpContainer: React.FC = () => {
           })
         : null;
     } else if (signUpData.password! !== signUpData.passwordcheck!) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordDiscord")
         ? toastMsg({
             title: "비밀번호 불일치",
@@ -263,7 +270,7 @@ const AdminSignUpContainer: React.FC = () => {
               <Button
                 type="submit"
                 variant="solid"
-                background="subBlue"
+                background="mainBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"
@@ -272,6 +279,7 @@ const AdminSignUpContainer: React.FC = () => {
                 height="3rem"
                 marginTop="1rem"
                 onClick={submitSignUpData}
+                isLoading={loadingState}
               >
                 다음으로
               </Button>
@@ -280,31 +288,31 @@ const AdminSignUpContainer: React.FC = () => {
         </>
       ) : (
         <>
-          <Heading as="h2" fontSize="1.25rem">
+          <Heading as="h2" fontSize="1.25rem" margin="1rem 0">
             계정 인증 이메일 전송 안내
           </Heading>
           <Flex
             direction="column"
             fontSize="1rem"
             lineHeight="1.5rem"
-            whiteSpace="pre-wrap"
+            wordBreak="keep-all"
             textAlign="left"
             letterSpacing="-1px"
             margin="1rem 0"
             gap="1rem"
           >
-            <Text>
-              입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
-              <br />
-              이메일에서 받으신 이메일 속 링크를 눌러 인증을 진행해주세요.
-              <br />
-              해당 페이지는 이제 닫으셔도 괜찮습니다.
-            </Text>
+            입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
+            <br />
+            <br />
+            받으신 이메일 속의 링크를 눌러 인증을 진행해주세요.
+            <br />
+            <br />
+            해당 페이지는 이제 닫으셔도 괜찮습니다.
           </Flex>
           <Button
             type="submit"
             variant="solid"
-            background="subBlue"
+            background="mainBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"

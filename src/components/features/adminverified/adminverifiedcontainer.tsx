@@ -28,6 +28,7 @@ const AdminVerifiedContainer = () => {
     passwordcheck: false,
   });
   const [changeState, setChangeState] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
 
   const [searchParams] = useSearchParams();
 
@@ -50,6 +51,7 @@ const AdminVerifiedContainer = () => {
 
   const resetPasswordMutation = useMutation(resetPasswordAccount, {
     onSuccess: (data) => {
+      setLoadingState(false);
       setChangeState(true);
     },
     onError: (error) => console.log(error),
@@ -73,11 +75,12 @@ const AdminVerifiedContainer = () => {
 
   const submitPasswordData = (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoadingState(true);
     if (
       passwordData.password?.trim() === "" ||
       passwordData.passwordcheck?.trim() === ""
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-blank")
         ? toastMsg({
             title: "입력란 확인",
@@ -92,6 +95,7 @@ const AdminVerifiedContainer = () => {
     } else if (
       passwordData.password?.trim() !== passwordData.passwordcheck?.trim()
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordDiscord")
         ? toastMsg({
             title: "비밀번호 불일치",
@@ -107,6 +111,7 @@ const AdminVerifiedContainer = () => {
       passwordRegex.test(passwordData.password!) === false ||
       passwordRegex.test(passwordData.passwordcheck!) === false
     ) {
+      setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
         ? toastMsg({
             title: "비밀번호 확인",
@@ -162,7 +167,7 @@ const AdminVerifiedContainer = () => {
           <Button
             type="submit"
             variant="solid"
-            background="#5ABFB7"
+            background="mainBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"
@@ -198,12 +203,10 @@ const AdminVerifiedContainer = () => {
               <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
                 비밀번호 변경
               </Heading>
-              <Text fontSize="0.75rem">
-                새로 등록할 비밀번호를 입력해주세요.
-              </Text>
+              <Text fontSize="1rem">새로 등록할 비밀번호를 입력해주세요.</Text>
               <form onSubmit={submitPasswordData}>
                 <FormControl>
-                  <Flex direction="column" margin="1.5rem 0">
+                  <Flex direction="column" margin="1.5rem 0 1rem 0">
                     <CommonInput
                       id="password"
                       title="비밀번호"
@@ -217,14 +220,15 @@ const AdminVerifiedContainer = () => {
                       value1={passwordData.password!}
                       inputCheck={inputCheck}
                     />
-
+                  </Flex>
+                  <Flex direction="column" margin="1rem 0 0.5rem 0">
                     <CommonInput
                       id="passwordcheck"
                       title="비밀번호 확인"
                       type="password"
                       value={passwordData.passwordcheck!}
                       onChange={inputPasswordData}
-                      margin="0.25rem 0"
+                      margin="0.25rem 0 0 0"
                     />
                     <CommonErrorMsg
                       type="passwordcheck"
@@ -236,7 +240,7 @@ const AdminVerifiedContainer = () => {
                   <Button
                     type="submit"
                     variant="solid"
-                    background="#5ABFB7"
+                    background="mainBlue"
                     padding="0.5rem auto"
                     fontSize="1.25rem"
                     borderRadius="0.25rem"
@@ -245,6 +249,7 @@ const AdminVerifiedContainer = () => {
                     height="3rem"
                     marginTop="1rem"
                     onClick={submitPasswordData}
+                    isLoading={loadingState}
                   >
                     비밀번호 변경
                   </Button>
@@ -272,6 +277,7 @@ const AdminVerifiedContainer = () => {
                 <Text>
                   비밀번호가 변경됐습니다.
                   <br />
+                  <br />
                   로그인 페이지로 돌아가 변경하신 비밀번호로 로그인을 다시
                   시도해주세요.
                 </Text>
@@ -279,7 +285,7 @@ const AdminVerifiedContainer = () => {
               <Button
                 type="submit"
                 variant="solid"
-                background="#5ABFB7"
+                background="mainBlue"
                 padding="0.5rem auto"
                 fontSize="1.25rem"
                 borderRadius="0.25rem"

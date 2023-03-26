@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -31,6 +32,7 @@ import { StoreOption, UserData } from "../../../utils/typealies";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
+  const [loadingState, setLoadingState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
   const navigate = useNavigate();
@@ -43,8 +45,10 @@ const WaitingStateContainer = () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
-        const userData = doc.data();
-        list.push({ ...userData, uid: doc.id });
+        if (doc.data().isentered === false) {
+          const userData = doc.data();
+          list.push({ ...userData, uid: doc.id });
+        }
       });
       list.sort(function (a: any, b: any) {
         return a.createdAt - b.createdAt;
@@ -76,7 +80,7 @@ const WaitingStateContainer = () => {
   };
 
   const storeOption = useQuery({
-    queryKey: ["storeData"],
+    queryKey: ["storeOption"],
     queryFn: getStoreOption,
   });
 
@@ -99,12 +103,14 @@ const WaitingStateContainer = () => {
   const deleteMutation = useMutation(deleteWaitingQueryFn, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
-      navigate(`/ ${storeuid}`);
+      setLoadingState(false);
+      navigate(`/${storeuid}`);
     },
   });
 
   const deleteWaitingData = (e: React.MouseEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     deleteMutation.mutate(currentUserData);
   };
 
@@ -132,6 +138,7 @@ const WaitingStateContainer = () => {
               borderRadius="0.25rem"
               fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               onClick={deleteWaitingData}
+              isLoading={loadingState}
             >
               취소할게요
             </Button>
@@ -143,6 +150,7 @@ const WaitingStateContainer = () => {
               borderRadius="0.25rem"
               onClick={onClose}
               fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+              isLoading={loadingState}
             >
               아니에요
             </Button>
@@ -248,7 +256,7 @@ const WaitingStateContainer = () => {
             margin="1.5rem 0"
           >
             <Text fontWeight="600">내 앞 대기팀</Text>
-            <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
+            <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
               {currentUserIdx === 0 ? "없음" : `${currentUserIdx} 팀`}
             </Text>
           </Flex>
@@ -260,7 +268,7 @@ const WaitingStateContainer = () => {
             margin="0.25rem 0"
             whiteSpace="pre-wrap"
             textAlign="left"
-            color="subBlue"
+            color="mainBlue"
           >
             순서가 가까워졌어요.
             <br />
@@ -300,7 +308,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="bold"
               >
                 {currentUserData.name}
@@ -322,7 +330,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="bold"
               >
                 {" "}
@@ -345,7 +353,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="bold"
               >
                 {currentUserData.adult}명
@@ -367,7 +375,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="mainBlue"
+                color="subBlue"
                 fontWeight="bold"
               >
                 {currentUserData.child}명
@@ -397,7 +405,7 @@ const WaitingStateContainer = () => {
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                     margin="0.5rem 0"
-                    color="subBlue"
+                    color="mainBlue"
                   >
                     반려 동물이 있어요.
                   </ListItem>
@@ -409,7 +417,7 @@ const WaitingStateContainer = () => {
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                     margin="0.5rem 0"
-                    color="subBlue"
+                    color="mainBlue"
                   >
                     자리가 나면 따로 앉아도 괜찮아요.
                   </ListItem>
@@ -421,7 +429,7 @@ const WaitingStateContainer = () => {
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                     margin="0.5rem 0"
-                    color="subBlue"
+                    color="mainBlue"
                   >
                     {storeOption.data.customOption1Name}
                   </ListItem>
@@ -433,7 +441,7 @@ const WaitingStateContainer = () => {
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                     margin="0.5rem 0"
-                    color="subBlue"
+                    color="mainBlue"
                   >
                     {storeOption.data.customOption2Name}
                   </ListItem>
@@ -445,7 +453,7 @@ const WaitingStateContainer = () => {
                     display="block"
                     fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                     margin="0.5rem 0"
-                    color="subBlue"
+                    color="mainBlue"
                   >
                     {storeOption.data.customOption3Name}
                   </ListItem>
