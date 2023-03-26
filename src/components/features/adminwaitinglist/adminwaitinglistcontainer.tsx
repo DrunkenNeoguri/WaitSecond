@@ -2,7 +2,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAuth } from "firebase/auth";
 import { collection, getDocs, getFirestore, query } from "firebase/firestore";
-import { UserData } from "../../../utils/typealies";
+import { StoreOption, UserData } from "../../../utils/typealies";
 import WaitingDataBlock from "./waitingdatablock";
 
 const AdminWaitingListContainer = () => {
@@ -35,7 +35,26 @@ const AdminWaitingListContainer = () => {
     queryFn: getWaitingData,
   });
 
-  console.log(currentWaitingState.data);
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
+    const storeDataState: StoreOption | undefined = await getDocs(
+      collection(db, "adminList")
+    ).then((data) => {
+      let adminData: any;
+      data.forEach((doc) => {
+        if (doc.data().uid === currentUser) {
+          return (adminData = doc.data());
+        }
+      });
+      return adminData!;
+    });
+    return storeDataState;
+  };
+
+  const storeOption = useQuery({
+    queryKey: ["storeData"],
+    queryFn: getStoreOption,
+  });
 
   return (
     <Flex
@@ -54,18 +73,20 @@ const AdminWaitingListContainer = () => {
         padding="1rem"
         backgroundColor="#ffffff"
       >
-        <Text letterSpacing="-0.1rem">현재 대기중인 팀</Text>
+        <Text letterSpacing="-0.1rem">현재 대기팀</Text>
         <Text fontWeight="bold" color="#58a6dc">
           4팀
         </Text>
       </Flex>
       <Flex direction="column" align="center" fontSize="1.25rem">
-        {currentWaitingState.data?.map((elem: UserData) => {
+        {currentWaitingState.data?.map((elem: UserData, index: number) => {
           return (
             <WaitingDataBlock
-              key={elem.uid!}
+              key={index}
               userData={elem}
               admin={currentUser!}
+              storeOption={storeOption.data!}
+              background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
             />
           );
         })}
@@ -75,12 +96,3 @@ const AdminWaitingListContainer = () => {
 };
 
 export default AdminWaitingListContainer;
-
-// <Text>현재 대기 팀</Text>
-// <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-//   {waitingList.data === undefined
-//     ? "확인 중"
-//     : waitingList.data.length === 0
-//     ? "없음"
-//     : `${waitingList.data.length} 팀`}
-// </Text>

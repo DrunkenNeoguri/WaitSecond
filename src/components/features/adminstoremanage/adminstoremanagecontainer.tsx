@@ -8,32 +8,33 @@ import {
   Heading,
   Input,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { getAuth } from "firebase/auth";
-import { StoreOption } from "../../../utils/typealies";
+import { EventObject, StoreOption } from "../../../utils/typealies";
 import {
   collection,
   doc,
   getDocs,
   getFirestore,
-  query,
   setDoc,
 } from "firebase/firestore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CommonInput } from "../../common/commoninput";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const AdminStoreManageContainer: React.FC = () => {
   const db = getFirestore();
   const firebaseAuth = getAuth();
   const queryClient = useQueryClient();
+  const toastMsg = useToast();
   const currentUser = firebaseAuth.currentUser?.uid;
-  console.log(currentUser);
 
   // interface에서 class로 바꿀 수 있는지 확인해보기
   const initialState = {
     uid: "",
     storeName: "",
-    storeId: "",
     storebg: "",
     waitingState: false,
     maximumTeamMemberCount: 1,
@@ -49,35 +50,98 @@ const AdminStoreManageContainer: React.FC = () => {
   };
 
   const [storeData, setStoreData] = useState<StoreOption>(initialState);
+  const [documentUID, setDocumentUID] = useState("");
+  const [inputCheck, setInputCheck] = useState(false);
+
+  // 설정 적용하기 (입력값)
+  const inputStoreOptionData = (e: React.ChangeEvent) => {
+    e.preventDefault();
+    const { id, value }: EventObject = e.target;
+    setStoreData({ ...storeData, [id]: value });
+
+    if (inputCheck === false) {
+      setInputCheck(true);
+    }
+  };
+
+  // 설정 적용하기 (+-)
+  const changeStoreOptionCounter = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const { id, value }: EventObject = e.currentTarget;
+
+    switch (id) {
+      case "maximumTeamMemberCount": {
+        if (Number(value)! === -1 && storeData.maximumTeamMemberCount > 1) {
+          setStoreData({
+            ...storeData,
+            maximumTeamMemberCount: storeData.maximumTeamMemberCount - 1,
+          });
+        } else if (Number(value)! === 1) {
+          setStoreData({
+            ...storeData,
+            maximumTeamMemberCount: storeData.maximumTeamMemberCount + 1,
+          });
+        }
+        break;
+      }
+      case "maximumWaitingTeamCount": {
+        if (Number(value)! === -1 && storeData.maximumWaitingTeamCount > 1) {
+          setStoreData({
+            ...storeData,
+            maximumWaitingTeamCount: storeData.maximumWaitingTeamCount - 1,
+          });
+        } else if (Number(value)! === 1) {
+          setStoreData({
+            ...storeData,
+            maximumWaitingTeamCount: storeData.maximumWaitingTeamCount + 1,
+          });
+        }
+        break;
+      }
+    }
+  };
+
+  // 설정 적용하기 (스위치)
+  const switchStoreOptionValue = (e: React.MouseEvent, state: boolean) => {
+    e.preventDefault();
+    const { id } = e.currentTarget;
+    setStoreData({ ...storeData, [id]: state });
+  };
 
   // 관리자의 설정 정보 가져오기
   const getStoreSettingData = async () => {
-    const storeDataState: StoreOption | undefined = await getDocs(
-      collection(db, "adminList")
-    ).then((data) => {
-      let adminData: any;
-      data.forEach((doc) => {
-        if (doc.data().uid === currentUser) {
-          return (adminData = doc.data());
-        }
-      });
-      return adminData!;
-    });
+    const storeDataState = await getDocs(collection(db, "adminList")).then(
+      (data) => {
+        let adminData: any;
+        data.forEach((doc) => {
+          if (doc.data().uid === currentUser) {
+            adminData = { data: doc.data(), uid: doc.id };
+          }
+        });
+        return adminData!;
+      }
+    );
     return storeDataState;
   };
 
   const currentStoreOption = useQuery({
     queryKey: ["currentStoreOption"],
     queryFn: getStoreSettingData,
+    onSuccess(data) {
+      if (data !== undefined) {
+        setStoreData(data.data);
+        setDocumentUID(data.uid);
+      }
+    },
   });
 
   // 관리자의 설정 저장하기
   const updateStoreDataToDatabase = async (storeData: StoreOption) => {
     const updateDataState = await setDoc(
-      doc(db, "adminData", `${currentUser}`),
+      doc(db, "adminList", documentUID),
       storeData
     )
-      .then((data) => data)
+      .then((data) => "option-setting-success")
       .catch((error) => error.message);
     return updateDataState;
   };
@@ -85,7 +149,19 @@ const AdminStoreManageContainer: React.FC = () => {
   const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
-      queryClient.invalidateQueries(["storeData"]);
+      if (data === "option-setting-success") {
+        return !toastMsg.isActive("option-setting-success")
+          ? toastMsg({
+              title: "변경 사항 적용 완료",
+              id: "option-setting-success",
+              description: "설정하신 사항이 적용됐습니다.",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
+      queryClient.invalidateQueries(["currentStoreOption"]);
     },
   });
 
@@ -94,50 +170,389 @@ const AdminStoreManageContainer: React.FC = () => {
     updateStoreDataMutation.mutate(storeData);
   };
 
-  return (
-    <Flex
-      as="article"
-      direction="column"
-      border="none"
-      borderRadius="1rem 1rem 0 0"
-      boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-      padding="4.5rem 1rem 3rem 1rem"
-      background="#FFFFFF"
-      boxSizing="border-box"
-    >
-      <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
-        매장 관리
-      </Heading>
-      <form onSubmit={submitUserWaitingData}>
-        <FormControl>
-          <Flex direction="column" padding="0.5rem 0">
-            <FormLabel fontSize="1rem" fontWeight="semibold">
-              매장명
-            </FormLabel>
-            <Input />
-            <Text fontSize="0.625rem" padding="0.25rem 0">
-              aaa
-            </Text>
-          </Flex>
-          <Flex direction="column" padding="0.5rem 0">
-            <FormLabel fontSize="1rem" fontWeight="semibold">
-              매장 아이디
-            </FormLabel>
-            <Input placeholder="20글자 이내 (영어 소문자, _ 가능)" />
-            <Text fontSize="0.625rem" padding="0.25rem 0">
-              aaa
-            </Text>
-          </Flex>
+  if (currentStoreOption.data !== undefined)
+    return (
+      <Flex
+        as="article"
+        direction="column"
+        border="none"
+        borderRadius="1rem 1rem 0 0"
+        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+        padding="4.5rem 1rem 3rem 1rem"
+        background="#FFFFFF"
+        boxSizing="border-box"
+      >
+        <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
+          매장 관리
+        </Heading>
+        {currentStoreOption.data !== undefined}
+        <form onSubmit={submitUserWaitingData}>
+          <FormControl>
+            <Flex direction="column" padding="0.5rem 0">
+              <CommonInput
+                id="storeName"
+                title="매장명"
+                type="text"
+                value={storeData.storeName}
+                onChange={inputStoreOptionData}
+                margin="0.25rem 0"
+              />
+              <CommonErrorMsg
+                type="storename"
+                value1={storeData.storeName}
+                inputCheck={{ storename: inputCheck }}
+              />
+            </Flex>
+            <Flex direction="column" padding="0.5rem 0 1.5rem 0">
+              <FormLabel fontSize="1rem" fontWeight="semibold">
+                배경 이미지
+              </FormLabel>
+              <Box background="#8D8D8D" width="326px" height="180px" />
+              <Button
+                type="submit"
+                variant="solid"
+                background="subBlue"
+                padding="0.5rem auto"
+                fontSize="1.25rem"
+                borderRadius="0.25rem"
+                color="#ffffff"
+                width="100%"
+                height="3rem"
+                margin="1.5rem 0 1rem 0"
+              >
+                배경 이미지 변경
+              </Button>
+            </Flex>
 
-          <Flex direction="column" padding="1.5rem 0">
-            <FormLabel fontSize="1rem" fontWeight="semibold">
-              배경 이미지
-            </FormLabel>
-            <Box background="#8D8D8D" width="326px" height="180px" />
+            <Flex direction="column" padding="0.5rem 0" gap="1rem">
+              <FormLabel fontSize="1rem" fontWeight="semibold">
+                대기 설정
+              </FormLabel>
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fontSize="0.875rem">현재 대기 접수 여부</Text>
+                <Flex>
+                  <Button
+                    id="waitingState"
+                    borderRadius="0.25rem 0 0 0.25rem"
+                    padding="0px 1.5rem"
+                    background={storeData.waitingState ? "subBlue" : "#FFFFFF"}
+                    color={storeData.waitingState ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, true)}
+                  >
+                    가능
+                  </Button>
+                  <Button
+                    id="waitingState"
+                    borderRadius="0 0.25rem 0.25rem 0"
+                    padding="0 1.5rem"
+                    background={!storeData.waitingState ? "subBlue" : "#FFFFFF"}
+                    color={!storeData.waitingState ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, false)}
+                  >
+                    불가
+                  </Button>
+                </Flex>
+              </Flex>
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fontSize="0.875rem">최대 대기 접수 가능 인원</Text>
+                <Flex justify="space-between" align="center" width="8.5rem">
+                  <Button
+                    id="maximumTeamMemberCount"
+                    background="subBlue"
+                    color="#FFFFFF"
+                    padding="0"
+                    size="sm"
+                    value={-1}
+                    onClick={changeStoreOptionCounter}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Text>{storeData.maximumTeamMemberCount}명</Text>
+                  <Button
+                    id="maximumTeamMemberCount"
+                    background="subBlue"
+                    color="#FFFFFF"
+                    padding="0"
+                    size="sm"
+                    value={1}
+                    onClick={changeStoreOptionCounter}
+                  >
+                    <AddIcon />
+                  </Button>
+                </Flex>
+              </Flex>
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fontSize="0.875rem">최대 접수 가능 팀 수</Text>
+                <Flex justify="space-between" align="center" width="8.5rem">
+                  <Button
+                    id="maximumWaitingTeamCount"
+                    background="subBlue"
+                    color="#FFFFFF"
+                    padding="0"
+                    size="sm"
+                    value={-1}
+                    onClick={changeStoreOptionCounter}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Text>{storeData.maximumWaitingTeamCount}팀</Text>
+                  <Button
+                    id="maximumWaitingTeamCount"
+                    background="subBlue"
+                    color="#FFFFFF"
+                    padding="0"
+                    size="sm"
+                    value={1}
+                    onClick={changeStoreOptionCounter}
+                  >
+                    <AddIcon />
+                  </Button>
+                </Flex>
+              </Flex>
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fontSize="0.875rem">반려 동물 동반</Text>
+                <Flex>
+                  <Button
+                    id="petAllow"
+                    borderRadius="0.25rem 0 0 0.25rem"
+                    padding="0px 1.5rem"
+                    background={storeData.petAllow ? "subBlue" : "#FFFFFF"}
+                    color={storeData.petAllow ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, true)}
+                  >
+                    가능
+                  </Button>
+                  <Button
+                    id="petAllow"
+                    borderRadius="0 0.25rem 0.25rem 0"
+                    padding="0px 1.5rem"
+                    background={!storeData.petAllow ? "subBlue" : "#FFFFFF"}
+                    color={!storeData.petAllow ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, false)}
+                  >
+                    불가
+                  </Button>
+                </Flex>
+              </Flex>
+              <Flex direction="row" justify="space-between" align="center">
+                <Text fontSize="0.875rem">테이블 인원 따로 앉기</Text>
+                <Flex>
+                  <Button
+                    id="teamSeparate"
+                    borderRadius="0.25rem 0 0 0.25rem"
+                    padding="0px 1.5rem"
+                    background={storeData.teamSeparate ? "subBlue" : "#FFFFFF"}
+                    color={storeData.teamSeparate ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, true)}
+                  >
+                    가능
+                  </Button>
+                  <Button
+                    id="teamSeparate"
+                    borderRadius="0 0.25rem 0.25rem 0"
+                    padding="0px 1.5rem"
+                    background={!storeData.teamSeparate ? "subBlue" : "#FFFFFF"}
+                    color={!storeData.teamSeparate ? "#FFFFFF" : "#3333333"}
+                    fontSize="0.75rem"
+                    size="sm"
+                    onClick={(e) => switchStoreOptionValue(e, false)}
+                  >
+                    불가
+                  </Button>
+                </Flex>
+              </Flex>
+            </Flex>
+
+            <Flex direction="column" padding="2rem 0 0.5rem" gap="1rem">
+              <Heading fontSize="1rem" fontWeight="semibold">
+                커스텀 설정
+              </Heading>
+              <Flex direction="column" gap="0.5rem">
+                <Flex justify="space-between" align="center">
+                  <FormLabel htmlFor="customOption1Name" fontSize="0.875rem">
+                    옵션 1
+                  </FormLabel>
+                  <Flex>
+                    <Button
+                      id="customOption1State"
+                      borderRadius="0.25rem 0 0 0.25rem"
+                      padding="0px 1.5rem"
+                      background={
+                        storeData.customOption1State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        storeData.customOption1State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, true)}
+                    >
+                      가능
+                    </Button>
+                    <Button
+                      id="customOption1State"
+                      borderRadius="0 0.25rem 0.25rem 0"
+                      padding="0px 1.5rem"
+                      background={
+                        !storeData.customOption1State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        !storeData.customOption1State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, false)}
+                    >
+                      불가
+                    </Button>
+                  </Flex>
+                </Flex>
+                <Input
+                  id="customOption1Name"
+                  value={storeData.customOption1Name}
+                  onChange={inputStoreOptionData}
+                  type="text"
+                  size="md"
+                  background="#F9F9F9"
+                  border="1px solid #F1F1F1"
+                  width="100%"
+                  _focus={{ background: "#FFFFFF" }}
+                />
+                <CommonErrorMsg
+                  type="custom"
+                  inputCheck={{ custom: storeData.customOption1State }}
+                  value1={storeData.customOption1Name}
+                />
+              </Flex>
+              <Flex direction="column" gap="0.5rem">
+                <Flex justify="space-between" align="center">
+                  <FormLabel htmlFor="customOption2Name" fontSize="0.875rem">
+                    옵션 2
+                  </FormLabel>
+                  <Flex>
+                    <Button
+                      id="customOption2State"
+                      borderRadius="0.25rem 0 0 0.25rem"
+                      padding="0px 1.5rem"
+                      background={
+                        storeData.customOption2State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        storeData.customOption2State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, true)}
+                    >
+                      가능
+                    </Button>
+                    <Button
+                      id="customOption2State"
+                      borderRadius="0 0.25rem 0.25rem 0"
+                      padding="0px 1.5rem"
+                      background={
+                        !storeData.customOption2State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        !storeData.customOption2State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, false)}
+                    >
+                      불가
+                    </Button>
+                  </Flex>
+                </Flex>
+                <Input
+                  id="customOption2Name"
+                  value={storeData.customOption2Name}
+                  onChange={inputStoreOptionData}
+                  type="text"
+                  size="md"
+                  background="#F9F9F9"
+                  border="1px solid #F1F1F1"
+                  width="100%"
+                  _focus={{ background: "#FFFFFF" }}
+                />
+                <CommonErrorMsg
+                  type="custom"
+                  inputCheck={{ custom: storeData.customOption2State }}
+                  value1={storeData.customOption2Name}
+                />
+              </Flex>
+              <Flex direction="column" gap="0.5rem">
+                <Flex justify="space-between" align="center">
+                  <FormLabel htmlFor="customOption3Name" fontSize="0.875rem">
+                    옵션 3
+                  </FormLabel>
+                  <Flex>
+                    <Button
+                      id="customOption3State"
+                      borderRadius="0.25rem 0 0 0.25rem"
+                      padding="0px 1.5rem"
+                      background={
+                        storeData.customOption3State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        storeData.customOption3State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, true)}
+                    >
+                      가능
+                    </Button>
+                    <Button
+                      id="customOption3State"
+                      borderRadius="0 0.25rem 0.25rem 0"
+                      padding="0px 1.5rem"
+                      background={
+                        !storeData.customOption3State ? "subBlue" : "#FFFFFF"
+                      }
+                      color={
+                        !storeData.customOption3State ? "#FFFFFF" : "#3333333"
+                      }
+                      fontSize="0.75rem"
+                      size="sm"
+                      onClick={(e) => switchStoreOptionValue(e, false)}
+                    >
+                      불가
+                    </Button>
+                  </Flex>
+                </Flex>
+                <Input
+                  id="customOption3Name"
+                  value={storeData.customOption3Name}
+                  onChange={inputStoreOptionData}
+                  type="text"
+                  size="md"
+                  background="#F9F9F9"
+                  border="1px solid #F1F1F1"
+                  width="100%"
+                  _focus={{ background: "#FFFFFF" }}
+                />
+                <CommonErrorMsg
+                  type="custom"
+                  inputCheck={{ custom: storeData.customOption3State }}
+                  value1={storeData.customOption3Name}
+                />
+              </Flex>
+            </Flex>
             <Button
               type="submit"
               variant="solid"
-              background="#5ABFB7"
+              background="subBlue"
               padding="0.5rem auto"
               fontSize="1.25rem"
               borderRadius="0.25rem"
@@ -146,210 +561,13 @@ const AdminStoreManageContainer: React.FC = () => {
               height="3rem"
               margin="1.5rem 0 1rem 0"
             >
-              배경 이미지 변경
+              변경 사항 적용
             </Button>
-          </Flex>
-
-          <Flex direction="column" padding="0.5rem 0" gap="1rem">
-            <FormLabel fontSize="1rem" fontWeight="semibold">
-              대기 설정
-            </FormLabel>
-            <Flex direction="row" justify="space-between" align="center">
-              <Text fontSize="0.875rem">현재 대기 접수 여부</Text>
-              <Flex>
-                <Button
-                  borderRadius="0.25rem 0 0 0.25rem"
-                  padding="0px 1.5rem"
-                  background="#4E95FF"
-                  color="#FFFFFF"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  가능
-                </Button>
-                <Button
-                  borderRadius="0 0.25rem 0.25rem 0"
-                  padding="0 1.5rem"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  불가
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex direction="row" justify="space-between" align="center">
-              <Text fontSize="0.875rem">최대 대기 접수 가능 인원</Text>
-              <Flex justify="space-between" align="center" width="9rem">
-                <Button background="#4E95FF" color="#FFFFFF" padding="0">
-                  <MinusIcon />
-                </Button>
-                <Text>12명</Text>
-                <Button background="#4E95FF" color="#FFFFFF" padding="0">
-                  <AddIcon />
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex direction="row" justify="space-between" align="center">
-              <Text fontSize="0.875rem">최대 접수 가능 팀 수</Text>
-              <Flex justify="space-between" align="center" width="9rem">
-                <Button background="#4E95FF" color="#FFFFFF" padding="0">
-                  <MinusIcon />
-                </Button>
-                <Text>12명</Text>
-                <Button background="#4E95FF" color="#FFFFFF" padding="0">
-                  <AddIcon />
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex direction="row" justify="space-between" align="center">
-              <Text fontSize="0.875rem">반려 동물 동반</Text>
-              <Flex>
-                <Button
-                  borderRadius="0.25rem 0 0 0.25rem"
-                  padding="0 1.5rem"
-                  background="#4E95FF"
-                  color="#FFFFFF"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  가능
-                </Button>
-                <Button
-                  borderRadius="0 0.25rem 0.25rem 0"
-                  padding="0 1.5rem"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  불가
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex direction="row" justify="space-between" align="center">
-              <Text fontSize="0.875rem">테이블 인원 따로 앉기</Text>
-              <Flex>
-                <Button
-                  borderRadius="0.25rem 0 0 0.25rem"
-                  padding="0 1.5rem"
-                  background="#4E95FF"
-                  color="#FFFFFF"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  가능
-                </Button>
-                <Button
-                  borderRadius="0 0.25rem 0.25rem 0"
-                  padding="0 1.5rem"
-                  fontSize="0.75rem"
-                  size="sm"
-                >
-                  불가
-                </Button>
-              </Flex>
-            </Flex>
-          </Flex>
-
-          <Flex direction="column" padding="1.5rem 0" gap="1rem">
-            <Heading fontSize="1rem" fontWeight="semibold">
-              커스텀 설정
-            </Heading>
-            <Flex direction="column" gap="0.5rem">
-              <Flex justify="space-between" align="center">
-                <Text fontSize="0.875rem">옵션 1</Text>
-                <Flex>
-                  <Button
-                    borderRadius="0.25rem 0 0 0.25rem"
-                    padding="0 1.5rem"
-                    background="#4E95FF"
-                    color="#FFFFFF"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    가능
-                  </Button>
-                  <Button
-                    borderRadius="0 0.25rem 0.25rem 0"
-                    padding="0 1.5rem"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    불가
-                  </Button>
-                </Flex>
-              </Flex>
-              <Input />
-            </Flex>
-            <Flex direction="column" gap="0.5rem">
-              <Flex justify="space-between" align="center">
-                <Text fontSize="0.875rem">옵션 2</Text>
-                <Flex>
-                  <Button
-                    borderRadius="0.25rem 0 0 0.25rem"
-                    padding="0 1.5rem"
-                    background="#4E95FF"
-                    color="#FFFFFF"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    가능
-                  </Button>
-                  <Button
-                    borderRadius="0 0.25rem 0.25rem 0"
-                    padding="0 1.5rem"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    불가
-                  </Button>
-                </Flex>
-              </Flex>
-              <Input />
-            </Flex>
-            <Flex direction="column" gap="0.5rem">
-              <Flex justify="space-between" align="center">
-                <Text fontSize="0.875rem">옵션 3</Text>
-                <Flex>
-                  <Button
-                    borderRadius="0.25rem 0 0 0.25rem"
-                    padding="0 1.5rem"
-                    background="#4E95FF"
-                    color="#FFFFFF"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    가능
-                  </Button>
-                  <Button
-                    borderRadius="0 0.25rem 0.25rem 0"
-                    padding="0 1.5rem"
-                    fontSize="0.75rem"
-                    size="sm"
-                  >
-                    불가
-                  </Button>
-                </Flex>
-              </Flex>
-              <Input />
-            </Flex>
-          </Flex>
-          <Button
-            type="submit"
-            variant="solid"
-            background="#5ABFB7"
-            padding="0.5rem auto"
-            fontSize="1.25rem"
-            borderRadius="0.25rem"
-            color="#ffffff"
-            width="100%"
-            height="3rem"
-            margin="1.5rem 0 1rem 0"
-          >
-            관리 내용 수정
-          </Button>
-        </FormControl>
-      </form>
-    </Flex>
-  );
+          </FormControl>
+        </form>
+      </Flex>
+    );
+  else return <></>;
 };
 
 export default AdminStoreManageContainer;

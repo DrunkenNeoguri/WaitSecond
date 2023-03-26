@@ -1,15 +1,13 @@
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Flex,
+  FormLabel,
   Heading,
-  ListIcon,
   ListItem,
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Skeleton,
@@ -26,7 +24,7 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
@@ -35,15 +33,18 @@ const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
+  const navigate = useNavigate();
 
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
+  // 현재 대기열 가져오기
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
-        list.push(doc.data());
+        const userData = doc.data();
+        list.push({ ...userData, uid: doc.id });
       });
       list.sort(function (a: any, b: any) {
         return a.createdAt - b.createdAt;
@@ -58,7 +59,8 @@ const WaitingStateContainer = () => {
     queryFn: getWaitingData,
   });
 
-  const getStoreSettingData = async () => {
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
     const storeDataState: StoreOption | undefined = await getDocs(
       collection(db, "adminList")
     ).then((data) => {
@@ -73,9 +75,9 @@ const WaitingStateContainer = () => {
     return storeDataState;
   };
 
-  const storeData = useQuery({
+  const storeOption = useQuery({
     queryKey: ["storeData"],
-    queryFn: getStoreSettingData,
+    queryFn: getStoreOption,
   });
 
   // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
@@ -85,18 +87,20 @@ const WaitingStateContainer = () => {
 
   const currentUserData = waitingList.data?.[currentUserIdx];
 
-  const cancelWaitingAccount = async () => {
-    const calcelWaitingState = deleteDoc(
-      doc(db, `${storeuid}`, currentUserData.tel)
+  const deleteWaitingQueryFn = async (userData: UserData) => {
+    const deleteWaitingState = deleteDoc(
+      doc(db, `storeList/${storeuid}/waitingList`, `${currentUserData.uid}`)
     )
       .then((data) => true)
       .catch((error) => error.message);
-    return calcelWaitingState;
+    return deleteWaitingState;
   };
 
-  const deleteMutation = useMutation(cancelWaitingAccount, {
+  const deleteMutation = useMutation(deleteWaitingQueryFn, {
     onError: (error, variable) => console.log(error),
-    onSuccess: (data, variable, context) => {},
+    onSuccess: (data, variable, context) => {
+      navigate(`/ ${storeuid}`);
+    },
   });
 
   const deleteWaitingData = (e: React.MouseEvent) => {
@@ -146,7 +150,7 @@ const WaitingStateContainer = () => {
         </ModalContent>
       </Modal>
 
-      {waitingList.data === undefined || storeData.data === undefined ? (
+      {waitingList.data === undefined || storeOption.data === undefined ? (
         <Flex
           direction="column"
           align="center"
@@ -225,33 +229,38 @@ const WaitingStateContainer = () => {
           borderRadius="1rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
-          <Heading as="h1" textAlign="center">
-            {storeData.data === undefined
+          <Heading
+            as="h1"
+            textAlign="center"
+            letterSpacing="-0.05rem"
+            padding="1rem 0"
+          >
+            {storeOption.data === undefined
               ? "불러오는중불러오는중불러오는중불러오는중"
-              : storeData.data.storeName}
+              : storeOption.data.storeName}
           </Heading>
           <Flex
             direction="row"
             justify="space-between"
             align="center"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+            fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+            letterSpacing="-0.05rem"
             margin="1.5rem 0"
           >
             <Text fontWeight="600">내 앞 대기팀</Text>
-            <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
+            <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
               {currentUserIdx === 0 ? "없음" : `${currentUserIdx} 팀`}
             </Text>
           </Flex>
 
           <Text
             borderRadius="0.25rem"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-            letterSpacing="-2%"
-            lineHeight={visionState === false ? "2rem" : "2.25rem"}
+            fontSize={visionState === false ? "1rem" : "1.625rem"}
+            lineHeight={visionState === false ? "1.4rem" : "2.25rem"}
             margin="0.25rem 0"
             whiteSpace="pre-wrap"
             textAlign="left"
-            color="#4E95FF"
+            color="subBlue"
           >
             순서가 가까워졌어요.
             <br />
@@ -263,90 +272,208 @@ const WaitingStateContainer = () => {
             height="0.125rem"
             borderRadius="1rem"
             boxSizing="border-box"
-            margin="2rem 1rem"
+            margin="1rem 1rem"
           />
           <Heading
             as="h2"
-            fontWeight="600"
-            fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+            fontWeight="bold"
+            letterSpacing="-0.05rem"
+            fontSize={visionState === false ? "1rem" : "1.625rem"}
+            margin="1rem 0"
           >
             내 정보
           </Heading>
           <Flex direction="column">
             <Flex
               direction="row"
-              justify="space-between"
-              align="center"
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              margin="1.5rem 0"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
             >
-              <Text fontWeight="600">인원</Text>
-              <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
-                {currentUserData.member}명
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="normal"
+                width="30%"
+                margin="0"
+              >
+                성함
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="bold"
+              >
+                {currentUserData.name}
+              </Text>
+            </Flex>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
+            >
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="normal"
+                width="30%"
+                margin="0"
+              >
+                연락처
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="bold"
+              >
+                {" "}
+                {currentUserData.tel}
+              </Text>
+            </Flex>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
+            >
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="normal"
+                width="30%"
+                margin="0"
+              >
+                성인
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="bold"
+              >
+                {currentUserData.adult}명
+              </Text>
+            </Flex>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
+            >
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="normal"
+                width="30%"
+                margin="0"
+              >
+                유아
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="bold"
+              >
+                {currentUserData.child}명
               </Text>
             </Flex>
           </Flex>
-          <Text
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-            fontWeight="600"
-          >
-            추가 옵션
-          </Text>
-          <UnorderedList
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          >
-            {currentUserData.child === true ? (
-              <ListItem
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-                margin="1rem 0"
+          <Box margin="0.5rem 0 0 0">
+            <FormLabel
+              fontSize={visionState === false ? "1rem" : "1.625rem"}
+              fontWeight="normal"
+              width="30%"
+              margin="0"
+            >
+              추가 옵션
+            </FormLabel>
+            <Flex
+              direction="column"
+              background="#F9F9F9"
+              margin="0.5rem 0"
+              padding="0.5rem"
+            >
+              <UnorderedList
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
               >
-                <ListIcon as={CheckCircleIcon} />
-                <Text color="#58a6dc" fontWeight="600">
-                  아이
-                </Text>
-                가 있어요.
-              </ListItem>
-            ) : (
-              <></>
-            )}
-            {currentUserData.pet === true ? (
-              <ListItem
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-                margin="1rem 0"
-              >
-                <ListIcon as={CheckCircleIcon} />
-                <Text color="#58a6dc" fontWeight="600">
-                  반려 동물
-                </Text>
-                이 있어요.
-              </ListItem>
-            ) : (
-              <></>
-            )}
-          </UnorderedList>
+                {currentUserData.pet ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    반려 동물이 있어요.
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.separate ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    자리가 나면 따로 앉아도 괜찮아요.
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom1 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption1Name}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom2 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption2Name}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+                {currentUserData.custom3 ? (
+                  <ListItem
+                    display="block"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                    margin="0.5rem 0"
+                    color="subBlue"
+                  >
+                    {storeOption.data.customOption3Name}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+              </UnorderedList>
+            </Flex>
+          </Box>
           <Flex
             direction={visionState === false ? "row" : "column"}
             justify="space-between"
             align={visionState === false ? "center" : "flex-start"}
-            fontSize={visionState === false ? "1rem" : "1.625rem"}
-            margin="1rem 0 2rem 0"
-            color="#8F8F8F"
+            fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+            margin="1rem 0 1.5rem 0"
+            color="mainGray"
           >
             <Text>대기 시작 시간</Text>
             <Text>2021-01-30 11:59</Text>
           </Flex>
           <Button
             type="button"
-            background="#5a5a5a"
+            background="accentGray"
             color="#ffffff"
             borderRadius="0.25rem"
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             fontWeight="500"
-            size="lg"
+            height="3rem"
             onClick={onOpen}
           >
             대기 등록 취소

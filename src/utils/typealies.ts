@@ -30,43 +30,56 @@ export class AdminData {
   email: string;
   password?: string;
   passwordcheck?: string;
+  currentpassword?: string;
+  storename?: string;
 
-  constructor(email: string, password?: string, passwordcheck?: string) {
+  constructor(
+    email: string,
+    password?: string,
+    passwordcheck?: string,
+    currentpassword?: string,
+    storename?: string
+  ) {
     this.email = email;
     this.password = password;
     this.passwordcheck = passwordcheck;
+    this.currentpassword = currentpassword;
+    this.storename = storename;
   }
 }
 
 export class UserData {
   name: string;
   tel: string;
-  member: number;
-  child?: boolean;
+  adult: number;
+  child: number;
   pet?: boolean;
+  separate?: boolean;
   custom1?: boolean;
   custom2?: boolean;
   custom3?: boolean;
-  createdAt?: string;
+  createdAt?: number;
   uid?: string;
 
   constructor(
     name: string,
     tel: string,
-    member: number,
-    child: boolean,
+    adult: number,
+    child: number,
     pet: boolean,
+    seperate: boolean,
     custom1?: boolean,
     custom2?: boolean,
     custom3?: boolean,
-    createdAt?: string,
+    createdAt?: number,
     uid?: string
   ) {
     this.name = name;
     this.tel = tel;
-    this.member = member;
+    this.adult = adult;
     this.child = child;
     this.pet = pet;
+    this.separate = seperate;
     this.custom1 = custom1;
     this.custom2 = custom2;
     this.custom3 = custom3;
@@ -75,7 +88,7 @@ export class UserData {
   }
 }
 
-export interface StoreOption {
+export type StoreOption = {
   uid: string;
   storeName: string;
   storebg: string;
@@ -90,7 +103,7 @@ export interface StoreOption {
   customOption2State: boolean;
   customOption3Name: string;
   customOption3State: boolean;
-}
+};
 
 // export class StoreOption {
 //   uid: string;

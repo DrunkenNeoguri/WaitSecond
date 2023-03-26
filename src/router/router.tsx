@@ -9,11 +9,13 @@ import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
 import AdminStoreManage from "../pages/adminstoremanage";
 import AdminSetting from "../pages/adminsetting";
+import WaitingMain from "../pages/waitingmain";
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/:storeuid" element={<WaitingMain />} />
         <Route path="/:storeuid/waitingform" element={<WaitingForm />} />
         <Route
           path="/:storeuid/waitingstate/:telnumber"
