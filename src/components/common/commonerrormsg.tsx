@@ -9,6 +9,7 @@ const CommonErrorMsg: React.FC<{
     email?: boolean;
     password?: boolean;
     passwordcheck?: boolean;
+    currentpassword?: boolean;
     storename?: boolean;
     customername?: boolean;
     tel?: boolean;
@@ -24,6 +25,15 @@ const CommonErrorMsg: React.FC<{
         errorMsg = "입력란을 빈칸으로 둘 수 없습니다.";
       else if (emailRegex.test(value1) === false)
         errorMsg = "정확한 이메일을 입력해주십시오.";
+      break;
+    }
+    case "currentpassword": {
+      if (!inputCheck?.password) errorMsg = "　";
+      else if (value1.trim() === "")
+        errorMsg = "입력란을 빈칸으로 둘 수 없습니다.";
+      else if (passwordRegex.test(value1) === false)
+        errorMsg =
+          "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다.";
       break;
     }
     case "password": {

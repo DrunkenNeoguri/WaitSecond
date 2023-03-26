@@ -36,7 +36,9 @@ const WaitingMainContainer: React.FC = () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
-        list.push(doc.data());
+        if (doc.data().isentered === false) {
+          list.push(doc.data());
+        }
       });
       list.sort(function (a: any, b: any) {
         return a.createdAt - b.createdAt;
@@ -46,13 +48,23 @@ const WaitingMainContainer: React.FC = () => {
     return waitingState;
   };
 
-  // 관리자가 설정한 매장 관리 정보 가져오기
   const waitingList = useQuery({
     queryKey: ["waitingList"],
     queryFn: getWaitingData,
   });
 
-  const getStoreSettingData = async () => {
+  const inputUserTelNumber = (e: React.ChangeEvent) => {
+    e.preventDefault();
+    const { value }: EventObject = e.currentTarget;
+    setTelInput(value!);
+
+    if (inputCheck === false) {
+      setInputCheck(true);
+    }
+  };
+
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
     const storeDataState: StoreOption | undefined = await getDocs(
       collection(db, "adminList")
     ).then((data) => {
@@ -67,20 +79,10 @@ const WaitingMainContainer: React.FC = () => {
     return storeDataState;
   };
 
-  const storeData = useQuery({
-    queryKey: ["storeData"],
-    queryFn: getStoreSettingData,
+  const storeOption = useQuery({
+    queryKey: ["storeOption"],
+    queryFn: getStoreOption,
   });
-
-  const inputUserTelNumber = (e: React.ChangeEvent) => {
-    e.preventDefault();
-    const { value }: EventObject = e.currentTarget;
-    setTelInput(value!);
-
-    if (inputCheck === false) {
-      setInputCheck(true);
-    }
-  };
 
   const moveToWaitingStatePage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,84 +142,155 @@ const WaitingMainContainer: React.FC = () => {
           letterSpacing="-0.05rem"
           padding="1rem 0"
         >
-          {storeData.data === undefined
+          {storeOption.data === undefined
             ? "불러오는중불러오는중불러오는중불러오는중"
-            : storeData.data.storeName}
+            : storeOption.data.storeName}
         </Heading>
-        <Flex
-          direction="row"
-          justify="space-between"
-          align="center"
-          fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-          fontWeight="semibold"
-          letterSpacing="-0.1rem"
-          margin="0.5rem 0 1rem 0"
-        >
-          <Text>현재 대기팀</Text>
-          <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
-            {waitingList.data === undefined
-              ? "확인 중"
-              : waitingList.data.length === 0
-              ? "없음"
-              : `${waitingList.data.length} 팀`}
-          </Text>
-        </Flex>
-        <Flex direction="column" fontSize="1rem" margin="1rem 0">
-          <Text>대기 등록을 원하시면</Text>
-          <Link
-            as={ReactRouterLink}
-            to={`${location.pathname}/waitingform`}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            background="subBlue"
-            fontWeight="semibold"
-            fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-            color="#FFFFFF"
-            padding="0.5rem auto"
-            margin="1rem 0"
-            borderRadius="0.25rem"
-            height="3rem"
-            width="100%"
-            _hover={{ textDecoration: "none", background: "#E2E8F0" }}
-          >
-            대기 등록
-          </Link>
-        </Flex>
-        <Flex direction="column" fontSize="1rem" margin="1rem 0">
-          <Text>이미 대기 등록을 하셨다면</Text>
-          <form onSubmit={moveToWaitingStatePage}>
-            <Flex direction="column" margin="1.5rem 0">
-              <CommonInput
-                id="tel"
-                title="등록하신 연락처"
-                type="tel"
-                value={telInput}
-                onChange={inputUserTelNumber}
-                margin="0.25rem 0"
-              />
-              <CommonErrorMsg
-                type="email"
-                value1={telInput}
-                inputCheck={{ tel: inputCheck }}
-              />
-            </Flex>
-            <Button
-              type="submit"
-              background="subBlue"
-              fontWeight="semibold"
-              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-              color="#FFFFFF"
-              padding="0.5rem auto"
-              margin="1rem 0"
-              borderRadius="0.25rem"
-              height="3rem"
-              width="100%"
+        {storeOption.data?.waitingState ? (
+          storeOption.data.maximumWaitingTeamCount <=
+          waitingList.data.length ? (
+            <>
+              <Flex
+                direction="row"
+                justify="space-between"
+                align="center"
+                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                fontWeight="semibold"
+                letterSpacing="-0.1rem"
+                margin="0.5rem 0 1rem 0"
+              >
+                <Text>현재 대기팀</Text>
+                <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
+                  {waitingList.data === undefined
+                    ? "확인 중"
+                    : waitingList.data.length === 0
+                    ? "없음"
+                    : `${waitingList.data.length} 팀`}
+                </Text>
+              </Flex>
+              <Heading
+                as="h2"
+                fontSize="1.25rem"
+                letterSpacing="-0.05rem"
+                padding="2rem 0"
+                textAlign="center"
+              >
+                대기 접수 불가 안내
+              </Heading>
+              <Text
+                as="p"
+                fontSize="1rem"
+                textAlign="center"
+                lineHeight="1.5rem"
+                wordBreak="break-word"
+                whiteSpace="pre-wrap"
+              >
+                현재 매장 내 대기팀이 최대치에 도달해 대기 접수가 불가능한
+                상황입니다.
+                <br />
+                <br />
+                <br />
+                관련 사항은 매장 내 직원에게 문의해주시기 바랍니다.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Flex
+                direction="row"
+                justify="space-between"
+                align="center"
+                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                fontWeight="semibold"
+                letterSpacing="-0.1rem"
+                margin="0.5rem 0 1rem 0"
+              >
+                <Text>현재 대기팀</Text>
+                <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
+                  {waitingList.data === undefined
+                    ? "확인 중"
+                    : waitingList.data.length === 0
+                    ? "없음"
+                    : `${waitingList.data.length} 팀`}
+                </Text>
+              </Flex>
+              <Flex direction="column" fontSize="1rem" margin="1rem 0">
+                <Text>대기 등록을 원하시면</Text>
+                <Link
+                  as={ReactRouterLink}
+                  to={`${location.pathname}/waitingform`}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  background="mainBlue"
+                  fontWeight="semibold"
+                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                  color="#FFFFFF"
+                  padding="0.5rem auto"
+                  margin="1rem 0"
+                  borderRadius="0.25rem"
+                  height="3rem"
+                  width="100%"
+                  _hover={{ textDecoration: "none", background: "#E2E8F0" }}
+                >
+                  대기 등록
+                </Link>
+              </Flex>
+              <Flex direction="column" fontSize="1rem" margin="1rem 0">
+                <Text>이미 대기 등록을 하셨다면</Text>
+                <form onSubmit={moveToWaitingStatePage}>
+                  <Flex direction="column" margin="0.5rem 0 0.5rem 0">
+                    <CommonInput
+                      id="tel"
+                      title="등록하신 연락처"
+                      type="tel"
+                      value={telInput}
+                      onChange={inputUserTelNumber}
+                      margin="0.25rem 0"
+                    />
+                    <CommonErrorMsg
+                      type="tel"
+                      value1={telInput}
+                      inputCheck={{ tel: inputCheck }}
+                    />
+                  </Flex>
+                  <Button
+                    type="submit"
+                    background="mainBlue"
+                    fontWeight="semibold"
+                    fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    padding="0.5rem auto"
+                    margin="0.5rem 0"
+                    borderRadius="0.25rem"
+                    height="3rem"
+                    width="100%"
+                  >
+                    대기 상태 확인
+                  </Button>
+                </form>
+              </Flex>
+            </>
+          )
+        ) : (
+          <>
+            <Heading
+              as="h2"
+              fontSize="1.25rem"
+              letterSpacing="-0.05rem"
+              padding="2rem 0"
+              textAlign="center"
             >
-              대기 상태 확인
-            </Button>
-          </form>
-        </Flex>
+              대기 접수 마감 안내
+            </Heading>
+            <Text as="p" fontSize="1rem" textAlign="center" lineHeight="1.5rem">
+              현재 매장 내 대기 접수 마감된 상태입니다. <br />
+              다음에 다시 이용해주십시오.
+              <br />
+              <br />
+              감사합니다.
+            </Text>
+          </>
+        )}
       </Flex>
     </section>
   );
