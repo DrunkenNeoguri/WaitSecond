@@ -31,11 +31,17 @@ import {
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { useMutation } from "@tanstack/react-query";
+import { CommonInput } from "../../common/commoninput";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const AdminWithdrawalContainer: React.FC = () => {
   const initialState = new AdminData("", "");
   const [userData, setUserData] = useState(initialState);
   const [withdrawalState, setWithdrawalState] = useState(false);
+  const [inputCheck, setInputCheck] = useState({
+    email: false,
+    password: false,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -68,6 +74,14 @@ const AdminWithdrawalContainer: React.FC = () => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setUserData({ ...userData, [id]: value });
+
+    if (e.target.id === "email" && inputCheck.email === false) {
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
+
+    if (e.target.id === "password" && inputCheck.password === false) {
+      setInputCheck({ ...inputCheck, [id]: true });
+    }
   };
 
   const toastMsg = useToast();
@@ -123,7 +137,7 @@ const AdminWithdrawalContainer: React.FC = () => {
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent padding="2rem 0" wordBreak="keep-all">
+        <ModalContent margin="auto" padding="2rem 0" wordBreak="keep-all">
           {withdrawalState ? (
             <>
               <ModalHeader>이용해주셔서 감사합니다.</ModalHeader>
@@ -142,46 +156,40 @@ const AdminWithdrawalContainer: React.FC = () => {
                     회원 탈퇴를 위해 이용 중이신 이메일 아이디와 비밀번호를
                     입력해주십시오.
                   </Text>
-                  <Flex direction="column" padding="1.5rem 0">
-                    <Flex direction="column" padding="0.25rem 0">
-                      <FormLabel
-                        htmlFor="email"
-                        fontSize="1rem"
-                        fontWeight="semibold"
-                      >
-                        이메일 아이디
-                      </FormLabel>
-                      <Input
-                        id="email"
-                        onChange={inputUserData}
-                        value={userData.email}
-                      />
-                      <Text fontSize="0.625rem" padding="0.25rem 0">
-                        잘못된 이메일 양식입니다.
-                      </Text>
-                    </Flex>
-                    <Flex direction="column" padding="0.25rem 0">
-                      <FormLabel
-                        htmlFor="password"
-                        fontSize="1rem"
-                        fontWeight="semibold"
-                      >
-                        비밀번호
-                      </FormLabel>
-                      <Input
-                        id="password"
-                        onChange={inputUserData}
-                        value={userData.password}
-                      />
-                      <Text fontSize="0.625rem" padding="0.25rem 0">
-                        잘못된 비밀번호 양식입니다.
-                      </Text>
-                    </Flex>
+                  <Flex direction="column" padding="1.5rem 0 0.5rem 0">
+                    <CommonInput
+                      id="email"
+                      title="이메일"
+                      type="email"
+                      value={userData.email!}
+                      onChange={inputUserData}
+                      margin="0.25rem 0"
+                      fontSize="1rem"
+                    />
+                    <CommonErrorMsg
+                      type="password"
+                      value1={userData.email!}
+                      inputCheck={inputCheck}
+                    />
+                    <CommonInput
+                      id="password"
+                      title="비밀번호"
+                      type="password"
+                      value={userData.password!}
+                      onChange={inputUserData}
+                      margin="0.25rem 0"
+                      fontSize="1rem"
+                    />
+                    <CommonErrorMsg
+                      type="password"
+                      value1={userData.email!}
+                      inputCheck={inputCheck}
+                    />
                   </Flex>
                   <Flex direction="column">
                     <Button
                       type="submit"
-                      background="#5ABFB7"
+                      background="subBlue"
                       fontSize="1.25rem"
                       borderRadius="0.25rem"
                       color="#ffffff"
@@ -272,7 +280,7 @@ const AdminWithdrawalContainer: React.FC = () => {
         <Button
           type="button"
           display="block"
-          background="#5ABFB7"
+          background="subBlue"
           fontSize="1.25rem"
           borderRadius="0.25rem"
           color="#ffffff"

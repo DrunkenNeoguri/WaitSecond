@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   ListItem,
-  ListIcon,
   UnorderedList,
   Modal,
   ModalOverlay,
@@ -15,7 +14,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
@@ -26,7 +24,8 @@ const CheckDataModal: React.FC<{
   userInfo: UserData;
   isOpen: boolean;
   onClose: () => void;
-}> = ({ userInfo, isOpen, onClose }) => {
+  custom: string[];
+}> = ({ userInfo, isOpen, onClose, custom }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
 
@@ -41,6 +40,7 @@ const CheckDataModal: React.FC<{
       ...userInfo,
       createdAt: new Date().getTime(),
     };
+
     const addWaitingData = await addDoc(
       collection(db, `storeList/${storeuid}/waitingList`),
       sendUserData
@@ -69,24 +69,33 @@ const CheckDataModal: React.FC<{
       <ModalOverlay />
 
       {registerState === true ? (
-        <ModalContent wordBreak="keep-all" padding="2rem 0">
-          <ModalHeader as="h1" textAlign="center" fontSize="1.5rem">
+        <ModalContent wordBreak="keep-all" padding="2rem 0" margin="auto 1rem">
+          <ModalHeader
+            as="h2"
+            textAlign="center"
+            fontSize="1rem"
+            letterSpacing="-0.05rem"
+            color="subBlue"
+          >
             등록이 완료되었습니다!
           </ModalHeader>
           <ModalBody
             textAlign="center"
             fontSize={visionState === false ? "1rem" : "1.625rem"}
+            letterSpacing="-0.05rem"
           >
             <Text margin="1rem 0">
-              5초 뒤에 자동으로 대기 상황 페이지로 이동합니다.
+              아래 버튼을 누르시면 등록하신 대기 정보를 확인하실 수 있습니다.
             </Text>
-            <ModalFooter justifyContent="center">
+            <ModalFooter justifyContent="center" padding="0 1rem">
               <Button
                 type="button"
-                background="#5a5a5a"
+                background="accentGray"
                 color="#ffffff"
                 padding="1.5rem"
+                margin="0.5rem 0"
                 borderRadius="0.25rem"
+                width="100%"
                 onClick={() => {
                   onClose();
                   setRegisterState(false);
@@ -100,14 +109,15 @@ const CheckDataModal: React.FC<{
           </ModalBody>
         </ModalContent>
       ) : (
-        <ModalContent padding="2rem 0">
+        <ModalContent padding="2rem 0 1rem 0" margin="auto 1rem">
           <ModalHeader
             as="h2"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+            fontSize={visionState === false ? "1rem" : "1.625rem"}
             textAlign="center"
-            marginBottom="1.5rem"
+            fontWeight="bold"
+            letterSpacing="-0.05rem"
           >
-            작성 내용을{visionState === false ? " " : <br />}확인해주세요.
+            작성 내용을 확인해주세요.
           </ModalHeader>
           <ModalBody>
             <Flex
@@ -117,16 +127,16 @@ const CheckDataModal: React.FC<{
               margin="0.5rem 0"
             >
               <FormLabel
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
                 fontWeight="500"
                 width="30%"
                 margin="0"
               >
-                성함
+                예약자명
               </FormLabel>
               <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
                 fontWeight="600"
               >
                 {userInfo.name}
@@ -139,7 +149,7 @@ const CheckDataModal: React.FC<{
               margin="0.5rem 0"
             >
               <FormLabel
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
                 fontWeight="500"
                 width="30%"
                 margin="0"
@@ -147,8 +157,8 @@ const CheckDataModal: React.FC<{
                 연락처
               </FormLabel>
               <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
                 fontWeight="600"
               >
                 {" "}
@@ -162,67 +172,126 @@ const CheckDataModal: React.FC<{
               margin="0.5rem 0"
             >
               <FormLabel
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
                 fontWeight="500"
                 width="30%"
                 margin="0"
               >
-                인원
+                성인
               </FormLabel>
               <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
                 fontWeight="600"
               >
-                {userInfo.member}명
+                {userInfo.adult}명
               </Text>
             </Flex>
-            {userInfo.pet === true || userInfo.child === true ? (
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              margin="0.5rem 0"
+            >
+              <FormLabel
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="500"
+                width="30%"
+                margin="0"
+              >
+                유아
+              </FormLabel>
+              <Text
+                fontSize={visionState === false ? "1rem" : "1.625rem"}
+                color="mainBlue"
+                fontWeight="600"
+              >
+                {userInfo.child}명
+              </Text>
+            </Flex>
+            {userInfo.pet === true ? (
               <Flex direction="column" margin="0.5rem 0">
                 <FormLabel
-                  fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
                   fontWeight="500"
                   width="30%"
                   margin="0"
                 >
-                  옵션
+                  추가 옵션
                 </FormLabel>
-                <Flex direction="column">
+                <Flex
+                  direction="column"
+                  background="#F9F9F9"
+                  margin="0.5rem 0"
+                  padding="0.5rem"
+                >
                   <UnorderedList>
-                    {userInfo.child === true ? (
+                    {userInfo.pet ? (
                       <ListItem
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
+                        display="block"
                         fontSize={
-                          visionState === false ? "1.25rem" : "1.625rem"
+                          visionState === false ? "0.75rem" : "1.625rem"
                         }
-                        margin="1rem 0"
+                        margin="0.5rem 0"
+                        color="subBlue"
                       >
-                        <ListIcon as={CheckCircleIcon} />
-                        <Text color="#58a6dc" fontWeight="600">
-                          아이
-                        </Text>
-                        가 있어요.
+                        반려 동물이 있어요.
                       </ListItem>
                     ) : (
                       <></>
                     )}
-                    {userInfo.pet === true ? (
+                    {userInfo.separate ? (
                       <ListItem
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
+                        display="block"
                         fontSize={
-                          visionState === false ? "1.25rem" : "1.625rem"
+                          visionState === false ? "0.75rem" : "1.625rem"
                         }
-                        margin="1rem 0"
+                        margin="0.5rem 0"
+                        color="subBlue"
                       >
-                        <ListIcon as={CheckCircleIcon} />
-                        <Text color="#58a6dc" fontWeight="600">
-                          반려 동물
-                        </Text>
-                        이 있어요.
+                        자리가 나면 따로 앉아도 괜찮아요.
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom1 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[0]}
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom2 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[1]}
+                      </ListItem>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom3 ? (
+                      <ListItem
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        margin="0.5rem 0"
+                        color="subBlue"
+                      >
+                        {custom[2]}
                       </ListItem>
                     ) : (
                       <></>
@@ -236,8 +305,8 @@ const CheckDataModal: React.FC<{
             <Flex
               direction="row"
               gap="1rem"
-              margin="2rem 0 0 0"
-              justify="center"
+              margin="0.5rem 0"
+              justify="space-between"
             >
               <Button
                 type="button"
@@ -245,6 +314,7 @@ const CheckDataModal: React.FC<{
                 color="#ffffff"
                 padding="1.5rem"
                 borderRadius="0.25rem"
+                width="100%"
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
                 onClick={(e) => submitUserWaitingData(e, userInfo)}
               >
@@ -256,6 +326,7 @@ const CheckDataModal: React.FC<{
                 color="#ffffff"
                 padding="1.5rem"
                 borderRadius="0.25rem"
+                width="100%"
                 onClick={onClose}
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               >

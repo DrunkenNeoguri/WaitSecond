@@ -6,7 +6,6 @@ import {
   FormLabel,
   Heading,
   Link,
-  Text,
   useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
@@ -17,6 +16,7 @@ import { emailRegex, passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
 import { Link as ReactRouterLink } from "react-router-dom";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const AdminLoginContainer = () => {
   const initialState = new AdminData("", "");
@@ -52,7 +52,7 @@ const AdminLoginContainer = () => {
       if (data === "login-success") {
         return navigate("/adminwaitinglist");
       } else {
-        if (data.indexOf("user-not-found") === -1) {
+        if (data.indexOf("user-not-found") !== -1) {
           return !toastMsg.isActive("error-userNotFound")
             ? toastMsg({
                 title: "존재하지 않는 계정",
@@ -66,7 +66,7 @@ const AdminLoginContainer = () => {
             : null;
         }
 
-        if (data.indexOf("wrong-password") === -1) {
+        if (data.indexOf("wrong-password") !== -1) {
           return !toastMsg.isActive("error-wrongPassword")
             ? toastMsg({
                 title: "잘못된 비밀번호",
@@ -94,7 +94,7 @@ const AdminLoginContainer = () => {
             : null;
         }
 
-        if (data.indexOf("too-many-requests") === -1) {
+        if (data.indexOf("too-many-requests") !== -1) {
           return !toastMsg.isActive("error-tooManyRequest")
             ? toastMsg({
                 title: "로그인 시도 횟수 초과",
@@ -179,50 +179,42 @@ const AdminLoginContainer = () => {
       top="5.5rem"
       boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
     >
-      <Heading as="h1" textAlign="center" marginBottom="2rem">
+      <Heading as="h1" textAlign="center">
         웨잇세컨드
       </Heading>
-      <Heading as="h2" fontSize="1.25rem">
+      <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
         관리자 로그인
       </Heading>
       <form onSubmit={submitLoginData}>
         <FormControl>
           <CommonInput
-            direction="column"
             id="email"
             title="이메일 아이디"
             type="email"
-            value={loginData.email}
+            value={loginData.email!}
             onChange={inputLoginData}
-            margin="1.25rem 0 0 0"
+            margin="0.25rem 0"
+            fontSize="1rem"
           />
-          <Text color="red" marginBottom="1rem">
-            {inputCheck.email === true
-              ? loginData.email.trim() === ""
-                ? "입력란을 빈칸으로 둘 수 없습니다."
-                : emailRegex.test(loginData.email) === false
-                ? "정확한 이메일을 입력해주십시오."
-                : "　"
-              : "　"}
-          </Text>
+          <CommonErrorMsg
+            type="email"
+            value1={loginData.email!}
+            inputCheck={inputCheck}
+          />
           <CommonInput
-            direction="column"
             id="password"
             title="비밀번호"
             type="password"
             value={loginData.password!}
             onChange={inputLoginData}
-            margin="1.25rem 0 0 0"
+            margin="0.25rem 0"
+            fontSize="1rem"
           />
-          <Text color="red" marginBottom="1.25rem">
-            {inputCheck.password === true
-              ? loginData.password!.trim() === ""
-                ? "입력란을 빈칸으로 둘 수 없습니다."
-                : passwordRegex.test(loginData.password!) === false
-                ? "비밀번호는 소문자, 숫자, 특수문자를 1글자씩 포함해야 합니다."
-                : "　"
-              : "　"}
-          </Text>
+          <CommonErrorMsg
+            type="password"
+            value1={loginData.password!}
+            inputCheck={inputCheck}
+          />
           <Flex direction="row" justify="space-between" margin="0.75rem 0">
             <Flex direction="row">
               <Checkbox
@@ -243,7 +235,7 @@ const AdminLoginContainer = () => {
           <Button
             type="submit"
             variant="solid"
-            background="#5ABFB7"
+            background="subBlue"
             padding="0.5rem auto"
             fontSize="1.25rem"
             borderRadius="0.25rem"

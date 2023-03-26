@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventObject, StoreOption, UserData } from "../../../utils/typealies";
 import { CommonInput } from "../../common/commoninput";
-import {
-  faMinus,
-  faPlus,
-  faTriangleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBell, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { telRegex } from "../../../utils/reqlist";
 import CheckDataModal from "./checkdatamodal";
 import {
@@ -26,11 +22,28 @@ import { useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
 import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const WaitingFormContainer: React.FC = () => {
-  const initialState = new UserData("", "", 1, false, false);
+  const initialState = new UserData(
+    "",
+    "",
+    0,
+    0,
+    false,
+    false,
+    false,
+    false,
+    false,
+    0,
+    ""
+  );
 
   const [userData, setUserData] = useState<UserData>(initialState);
+  const [inputCheck, setInputCheck] = useState({
+    customername: false,
+    tel: false,
+  });
   const [agreeState, setAgreeState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const visionState = useRecoilValue<boolean>(lowVisionState);
@@ -39,6 +52,7 @@ const WaitingFormContainer: React.FC = () => {
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
+  // 현재 대기열 가져오기
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
@@ -58,7 +72,8 @@ const WaitingFormContainer: React.FC = () => {
     queryFn: getWaitingData,
   });
 
-  const getStoreSettingData = async () => {
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
     const storeDataState: StoreOption | undefined = await getDocs(
       collection(db, "adminList")
     ).then((data) => {
@@ -73,9 +88,9 @@ const WaitingFormContainer: React.FC = () => {
     return storeDataState;
   };
 
-  const storeData = useQuery({
+  const storeOption = useQuery({
     queryKey: ["storeData"],
-    queryFn: getStoreSettingData,
+    queryFn: getStoreOption,
   });
 
   // Func - Input User Data
@@ -83,6 +98,13 @@ const WaitingFormContainer: React.FC = () => {
     e.preventDefault();
     const { id, value }: EventObject = e.target;
     setUserData({ ...userData, [id]: value });
+
+    if (e.target.id === "name" && inputCheck.customername === false) {
+      setInputCheck({ ...inputCheck, customername: true });
+    }
+    if (e.target.id === "tel" && inputCheck.tel === false) {
+      setInputCheck({ ...inputCheck, tel: true });
+    }
   };
 
   // Func - change state when user clicked checkbox
@@ -94,11 +116,37 @@ const WaitingFormContainer: React.FC = () => {
   // Func - change state when user clicked member count button
   const changeMemberCount = (e: React.MouseEvent) => {
     e.preventDefault();
+    const { id, value }: EventObject = e.currentTarget;
 
-    if (e.currentTarget.id === "countMinus" && userData.member > 1) {
-      setUserData({ ...userData, member: userData.member - 1 });
-    } else if (e.currentTarget.id === "countPlus") {
-      setUserData({ ...userData, member: userData.member + 1 });
+    switch (id) {
+      case "adult": {
+        if (Number(value)! === -1 && userData.adult > 0) {
+          setUserData({
+            ...userData,
+            adult: userData.adult - 1,
+          });
+        } else if (Number(value)! === 1) {
+          setUserData({
+            ...userData,
+            adult: userData.adult + 1,
+          });
+        }
+        break;
+      }
+      case "child": {
+        if (Number(value)! === -1 && userData.child > 0) {
+          setUserData({
+            ...userData,
+            child: userData.child - 1,
+          });
+        } else if (Number(value)! === 1) {
+          setUserData({
+            ...userData,
+            child: userData.child + 1,
+          });
+        }
+        break;
+      }
     }
   };
 
@@ -151,6 +199,19 @@ const WaitingFormContainer: React.FC = () => {
           })
         : null;
     }
+
+    if (userData.child === 0 && userData.adult === 0) {
+      return !toastMsg.isActive("error-memberCheck")
+        ? toastMsg({
+            title: "인원 수 확인",
+            id: "error-memberCheck",
+            description: "인원 수를 정확하게 입력하셨는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    }
     return onOpen();
   };
 
@@ -162,33 +223,45 @@ const WaitingFormContainer: React.FC = () => {
         height="13rem"
         marginTop="3.5rem"
       />
-      <CheckDataModal isOpen={isOpen} onClose={onClose} userInfo={userData} />
+      <CheckDataModal
+        isOpen={isOpen}
+        onClose={onClose}
+        userInfo={userData}
+        custom={[
+          storeOption.data?.customOption1Name!,
+          storeOption.data?.customOption2Name!,
+          storeOption.data?.customOption3Name!,
+        ]}
+      />
       <Flex
         as="article"
         direction="column"
-        position="relative"
         background="#ffffff"
-        padding="2rem 1rem"
-        margin="0 1rem"
+        padding="1rem"
         border="none"
-        borderRadius="1rem 1rem 0 0"
         top="-4rem"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
       >
-        <Heading as="h1" textAlign="center">
-          {storeData.data === undefined
+        <Heading
+          as="h1"
+          textAlign="center"
+          letterSpacing="-0.05rem"
+          padding="1rem 0"
+        >
+          {storeOption.data === undefined
             ? "불러오는중불러오는중불러오는중불러오는중"
-            : storeData.data.storeName}
+            : storeOption.data.storeName}
         </Heading>
         <Flex
           direction="row"
           justify="space-between"
           align="center"
-          fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          margin="1.5rem 0"
+          fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+          fontWeight="semibold"
+          letterSpacing="-0.1rem"
+          margin="0.5rem 0 1rem 0"
         >
-          <Text>현재 대기 팀</Text>
-          <Text fontSize="1.75rem" fontWeight="700" color="#58a6dc">
+          <Text>현재 대기팀</Text>
+          <Text fontSize="1.75rem" fontWeight="700" color="subBlue">
             {waitingList.data === undefined
               ? "확인 중"
               : waitingList.data.length === 0
@@ -197,51 +270,59 @@ const WaitingFormContainer: React.FC = () => {
           </Text>
         </Flex>
         <form onSubmit={submitUserData}>
-          <FormControl textAlign="center">
+          <FormControl>
             <Flex direction="column">
-              <Flex direction="row" align="center">
+              <Flex direction="column" align="center" margin="1rem 0">
                 <FontAwesomeIcon
-                  icon={faTriangleExclamation}
+                  icon={faBell}
                   style={{
-                    color: "red",
+                    color: "orange",
                     fontSize: visionState === false ? "1.5rem" : "1.625rem",
                   }}
                 />
                 <Text
-                  margin="0 0.5rem"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#58a6dc"
-                  fontWeight="600"
+                  margin="0.5rem"
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  textAlign="center"
+                  color="subBlue"
+                  fontWeight="bold"
                 >
                   참고해주세요!
                 </Text>
               </Flex>
               <Text
-                border="2px solid #4E95FF"
+                background="#F9F9F9"
                 borderRadius="0.25rem"
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                letterSpacing="-2%"
+                fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                letterSpacing="-0.05rem"
                 lineHeight={visionState === false ? "1.5rem" : "2.25rem"}
-                margin="1.5rem 0"
-                padding="0.25rem"
+                padding="0.5rem"
                 whiteSpace="pre-wrap"
                 textAlign="left"
               >
                 대기 등록을 위해 성함과 연락처를 수집하고 있습니다.
                 <br />
-                수집한 정보는 가게에 입장하거나, 대기 취소 시 자동으로
-                삭제됩니다.
+                수집한 정보는 대기 취소 버튼을 누르시거나, 입장 후 관리자가 입장
+                완료 버튼을 누르면 삭제됩니다.
+                <br />
+                잘못된 정보를 입력하셨을 시, 매장 입장에 제한이 생길 수
+                있습니다.
               </Text>
-              <Flex direction="row" align="center">
+              <Flex
+                direction="row"
+                align="center"
+                justifyContent="flex-end"
+                margin="0.5rem 0"
+              >
                 <Checkbox
-                  size="lg"
+                  size="md"
                   id="agree"
                   onChange={changeAgreeState}
                   isChecked={agreeState === false ? false : true}
                 />
                 <FormLabel
                   htmlFor="agree"
-                  fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
                   margin="0 0.5rem"
                   cursor="pointer"
                 >
@@ -255,151 +336,309 @@ const WaitingFormContainer: React.FC = () => {
               height="0.125rem"
               borderRadius="1rem"
               boxSizing="border-box"
-              margin="2rem 1rem"
+              margin="2rem 1rem 2.5rem 1rem"
             />
             <CommonInput
               id="name"
+              title="예약자명"
               type="text"
-              title="성함"
               value={userData.name}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-              labelWidth="30%"
-              inputWidth="70%"
-              margin="2rem 0"
+              margin="0.25rem 0"
+            />
+            <CommonErrorMsg
+              type="customername"
+              value1={userData.name!}
+              inputCheck={inputCheck}
             />
             <CommonInput
               id="tel"
-              type="tel"
               title="연락처"
+              type="tel"
               value={userData.tel}
               onChange={inputUserText}
-              fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-              labelWidth="30%"
-              inputWidth="70%"
-              margin="2rem 0"
+              margin="0.25rem 0"
             />
-            <Flex
-              direction="row"
-              align="center"
-              justify="space-between"
-              margin="2rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
+            <CommonErrorMsg
+              type="tel"
+              value1={userData.tel}
+              inputCheck={inputCheck}
+            />
+            <Flex direction="column" margin="1.5rem 0 0.5rem 0">
+              <Text
+                fontWeight="bold"
+                color="subBlue"
+                textAlign="left"
+                margin="0.5rem 0"
               >
-                인원
-              </FormLabel>
-              <Flex
-                width="70%"
-                justifyContent="space-between"
-                flex="1 0 2.5rem"
-              >
-                <Button
-                  id="countMinus"
-                  onClick={changeMemberCount}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="2.5rem"
-                  flex="1 0 2.5rem"
-                  margin="0 1rem 0 0"
-                  background="#5ABFB7"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#FFFFFF"
-                  padding={0}
-                  borderRadius="4px"
-                  border="1px solid gray"
+                인원을 선택하세요.
+              </Text>
+              <Flex justify="space-between" align="center" margin="0.5rem 0">
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="semibold"
+                  margin="0"
                 >
-                  <FontAwesomeIcon icon={faMinus} />
-                </Button>
-                <Flex
-                  justify="center"
-                  align="center"
-                  height="2.5rem"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#000000"
-                  padding="0.5rem 0"
-                  borderRadius="4px"
-                  border="1px solid gray"
-                  width="100%"
-                >
-                  {userData.member}명
+                  성　인
+                </FormLabel>
+                <Flex justify="space-between" align="cneter">
+                  <Button
+                    size="sm"
+                    id="adult"
+                    value={-1}
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "0.875rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </Button>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    height="auto"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#000000"
+                    padding="0 1rem"
+                    width="5rem"
+                  >
+                    {userData.adult}명
+                  </Flex>
+
+                  <Button
+                    size="sm"
+                    id="adult"
+                    value={1}
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
                 </Flex>
-                <Button
-                  id="countPlus"
-                  onClick={changeMemberCount}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="2.5rem"
-                  flex="1 0 2.5rem"
-                  margin="0 0 0 1rem"
-                  background="#5ABFB7"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#FFFFFF"
-                  padding={0}
-                  borderRadius="4px"
-                  border="1px solid gray"
+              </Flex>
+              <Flex justify="space-between" align="center" margin="0.5rem 0">
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="semibold"
+                  margin="0"
                 >
-                  <FontAwesomeIcon icon={faPlus} />
-                </Button>
+                  유　아
+                </FormLabel>
+                <Flex justify="space-between" align="cneter">
+                  <Button
+                    size="sm"
+                    id="child"
+                    value={-1}
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "0.875rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </Button>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    height="auto"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#000000"
+                    padding="0 1rem"
+                    width="5rem"
+                  >
+                    {userData.child}명
+                  </Flex>
+
+                  <Button
+                    size="sm"
+                    id="child"
+                    value={1}
+                    onClick={changeMemberCount}
+                    background="mainBlue"
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    color="#FFFFFF"
+                    borderRadius="0.25rem"
+                    padding="0"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
+                </Flex>
               </Flex>
             </Flex>
-            <Box>
-              <Flex align="center" margin="1rem 0">
-                <Checkbox
-                  size="lg"
-                  id="child"
-                  onChange={(e: React.ChangeEvent) =>
-                    changeCheckState(e, userData.child!)
-                  }
-                  isChecked={userData.child === false ? false : true}
-                />
-                <FormLabel
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  fontWeight="500"
-                  width="auto"
-                  margin="0 0.5rem"
-                  htmlFor="child"
-                  cursor="pointer"
+            <Flex direction="column" background="#F9F9F9" padding="0.75rem">
+              {storeOption.data?.petAllow ? (
+                <Flex
+                  align="center"
+                  margin="0.25rem 0"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  letterSpacing="-0.05rem"
                 >
-                  아이가 있어요.
-                </FormLabel>
-              </Flex>
-              <Flex align="center" margin="1rem 0">
-                <Checkbox
-                  size="lg"
-                  id="pet"
-                  onChange={(e: React.ChangeEvent) =>
-                    changeCheckState(e, userData.pet!)
-                  }
-                  isChecked={userData.pet === false ? false : true}
-                />
-                <FormLabel
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  fontWeight="500"
-                  width="auto"
-                  margin="0 0.5rem"
-                  htmlFor="pet"
-                  cursor="pointer"
+                  <Checkbox
+                    size="md"
+                    id="pet"
+                    onChange={(e: React.ChangeEvent) =>
+                      changeCheckState(e, userData.pet!)
+                    }
+                    borderRadius="0.5rem"
+                    isChecked={userData.pet === false ? false : true}
+                    variant="customBlue"
+                  />
+                  <FormLabel
+                    fontWeight="500"
+                    width="auto"
+                    margin="0 0.5rem"
+                    htmlFor="pet"
+                    cursor="pointer"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  >
+                    반려 동물이 있어요.
+                  </FormLabel>
+                </Flex>
+              ) : (
+                <></>
+              )}
+              {storeOption.data?.teamSeparate ? (
+                <Flex
+                  align="center"
+                  margin="0.25rem 0"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  letterSpacing="-0.05rem"
                 >
-                  반려 동물이 있어요.
-                </FormLabel>
-              </Flex>
-            </Box>
+                  <Checkbox
+                    size="md"
+                    id="separate"
+                    onChange={(e: React.ChangeEvent) =>
+                      changeCheckState(e, userData.separate!)
+                    }
+                    borderRadius="0.5rem"
+                    isChecked={userData.separate === false ? false : true}
+                    variant="customBlue"
+                  />
+                  <FormLabel
+                    fontWeight="500"
+                    width="auto"
+                    margin="0 0.5rem"
+                    htmlFor="separate"
+                    cursor="pointer"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  >
+                    자리가 나면 따로 앉아도 괜찮아요.
+                  </FormLabel>
+                </Flex>
+              ) : (
+                <></>
+              )}
+              {storeOption.data?.customOption1State ? (
+                <Flex
+                  align="center"
+                  margin="0.25rem 0"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  letterSpacing="-0.05rem"
+                >
+                  <Checkbox
+                    size="md"
+                    id="custom1"
+                    onChange={(e: React.ChangeEvent) =>
+                      changeCheckState(e, userData.custom1!)
+                    }
+                    borderRadius="0.5rem"
+                    isChecked={userData.custom1 === false ? false : true}
+                    variant="customBlue"
+                  />
+                  <FormLabel
+                    fontWeight="500"
+                    width="auto"
+                    margin="0 0.5rem"
+                    htmlFor="custom1"
+                    cursor="pointer"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  >
+                    {storeOption.data.customOption1Name}
+                  </FormLabel>
+                </Flex>
+              ) : (
+                <></>
+              )}
+              {storeOption.data?.customOption2State ? (
+                <Flex
+                  align="center"
+                  margin="0.25rem 0"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  letterSpacing="-0.05rem"
+                >
+                  <Checkbox
+                    size="md"
+                    id="custom2"
+                    onChange={(e: React.ChangeEvent) =>
+                      changeCheckState(e, userData.custom2!)
+                    }
+                    borderRadius="0.5rem"
+                    isChecked={userData.custom2 === false ? false : true}
+                    variant="customBlue"
+                  />
+                  <FormLabel
+                    fontWeight="500"
+                    width="auto"
+                    margin="0 0.5rem"
+                    htmlFor="custom2"
+                    cursor="pointer"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  >
+                    {storeOption.data.customOption2Name}
+                  </FormLabel>
+                </Flex>
+              ) : (
+                <></>
+              )}
+              {storeOption.data?.customOption3State ? (
+                <Flex
+                  align="center"
+                  margin="0.25rem 0"
+                  fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  letterSpacing="-0.05rem"
+                >
+                  <Checkbox
+                    size="md"
+                    id="custom3"
+                    onChange={(e: React.ChangeEvent) =>
+                      changeCheckState(e, userData.custom3!)
+                    }
+                    borderRadius="0.5rem"
+                    isChecked={userData.custom3 === false ? false : true}
+                    variant="customBlue"
+                  />
+                  <FormLabel
+                    fontWeight="500"
+                    width="auto"
+                    margin="0 0.5rem"
+                    htmlFor="custom3"
+                    cursor="pointer"
+                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                  >
+                    {storeOption.data.customOption3Name}
+                  </FormLabel>
+                </Flex>
+              ) : (
+                <></>
+              )}
+            </Flex>
             <Button
               type="submit"
-              variant="solid"
-              background="#5ABFB7"
-              padding="0.5rem auto"
+              background="subBlue"
               fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+              color="#FFFFFF"
+              padding="0.5rem auto"
+              margin="1rem 0"
               borderRadius="0.25rem"
-              color="#ffffff"
-              width="90%"
+              height="3rem"
+              width="100%"
             >
               대기 등록
             </Button>
