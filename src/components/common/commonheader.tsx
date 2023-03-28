@@ -1,9 +1,9 @@
-import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import { AddIcon, ArrowBackIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { Box, Button, Flex, useDisclosure } from "@chakra-ui/react";
 import { faLanguage, faLowVision } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { lowVisionState } from "../../modules/atoms/atoms";
 import AdminRegisterModal from "../features/adminwaitinglist/adminregistermodal";
@@ -16,7 +16,10 @@ const CommonHeader: React.FC<{
   const [visionState, setVisionState] = useRecoilState<boolean>(lowVisionState);
   const [menuState, setMenuState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const day = ["일", "월", "화", "수", "목", "금", "토"];
   const location = useLocation();
+  const navigate = useNavigate();
+  const nowDate = new Date();
 
   //Func - change font size when user clicked low vision button
   const changeLowVisionState = (e: React.MouseEvent) => {
@@ -44,7 +47,13 @@ const CommonHeader: React.FC<{
         {props.page === "admin" ? (
           <>
             <AdminRegisterModal isOpen={isOpen} onClose={onClose} />
-            <Flex gap="0.5rem" align="center">
+            <Flex
+              direction="row"
+              gap="0.5rem"
+              align="center"
+              width="100%"
+              justify="space-between"
+            >
               <Button
                 background="none"
                 padding="0"
@@ -52,15 +61,36 @@ const CommonHeader: React.FC<{
               >
                 <HamburgerIcon fontSize="2xl" pointerEvents="none" />
               </Button>
-              <Text fontSize="1rem">김천재의 육회바른연어</Text>
+              {location.pathname === "/adminwaitinglist" ? (
+                <>
+                  <Box
+                    background="#FFFFFF"
+                    color="#333333"
+                    padding="0.25rem 1rem"
+                    fontSize="1rem"
+                    fontWeight="semibold"
+                    borderRadius="0.25rem"
+                  >
+                    {`${nowDate.getFullYear()}.
+                    ${
+                      nowDate.getMonth() < 10
+                        ? `0${nowDate.getMonth() + 1}`
+                        : nowDate.getMonth() + 1
+                    }.
+                    ${
+                      nowDate.getDate() < 10
+                        ? `0${nowDate.getDate()}`
+                        : nowDate.getDate()
+                    }. (${day[nowDate.getDay()]})`}
+                  </Box>
+                  <Button background="none" padding="0" onClick={onOpen}>
+                    <AddIcon fontSize="xl" />
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
             </Flex>
-            {location.pathname === "/adminwaitinglist" ? (
-              <Button background="none" padding="0" onClick={onOpen}>
-                <AddIcon fontSize="xl" />
-              </Button>
-            ) : (
-              <></>
-            )}
           </>
         ) : props.page === "user" ? (
           <>
@@ -92,6 +122,15 @@ const CommonHeader: React.FC<{
               />
             </Button>
           </>
+        ) : location.pathname !== "/adminlogin" ? (
+          <Button
+            background="none"
+            color="#ffffff"
+            padding="0"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowBackIcon fontSize="2xl" />
+          </Button>
         ) : (
           <></>
         )}

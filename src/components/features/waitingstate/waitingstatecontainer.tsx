@@ -104,7 +104,7 @@ const WaitingStateContainer = () => {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
-      navigate(`/${storeuid}`);
+      navigate(`/store/${storeuid}`);
     },
   });
 
@@ -260,20 +260,23 @@ const WaitingStateContainer = () => {
               {currentUserIdx === 0 ? "없음" : `${currentUserIdx} 팀`}
             </Text>
           </Flex>
-
-          <Text
-            borderRadius="0.25rem"
-            fontSize={visionState === false ? "1rem" : "1.625rem"}
-            lineHeight={visionState === false ? "1.4rem" : "2.25rem"}
-            margin="0.25rem 0"
-            whiteSpace="pre-wrap"
-            textAlign="left"
-            color="mainBlue"
-          >
-            순서가 가까워졌어요.
-            <br />
-            가게 근처에서 기다려주세요.
-          </Text>
+          {currentUserIdx < 3 ? (
+            <Text
+              borderRadius="0.25rem"
+              fontSize={visionState === false ? "1rem" : "1.625rem"}
+              lineHeight={visionState === false ? "1.75rem" : "2.25rem"}
+              margin="0.25rem 0"
+              whiteSpace="pre-wrap"
+              textAlign="left"
+              color="mainBlue"
+            >
+              {currentUserIdx === 0
+                ? `입장하실 차례입니다.\n매장에 방문해 매장 직원에게 말씀해주세요.`
+                : `순서가 가까워졌어요.\n매장 근처에서 기다려주세요.`}
+            </Text>
+          ) : (
+            <></>
+          )}
           <Box
             display="block"
             background="#d4d4d4"

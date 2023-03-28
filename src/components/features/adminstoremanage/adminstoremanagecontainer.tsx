@@ -128,6 +128,7 @@ const AdminStoreManageContainer: React.FC = () => {
   const currentStoreOption = useQuery({
     queryKey: ["currentStoreOption"],
     queryFn: getStoreSettingData,
+    refetchOnWindowFocus: false,
     onSuccess(data) {
       if (data !== undefined) {
         setStoreData(data.data);

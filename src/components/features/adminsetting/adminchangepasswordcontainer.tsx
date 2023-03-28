@@ -3,9 +3,7 @@ import {
   Button,
   Flex,
   FormControl,
-  FormLabel,
   Heading,
-  Input,
   Text,
   Link,
   useToast,
@@ -90,6 +88,7 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordMutation = useMutation(changePasswordAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
+      console.log(data);
       setLoadingState(false);
       if (data === "change-success") {
         onOpen();
@@ -101,6 +100,20 @@ const AdminChangePasswordContainer: React.FC = () => {
                 id: "error-duplicate",
                 description:
                   "이미 해당 이메일로 가입하신 계정이 있습니다. 로그인 페이지로 돌아가 로그인을 다시 시도해보세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+
+        if (data.indexOf("wrong-password") !== -1) {
+          return !toastMsg.isActive("error-wrongPassword")
+            ? toastMsg({
+                title: "잘못된 비밀번호",
+                id: "error-wrongPassword",
+                description:
+                  "해당 계정의 비밀번호가 일치하지 않습니다. 다시 시도해주세요.",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
