@@ -205,6 +205,11 @@ const AdminRegisterModal: React.FC<{
     onError: (error, variable) => setLoadingState(false),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
+      setUserData(initialState);
+      setInputCheck({
+        customername: false,
+        tel: false,
+      });
       queryClient.invalidateQueries(["waitingList"]);
       queryClient.invalidateQueries(["storeOption"]);
       queryClient.invalidateQueries(["currentWaitingState"]);
@@ -212,8 +217,17 @@ const AdminRegisterModal: React.FC<{
     },
   });
 
+  const closeRegisterModal = () => {
+    setUserData(initialState);
+    setInputCheck({
+      customername: false,
+      tel: false,
+    });
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeRegisterModal}>
       <ModalOverlay />
       <ModalContent
         wordBreak="keep-all"
@@ -550,7 +564,7 @@ const AdminRegisterModal: React.FC<{
                   margin="0.5rem 0"
                   borderRadius="0.25rem"
                   width="100%"
-                  onClick={onClose}
+                  onClick={closeRegisterModal}
                   size="md"
                 >
                   창 닫기

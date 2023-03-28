@@ -2,10 +2,40 @@ import React, { Dispatch, SetStateAction } from "react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { useQuery } from "@tanstack/react-query";
 
 const CommonMenu: React.FC<{
   close: Dispatch<SetStateAction<boolean>>;
 }> = ({ close }) => {
+  const db = getFirestore();
+  const firebaseAuth = getAuth();
+  const currentUser = firebaseAuth.currentUser?.uid;
+
+  // 관리자가 설정한 매장 관리 정보 가져오기
+  const getStoreOption = async () => {
+    const storeDataState = await getDocs(collection(db, "adminList")).then(
+      (data) => {
+        let adminData: any;
+        data.forEach((doc) => {
+          if (doc.data().uid === currentUser) {
+            return (adminData = doc.data());
+          }
+        });
+        return adminData;
+      }
+    );
+    return storeDataState;
+  };
+
+  const { data } = useQuery({
+    queryKey: ["storeOption"],
+    queryFn: getStoreOption,
+  });
+
+  console.log(data);
+
   return (
     <Box
       background="rgba(38, 38, 38, 40%)"
@@ -33,9 +63,8 @@ const CommonMenu: React.FC<{
           width="100%"
         >
           <Flex>
-            developneoguri{" "}
             <Text fontWeight="semibold" margin="0 0.25rem">
-              님
+              {`${data.storeName} 님`}
             </Text>
           </Flex>
           <Button background="none" padding="0" onClick={() => close(false)}>

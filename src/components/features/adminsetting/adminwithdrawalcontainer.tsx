@@ -49,7 +49,7 @@ const AdminWithdrawalContainer: React.FC = () => {
 
   const withdrawalAccount = async (userData: AdminData) => {
     const credential = EmailAuthProvider.credential(
-      currentUser!.email!,
+      userData!.email!,
       userData.password!
     );
 
@@ -57,7 +57,11 @@ const AdminWithdrawalContainer: React.FC = () => {
       currentUser!,
       credential
     )
-      .then(() => deleteUser(currentUser!).then(() => "delete-success"))
+      .then(() =>
+        deleteUser(currentUser!).then((data) => {
+          return "delete-success";
+        })
+      )
       .catch((error) => error.message);
     return withdrawalState;
   };
@@ -66,7 +70,51 @@ const AdminWithdrawalContainer: React.FC = () => {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
-      setWithdrawalState(true);
+      console.log(data);
+      if (data === "delete-success") {
+        return setWithdrawalState(true);
+      }
+      if (data.indexOf("user-not-found") !== -1) {
+        return !toastMsg.isActive("error-userNotFound")
+          ? toastMsg({
+              title: "존재하지 않는 계정",
+              id: "error-userNotFound",
+              description:
+                "해당 이메일로 가입한 아이디가 존재하지 않습니다. 이메일을 다시 확인해주세요. ",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
+
+      if (data.indexOf("wrong-password") !== -1) {
+        return !toastMsg.isActive("error-wrongPassword")
+          ? toastMsg({
+              title: "잘못된 비밀번호",
+              id: "error-wrongPassword",
+              description:
+                "해당 계정의 비밀번호가 일치하지 않습니다. 다시 시도해주세요.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
+
+      if (data.indexOf("user-mismatch") !== -1) {
+        return !toastMsg.isActive("error-userMismatch")
+          ? toastMsg({
+              title: "계정 불일치",
+              id: "error-userMismatch",
+              description:
+                "현재 로그인한 계정과 정보가 일치하지 않습니다. 정보를 정확하게 입력해주세요.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
     },
   });
 
@@ -85,6 +133,7 @@ const AdminWithdrawalContainer: React.FC = () => {
   };
 
   const toastMsg = useToast();
+
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingState(true);
@@ -129,18 +178,25 @@ const AdminWithdrawalContainer: React.FC = () => {
     withdrawalMutation.mutate(userData);
   };
 
-  const returnToLoginPage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    signOut(firebaseAuth)
-      .then(() => navigate("/adminlogin"))
-      .catch((err) => console.log(err.message));
+  const closeRegisterModal = () => {
+    setUserData(initialState);
+    setInputCheck({
+      email: false,
+      password: false,
+    });
+    onClose();
+    if (withdrawalState === true) {
+      signOut(firebaseAuth)
+        .then(() => navigate("/adminlogin"))
+        .catch((err) => console.log(err.message));
+    }
   };
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={closeRegisterModal}>
         <ModalOverlay />
-        <ModalContent margin="auto" padding="2rem 0" wordBreak="keep-all">
+        <ModalContent margin="auto 1rem" padding="2rem 0" wordBreak="keep-all">
           {withdrawalState ? (
             <>
               <ModalHeader>이용해주셔서 감사합니다.</ModalHeader>
@@ -148,7 +204,7 @@ const AdminWithdrawalContainer: React.FC = () => {
                 그 동안 웨잇세컨드를 이용해주셔서 감사합니다.
               </ModalBody>
               <ModalFooter>
-                <Button onClick={returnToLoginPage}>닫기</Button>
+                <Button onClick={closeRegisterModal}>닫기</Button>
               </ModalFooter>
             </>
           ) : (
@@ -156,8 +212,8 @@ const AdminWithdrawalContainer: React.FC = () => {
               <form onSubmit={submitUserData}>
                 <FormControl>
                   <Text fontSize="1rem">
-                    회원 탈퇴를 위해 이용 중이신 이메일 아이디와 비밀번호를
-                    입력해주십시오.
+                    회원 탈퇴를 진행하기 위해 이용 중이신 이메일 아이디와
+                    비밀번호를 입력해주세요.
                   </Text>
                   <Flex direction="column" padding="1.5rem 0 0.5rem 0">
                     <CommonInput

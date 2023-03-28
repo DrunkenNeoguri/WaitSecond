@@ -264,7 +264,7 @@ const AdminLoginContainer = () => {
             color="#ffffff"
             width="100%"
             height="3rem"
-            margin="1rem 0"
+            margin="0.5 01rem 0"
             onClick={() => navigate("/adminsignup")}
           >
             회원가입
