@@ -28,9 +28,10 @@ import {
 } from "firebase/auth";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import { emailRegex, passwordRegex } from "../../../utils/reqlist";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { CommonInput } from "../../common/commoninput";
 import CommonErrorMsg from "../../common/commonerrormsg";
+import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 
 const AdminWithdrawalContainer: React.FC = () => {
   const initialState = new AdminData("", "");
@@ -46,6 +47,35 @@ const AdminWithdrawalContainer: React.FC = () => {
 
   const firebaseAuth = getAuth();
   const currentUser = firebaseAuth.currentUser;
+
+  // 토큰이 만료됐는지 확인
+  const expiredCheck = async () => {
+    const expiredstate = await tokenExpirationCheck();
+    return expiredstate;
+  };
+
+  useQuery({
+    queryKey: ["tokenExpriedCheck"],
+    queryFn: expiredCheck,
+    onSuccess(data) {
+      if (data === true) {
+        if (!toastMsg.isActive("error-tokenExpired")) {
+          return !toastMsg.isActive("error-tokenExpired")
+            ? toastMsg({
+                title: "계정 로그인 만료",
+                id: "error-tokenExpired",
+                description:
+                  "오랫동안 페이지 내 활동이 없어 안전을 위해 로그인을 해제합니다. 다시 로그인해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+        navigate("/adminlogin");
+      }
+    },
+  });
 
   const withdrawalAccount = async (userData: AdminData) => {
     const credential = EmailAuthProvider.credential(
@@ -70,7 +100,6 @@ const AdminWithdrawalContainer: React.FC = () => {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
-      console.log(data);
       if (data === "delete-success") {
         return setWithdrawalState(true);
       }

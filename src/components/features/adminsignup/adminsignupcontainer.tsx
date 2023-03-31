@@ -66,6 +66,7 @@ const AdminSignUpContainer: React.FC = () => {
           customOption2State: false,
           customOption3Name: "",
           customOption3State: false,
+          firstSetting: false,
         };
         addDoc(adminList, adminData)
           .then((data) => data)

@@ -23,10 +23,11 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { AdminData, EventObject } from "../../../utils/typealies";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { passwordRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
+import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 
 const AdminChangePasswordContainer: React.FC = () => {
   const firebaseAuth = getAuth();
@@ -42,6 +43,35 @@ const AdminChangePasswordContainer: React.FC = () => {
   const [loadingState, setLoadingState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
+
+  // 토큰이 만료됐는지 확인
+  const expiredCheck = async () => {
+    const expiredstate = await tokenExpirationCheck();
+    return expiredstate;
+  };
+
+  useQuery({
+    queryKey: ["tokenExpriedCheck"],
+    queryFn: expiredCheck,
+    onSuccess(data) {
+      if (data === true) {
+        if (!toastMsg.isActive("error-tokenExpired")) {
+          return !toastMsg.isActive("error-tokenExpired")
+            ? toastMsg({
+                title: "계정 로그인 만료",
+                id: "error-tokenExpired",
+                description:
+                  "오랫동안 페이지 내 활동이 없어 안전을 위해 로그인을 해제합니다. 다시 로그인해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+        navigate("/adminlogin");
+      }
+    },
+  });
 
   const inputUserData = (e: React.ChangeEvent) => {
     e.preventDefault();
@@ -88,7 +118,6 @@ const AdminChangePasswordContainer: React.FC = () => {
   const changePasswordMutation = useMutation(changePasswordAccount, {
     onError: (error, variable) => console.log(error),
     onSuccess: (data, variable, context) => {
-      console.log(data);
       setLoadingState(false);
       if (data === "change-success") {
         onOpen();

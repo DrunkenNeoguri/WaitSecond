@@ -23,12 +23,15 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CommonInput } from "../../common/commoninput";
 import CommonErrorMsg from "../../common/commonerrormsg";
+import { useNavigate } from "react-router-dom";
+import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 
 const AdminStoreManageContainer: React.FC = () => {
   const db = getFirestore();
   const firebaseAuth = getAuth();
   const queryClient = useQueryClient();
   const toastMsg = useToast();
+  const navigate = useNavigate();
   const currentUser = firebaseAuth.currentUser?.uid;
 
   // interface에서 class로 바꿀 수 있는지 확인해보기
@@ -47,12 +50,42 @@ const AdminStoreManageContainer: React.FC = () => {
     customOption2State: false,
     customOption3Name: "",
     customOption3State: false,
+    firstSetting: false,
   };
 
   const [storeData, setStoreData] = useState<StoreOption>(initialState);
   const [documentUID, setDocumentUID] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
+
+  // 토큰이 만료됐는지 확인
+  const expiredCheck = async () => {
+    const expiredstate = await tokenExpirationCheck();
+    return expiredstate;
+  };
+
+  useQuery({
+    queryKey: ["tokenExpriedCheck"],
+    queryFn: expiredCheck,
+    onSuccess(data) {
+      if (data === true) {
+        if (!toastMsg.isActive("error-tokenExpired")) {
+          return !toastMsg.isActive("error-tokenExpired")
+            ? toastMsg({
+                title: "계정 로그인 만료",
+                id: "error-tokenExpired",
+                description:
+                  "오랫동안 페이지 내 활동이 없어 안전을 위해 로그인을 해제합니다. 다시 로그인해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+        navigate("/adminlogin");
+      }
+    },
+  });
 
   // 설정 적용하기 (입력값)
   const inputStoreOptionData = (e: React.ChangeEvent) => {

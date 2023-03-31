@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAuth } from "firebase/auth";
 import {
   collection,
   deleteDoc,
@@ -15,19 +14,57 @@ import { UserData } from "../../../utils/typealies";
 import WaitingDataBlock from "./waitingdatablock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faList, faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
+import {
+  loginStateCheck,
+  tokenExpirationCheck,
+} from "../../../utils/verifiedcheck";
+import { useNavigate } from "react-router-dom";
 
 const AdminWaitingListContainer = () => {
   const db = getFirestore();
-  const firebaseAuth = getAuth();
   const queryClient = useQueryClient();
+  const toastMsg = useToast();
+  const navigate = useNavigate();
+
   const [waitingSetting, setWaitingSetting] = useState("entering");
   const [listState, setlistState] = useState(false);
   const [receiveState, setReceiveState] = useState(false);
-  const currentUser = firebaseAuth.currentUser?.uid;
+
+  // 토큰이 만료됐는지 확인
+  const expiredCheck = async () => {
+    const expiredstate = await tokenExpirationCheck();
+    return expiredstate;
+  };
+
+  useQuery({
+    queryKey: ["tokenExpriedCheck"],
+    queryFn: expiredCheck,
+    onSuccess(data) {
+      if (data === true) {
+        if (!toastMsg.isActive("error-tokenExpired")) {
+          return !toastMsg.isActive("error-tokenExpired")
+            ? toastMsg({
+                title: "계정 로그인 만료",
+                id: "error-tokenExpired",
+                description:
+                  "오랫동안 페이지 내 활동이 없어 안전을 위해 로그인을 해제합니다. 다시 로그인해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+        navigate("/adminlogin");
+      }
+    },
+    onSettled(data, error) {
+      setlistState(false);
+    },
+  });
 
   // 현재 가게 대기 정보 가져오기
   const waitingCol = query(
-    collection(db, `storeList/${currentUser}/waitingList`)
+    collection(db, `storeList/${loginStateCheck()}/waitingList`)
   );
 
   useEffect(() => {
@@ -47,7 +84,7 @@ const AdminWaitingListContainer = () => {
           const dataDate = new Date(document[0].createdAt!).getDate();
           if (nowDate !== dataDate) {
             deleteDoc(
-              doc(db, `storeList/${currentUser}/waitingList`, document[1])
+              doc(db, `storeList/${loginStateCheck()}/waitingList`, document[1])
             );
           }
         });
@@ -93,7 +130,7 @@ const AdminWaitingListContainer = () => {
       (data) => {
         let adminData: any;
         data.forEach((doc) => {
-          if (doc.data().uid === currentUser) {
+          if (doc.data().uid === loginStateCheck()) {
             adminData = { data: doc.data(), uid: doc.id };
           }
         });
@@ -187,7 +224,7 @@ const AdminWaitingListContainer = () => {
               <WaitingDataBlock
                 key={index}
                 userData={elem}
-                admin={currentUser!}
+                admin={loginStateCheck()}
                 storeOption={storeOption.data?.data}
                 background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
                 waitingSetting={waitingSetting}
@@ -207,7 +244,7 @@ const AdminWaitingListContainer = () => {
         borderTop="1px Solid #424242"
       >
         <Button
-          color={storeOption.data?.data.waitingState ? "mainBlue" : "errorRed"}
+          color={storeOption.data?.data.waitingState ? "errorRed" : "mainBlue"}
           background="none"
           borderRadius="0"
           display="flex"

@@ -15,9 +15,9 @@ import {
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAuth } from "firebase/auth";
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { useState } from "react";
+import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { telRegex } from "../../../utils/reqlist";
 import { EventObject, UserData } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
@@ -28,8 +28,6 @@ const AdminRegisterModal: React.FC<{
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
   const db = getFirestore();
-  const firebaseAuth = getAuth();
-  const currentUser = firebaseAuth.currentUser?.uid;
   const initialState = new UserData(
     false,
     "",
@@ -60,7 +58,7 @@ const AdminRegisterModal: React.FC<{
       (data) => {
         let adminData: any;
         data.forEach((doc) => {
-          if (doc.data().uid === currentUser) {
+          if (doc.data().uid === loginStateCheck()) {
             return (adminData = doc.data());
           }
         });
@@ -193,7 +191,7 @@ const AdminRegisterModal: React.FC<{
     };
 
     const addWaitingData = await addDoc(
-      collection(db, `storeList/${currentUser}/waitingList`),
+      collection(db, `storeList/${loginStateCheck()}/waitingList`),
       sendUserData
     )
       .then((data) => data)

@@ -1,4 +1,4 @@
-import { CloseIcon, SmallCloseIcon, TriangleDownIcon } from "@chakra-ui/icons";
+import { CloseIcon, TriangleDownIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +28,6 @@ const WaitingDataBlock: React.FC<{
       { ...userData, isentered: !userData.isentered }
     )
       .then((data) => {
-        console.log(data);
         return "delete-success";
       })
       .catch((error) => console.log(error.message));
