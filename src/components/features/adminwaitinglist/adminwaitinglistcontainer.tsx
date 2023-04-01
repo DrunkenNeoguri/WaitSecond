@@ -213,10 +213,9 @@ const AdminWaitingListContainer = () => {
       <Flex
         as="article"
         direction="column"
-        border="none"
-        borderRadius="1rem 1rem 0 0"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-        margin="7.75rem 0 3.5rem 0"
+        background="#F2F2F2"
+        minHeight="75vh"
+        margin="2.25rem 0 0.5rem 0"
       >
         <Flex direction="column" align="center" fontSize="1.25rem">
           {data?.map((elem: UserData, index: number) => {

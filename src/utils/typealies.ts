@@ -16,6 +16,7 @@ export type TypedCommonInput = {
   fontWeight?: string;
   labelWidth?: string;
   inputWidth?: string;
+  isDisabled?: boolean;
   onChange: (e: React.ChangeEvent) => void;
 };
 

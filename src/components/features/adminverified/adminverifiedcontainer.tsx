@@ -147,7 +147,6 @@ const AdminVerifiedContainer = () => {
           margin="0 1rem"
           border="none"
           borderRadius="1rem"
-          top="5.5rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
           <Heading as="h1" textAlign="center" marginBottom="2rem">
@@ -199,7 +198,6 @@ const AdminVerifiedContainer = () => {
           margin="0 1rem"
           border="none"
           borderRadius="1rem"
-          top="5.5rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
           {!changeState ? (
@@ -221,6 +219,7 @@ const AdminVerifiedContainer = () => {
                       value={passwordData.password!}
                       onChange={inputPasswordData}
                       margin="0.25rem 0"
+                      placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
                     />
                     <CommonErrorMsg
                       type="password"
@@ -236,6 +235,7 @@ const AdminVerifiedContainer = () => {
                       value={passwordData.passwordcheck!}
                       onChange={inputPasswordData}
                       margin="0.25rem 0 0 0"
+                      placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
                     />
                     <CommonErrorMsg
                       type="passwordcheck"
@@ -319,7 +319,6 @@ const AdminVerifiedContainer = () => {
           margin="0 1rem"
           border="none"
           borderRadius="1rem"
-          top="5.5rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
           <Heading as="h1" textAlign="center" marginBottom="2rem">

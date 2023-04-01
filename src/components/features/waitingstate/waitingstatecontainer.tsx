@@ -29,10 +29,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
+import AdminRegisterModal from "../adminwaitinglist/adminregistermodal";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [loadingState, setLoadingState] = useState(false);
+  const [modalState, setModalState] = useState("none");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
   const navigate = useNavigate();
@@ -114,58 +116,111 @@ const WaitingStateContainer = () => {
     deleteMutation.mutate(currentUserData);
   };
 
+  const openToCancelProcess = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setModalState("cancel");
+    onOpen();
+  };
+
+  const openToModifyProcess = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setModalState("modify");
+    onOpen();
+  };
+
+  const closeToModal = () => {
+    setModalState("none");
+    onClose();
+  };
+
+  const registerTime =
+    currentUserData !== undefined
+      ? new Date(Number(currentUserData.createdAt))
+      : undefined;
+
   return (
     <section style={{ background: "#EDEDED", padding: "1rem 0" }}>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent padding="2rem 0">
-          <ModalHeader as="h1" textAlign="center" fontSize="1.5rem">
-            정말로 대기 등록을 취소하시겠습니까?
-          </ModalHeader>
-          <ModalBody
-            textAlign="center"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          >
-            취소 시, 등록하신 정보는 삭제되며 재등록을 원하실 경우 처음부터 다시
-            등록해주셔야 합니다.
-          </ModalBody>
-          <Flex direction="row" gap="1rem" margin="1rem 0 0 0" justify="center">
-            <Button
-              type="button"
-              background="#58a6dc"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              onClick={deleteWaitingData}
-              isLoading={loadingState}
+      {modalState === "cancel" ? (
+        <Modal isOpen={isOpen} onClose={closeToModal}>
+          <ModalOverlay />
+          <ModalContent padding="2rem 0" margin="auto 1rem">
+            <ModalHeader
+              as="h2"
+              textAlign="center"
+              fontSize="1rem"
+              letterSpacing="-0.05rem"
             >
-              취소할게요
-            </Button>
-            <Button
-              type="button"
-              background="#5a5a5a"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              onClick={onClose}
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              isLoading={loadingState}
+              대기 등록 취소 확인
+            </ModalHeader>
+            <ModalBody
+              textAlign="center"
+              fontSize={visionState === false ? "1rem" : "1.625rem"}
+              letterSpacing="-0.05rem"
+              wordBreak="keep-all"
             >
-              아니에요
-            </Button>
-          </Flex>
-        </ModalContent>
-      </Modal>
-
+              <Text margin="1rem 0">
+                정말로 대기 등록을 취소하시겠습니까? <br /> <br />
+                취소 시, 등록하신 정보는 삭제되며 재등록을 원하실 경우 처음부터
+                다시 등록해주셔야 합니다.
+              </Text>
+            </ModalBody>
+            <Flex
+              direction="row"
+              gap="1rem"
+              padding="0 1rem"
+              margin="1rem 0 0 0"
+              justify="center"
+              width="100%"
+            >
+              <Button
+                type="button"
+                background="#58a6dc"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                onClick={deleteWaitingData}
+                isLoading={loadingState}
+                width="100%"
+              >
+                취소할게요
+              </Button>
+              <Button
+                type="button"
+                background="#5a5a5a"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                onClick={closeToModal}
+                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                isLoading={loadingState}
+                width="100%"
+              >
+                아니에요
+              </Button>
+            </Flex>
+          </ModalContent>
+        </Modal>
+      ) : modalState === "modify" ? (
+        <AdminRegisterModal
+          isOpen={isOpen}
+          onClose={closeToModal}
+          modify={true}
+          modifyData={currentUserData}
+          storeuid={storeuid}
+        />
+      ) : (
+        <></>
+      )}
       {waitingList.data === undefined || storeOption.data === undefined ? (
         <Flex
           direction="column"
           align="center"
-          background="#ffffff"
           padding="3rem 1rem"
-          margin="5rem 1rem 0 1rem"
+          margin="5rem 1rem 2rem 1rem"
+          border="none"
           borderRadius="1rem"
+          background="#FFFFFF"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
         >
           <Skeleton textAlign="center" height="2.5rem" width="50vw" />
@@ -232,7 +287,7 @@ const WaitingStateContainer = () => {
           direction="column"
           background="#ffffff"
           padding="3rem 1rem"
-          margin="5rem 1rem 0 1rem"
+          margin="5rem 1rem 2rem 1rem"
           border="none"
           borderRadius="1rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
@@ -475,17 +530,33 @@ const WaitingStateContainer = () => {
             color="mainGray"
           >
             <Text>대기 시작 시간</Text>
-            <Text>2021-01-30 11:59</Text>
+            <Text>{`${registerTime!.getFullYear()}년 ${registerTime!.getMonth()}월 ${registerTime!.getDate()}일 ${registerTime!.getHours()}시 ${registerTime!.getMinutes()}분`}</Text>
           </Flex>
           <Button
             type="button"
-            background="accentGray"
-            color="#ffffff"
-            borderRadius="0.25rem"
+            background="mainBlue"
+            color="#FFFFFF"
+            fontWeight="medium"
             fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-            fontWeight="500"
+            padding="0.5rem auto"
+            margin="0.5rem 0"
+            borderRadius="0.25rem"
             height="3rem"
-            onClick={onOpen}
+            onClick={openToModifyProcess}
+          >
+            대기 정보 수정
+          </Button>
+          <Button
+            type="button"
+            background="accentGray"
+            color="#FFFFFF"
+            fontWeight="medium"
+            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+            padding="0.5rem auto"
+            margin="0.5rem 0"
+            borderRadius="0.25rem"
+            height="3rem"
+            onClick={openToCancelProcess}
           >
             대기 등록 취소
           </Button>
