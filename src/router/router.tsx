@@ -15,10 +15,10 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/:storeuid" element={<WaitingMain />} />
-        <Route path="/:storeuid/waitingform" element={<WaitingForm />} />
+        <Route path="/store/:storeuid" element={<WaitingMain />} />
+        <Route path="/store/:storeuid/waitingform" element={<WaitingForm />} />
         <Route
-          path="/:storeuid/waitingstate/:telnumber"
+          path="/store/:storeuid/waitingstate/:telnumber"
           element={<WaitingState />}
         />
         <Route path="/adminlogin" element={<AdminLogin />} />

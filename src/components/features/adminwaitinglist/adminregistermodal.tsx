@@ -15,9 +15,9 @@ import {
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAuth } from "firebase/auth";
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { useState } from "react";
+import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { telRegex } from "../../../utils/reqlist";
 import { EventObject, UserData } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
@@ -28,8 +28,6 @@ const AdminRegisterModal: React.FC<{
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
   const db = getFirestore();
-  const firebaseAuth = getAuth();
-  const currentUser = firebaseAuth.currentUser?.uid;
   const initialState = new UserData(
     false,
     "",
@@ -60,7 +58,7 @@ const AdminRegisterModal: React.FC<{
       (data) => {
         let adminData: any;
         data.forEach((doc) => {
-          if (doc.data().uid === currentUser) {
+          if (doc.data().uid === loginStateCheck()) {
             return (adminData = doc.data());
           }
         });
@@ -193,7 +191,7 @@ const AdminRegisterModal: React.FC<{
     };
 
     const addWaitingData = await addDoc(
-      collection(db, `storeList/${currentUser}/waitingList`),
+      collection(db, `storeList/${loginStateCheck()}/waitingList`),
       sendUserData
     )
       .then((data) => data)
@@ -205,6 +203,11 @@ const AdminRegisterModal: React.FC<{
     onError: (error, variable) => setLoadingState(false),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
+      setUserData(initialState);
+      setInputCheck({
+        customername: false,
+        tel: false,
+      });
       queryClient.invalidateQueries(["waitingList"]);
       queryClient.invalidateQueries(["storeOption"]);
       queryClient.invalidateQueries(["currentWaitingState"]);
@@ -212,8 +215,17 @@ const AdminRegisterModal: React.FC<{
     },
   });
 
+  const closeRegisterModal = () => {
+    setUserData(initialState);
+    setInputCheck({
+      customername: false,
+      tel: false,
+    });
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeRegisterModal}>
       <ModalOverlay />
       <ModalContent
         wordBreak="keep-all"
@@ -550,7 +562,7 @@ const AdminRegisterModal: React.FC<{
                   margin="0.5rem 0"
                   borderRadius="0.25rem"
                   width="100%"
-                  onClick={onClose}
+                  onClick={closeRegisterModal}
                   size="md"
                 >
                   창 닫기

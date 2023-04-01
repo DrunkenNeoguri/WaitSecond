@@ -18,6 +18,8 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { CommonInput } from "../../common/commoninput";
 import { telRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
+import CommonCloseBox from "../../common/commonclosebox";
+import CommonFullBox from "../../common/commonfullbox";
 
 const WaitingMainContainer: React.FC = () => {
   const { storeuid } = useParams();
@@ -117,7 +119,7 @@ const WaitingMainContainer: React.FC = () => {
         : null;
     }
 
-    navigate(`${location.pathname}/waitingstate/${telInput}`);
+    navigate(`/store/${location.pathname}/waitingstate/${telInput}`);
   };
 
   return (
@@ -149,50 +151,7 @@ const WaitingMainContainer: React.FC = () => {
         {storeOption.data?.waitingState ? (
           storeOption.data.maximumWaitingTeamCount <=
           waitingList.data.length ? (
-            <>
-              <Flex
-                direction="row"
-                justify="space-between"
-                align="center"
-                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                fontWeight="semibold"
-                letterSpacing="-0.1rem"
-                margin="0.5rem 0 1rem 0"
-              >
-                <Text>현재 대기팀</Text>
-                <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
-                  {waitingList.data === undefined
-                    ? "확인 중"
-                    : waitingList.data.length === 0
-                    ? "없음"
-                    : `${waitingList.data.length} 팀`}
-                </Text>
-              </Flex>
-              <Heading
-                as="h2"
-                fontSize="1.25rem"
-                letterSpacing="-0.05rem"
-                padding="2rem 0"
-                textAlign="center"
-              >
-                대기 접수 불가 안내
-              </Heading>
-              <Text
-                as="p"
-                fontSize="1rem"
-                textAlign="center"
-                lineHeight="1.5rem"
-                wordBreak="break-word"
-                whiteSpace="pre-wrap"
-              >
-                현재 매장 내 대기팀이 최대치에 도달해 대기 접수가 불가능한
-                상황입니다.
-                <br />
-                <br />
-                <br />
-                관련 사항은 매장 내 직원에게 문의해주시기 바랍니다.
-              </Text>
-            </>
+            <CommonFullBox data={waitingList.data} />
           ) : (
             <>
               <Flex
@@ -272,24 +231,7 @@ const WaitingMainContainer: React.FC = () => {
             </>
           )
         ) : (
-          <>
-            <Heading
-              as="h2"
-              fontSize="1.25rem"
-              letterSpacing="-0.05rem"
-              padding="2rem 0"
-              textAlign="center"
-            >
-              대기 접수 마감 안내
-            </Heading>
-            <Text as="p" fontSize="1rem" textAlign="center" lineHeight="1.5rem">
-              현재 매장 내 대기 접수 마감된 상태입니다. <br />
-              다음에 다시 이용해주십시오.
-              <br />
-              <br />
-              감사합니다.
-            </Text>
-          </>
+          <CommonCloseBox />
         )}
       </Flex>
     </section>

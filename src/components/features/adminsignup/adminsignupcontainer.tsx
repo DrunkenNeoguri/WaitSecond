@@ -66,6 +66,7 @@ const AdminSignUpContainer: React.FC = () => {
           customOption2State: false,
           customOption3Name: "",
           customOption3State: false,
+          firstSetting: false,
         };
         addDoc(adminList, adminData)
           .then((data) => data)
@@ -288,7 +289,7 @@ const AdminSignUpContainer: React.FC = () => {
         </>
       ) : (
         <>
-          <Heading as="h2" fontSize="1.25rem" margin="1rem 0">
+          <Heading as="h2" fontSize="1.25rem" padding="2rem 0 1rem 0">
             계정 인증 이메일 전송 안내
           </Heading>
           <Flex
