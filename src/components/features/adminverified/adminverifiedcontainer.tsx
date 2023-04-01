@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import {
+  applyActionCode,
   confirmPasswordReset,
   getAuth,
   verifyPasswordResetCode,
@@ -126,6 +127,12 @@ const AdminVerifiedContainer = () => {
 
     resetPasswordMutation.mutate(passwordData);
   };
+
+  if (searchParams.get("mode") === "verifyEmail") {
+    if (actionCode !== null) {
+      applyActionCode(firebaseAuth, actionCode);
+    }
+  }
 
   // 내용 다시 수정해야함 -> 인증 후 5초 후에 로그인 페이지로 이동
   switch (searchParams.get("mode")) {

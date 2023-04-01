@@ -1,8 +1,42 @@
 import React from "react";
-import { Flex, Link } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Flex, Link, useToast } from "@chakra-ui/react";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
+import { useQuery } from "@tanstack/react-query";
 
 const AdminSettingContainer: React.FC = () => {
+  const toastMsg = useToast();
+  const navigate = useNavigate();
+
+  // 토큰이 만료됐는지 확인
+  const expiredCheck = async () => {
+    const expiredstate = await tokenExpirationCheck();
+    return expiredstate;
+  };
+
+  useQuery({
+    queryKey: ["tokenExpriedCheck"],
+    queryFn: expiredCheck,
+    onSuccess(data) {
+      if (data === true) {
+        if (!toastMsg.isActive("error-tokenExpired")) {
+          return !toastMsg.isActive("error-tokenExpired")
+            ? toastMsg({
+                title: "계정 로그인 만료",
+                id: "error-tokenExpired",
+                description:
+                  "오랫동안 페이지 내 활동이 없어 안전을 위해 로그인을 해제합니다. 다시 로그인해주세요.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              })
+            : null;
+        }
+        navigate("/adminlogin");
+      }
+    },
+  });
+
   return (
     <Flex
       as="article"

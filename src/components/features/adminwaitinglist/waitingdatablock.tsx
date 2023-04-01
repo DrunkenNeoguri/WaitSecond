@@ -1,4 +1,4 @@
-import { TriangleDownIcon } from "@chakra-ui/icons";
+import { CloseIcon, TriangleDownIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +17,6 @@ const WaitingDataBlock: React.FC<{
 }> = ({ admin, userData, background, storeOption, waitingSetting }) => {
   const [openState, setOpenState] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
-  console.log(storeOption);
 
   // 등록된 손님 정보 지우기
   const db = getFirestore();
@@ -29,7 +28,6 @@ const WaitingDataBlock: React.FC<{
       { ...userData, isentered: !userData.isentered }
     )
       .then((data) => {
-        console.log(data);
         return "delete-success";
       })
       .catch((error) => console.log(error.message));
@@ -118,41 +116,54 @@ const WaitingDataBlock: React.FC<{
           </Flex>
         </Flex>
         <Flex direction="row" align="center" gap="1rem" margin="0 0.5rem">
-          <Link
-            href={`tel:${userData.tel}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Button
-              display="flex"
-              flexDirection="column"
-              width="3rem"
-              height="3rem"
-              backgroundColor="green"
-              fontSize="0.625rem"
-              color="#ffffff"
-              fontWeight="normal"
-              gap="0.375rem"
+          {userData.isentered ? (
+            <></>
+          ) : (
+            <Link
+              href={`tel:${userData.tel}`}
+              onClick={(e) => e.stopPropagation()}
             >
-              <FontAwesomeIcon icon={faPhone} fontSize="1.125rem" />
-              전화
-            </Button>
-          </Link>
+              <Button
+                display="flex"
+                flexDirection="column"
+                width="3rem"
+                height="3rem"
+                backgroundColor="green"
+                fontSize="0.625rem"
+                color="#ffffff"
+                fontWeight="normal"
+                gap="0.375rem"
+              >
+                <FontAwesomeIcon icon={faPhone} fontSize="1rem" />
+                전화
+              </Button>
+            </Link>
+          )}
 
           <Button
             display="flex"
             flexDirection="column"
             width="3rem"
             height="3rem"
-            backgroundColor="#4E95FF"
+            backgroundColor={userData.isentered ? "errorRed" : "mainBlue"}
             fontSize="0.625rem"
             color="#ffffff"
             fontWeight="normal"
-            gap="0.25rem"
+            gap={userData.isentered ? "0.5rem" : "0.25rem"}
             onClick={(e) => changeEnteredGuestState(e, userData)}
             isLoading={loadingState}
           >
-            <FontAwesomeIcon icon={faCircleCheck} fontSize="1.25rem" />
-            입장 완료
+            {userData.isentered ? (
+              <>
+                <CloseIcon fontSize="1rem" />
+                완료 취소
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faCircleCheck} fontSize="1.25rem" />
+                입장 완료
+              </>
+            )}
           </Button>
         </Flex>
       </Flex>

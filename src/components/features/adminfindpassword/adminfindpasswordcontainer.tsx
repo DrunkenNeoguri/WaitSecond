@@ -9,6 +9,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../../utils/reqlist";
 import { EventObject } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
@@ -18,7 +19,9 @@ const AdminFindPasswordContainer = () => {
   const [emailData, setEmailData] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
+  const [sendState, setSendState] = useState(false);
 
+  const navigate = useNavigate();
   const firebaseAuth = getAuth();
 
   const findPasswordAccount = async (emailData: string) => {
@@ -32,32 +35,20 @@ const AdminFindPasswordContainer = () => {
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
-      if (data === "send-email-success") {
-        if (!toastMsg.isActive("send-email-success")) {
-          toastMsg({
-            title: "이메일 전송 완료",
-            id: "send-email-success",
-            description:
-              "입력하신 이메일 아이디로 비밀번호 변경 관련 메일을 전송했습니다. 메일함에서 확인해주세요.",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
-        }
-      } else {
-        if (data.indexOf("user-not-found") !== -1) {
-          return !toastMsg.isActive("error-userNotFound")
-            ? toastMsg({
-                title: "존재하지 않는 계정",
-                id: "error-userNotFound",
-                description:
-                  "해당 이메일로 가입한 아이디가 존재하지 않습니다. 이메일을 다시 확인해주세요. ",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-              })
-            : null;
-        }
+      setSendState(true);
+
+      if (data.indexOf("user-not-found") !== -1) {
+        return !toastMsg.isActive("error-userNotFound")
+          ? toastMsg({
+              title: "존재하지 않는 계정",
+              id: "error-userNotFound",
+              description:
+                "해당 이메일로 가입한 아이디가 존재하지 않습니다. 이메일을 다시 확인해주세요. ",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
       }
     },
   });
@@ -110,26 +101,30 @@ const AdminFindPasswordContainer = () => {
       <Heading as="h1" textAlign="center">
         웨잇세컨드
       </Heading>
-      <Heading as="h1" fontSize="1.5rem" padding="1rem 0">
-        비밀번호 찾기
-      </Heading>
-      <Text fontSize="1rem">가입하신 이메일 아이디를 입력해주세요.</Text>
-      <form onSubmit={submitEmailData}>
-        <FormControl>
-          <Flex direction="column" margin="1.5rem 0 0.5rem 0">
-            <CommonInput
-              id="email"
-              title="가입하신 이메일 아이디"
-              type="email"
-              value={emailData}
-              onChange={inputEmailData}
-              margin="0.25rem 0"
-            />
-            <CommonErrorMsg
-              type="email"
-              value1={emailData}
-              inputCheck={{ email: inputCheck }}
-            />
+
+      {sendState ? (
+        <>
+          <Heading as="h2" fontSize="1.25rem" padding="2rem 0 1rem 0">
+            이메일 전송 안내
+          </Heading>
+          <Flex
+            direction="column"
+            fontSize="1rem"
+            lineHeight="1.5rem"
+            wordBreak="keep-all"
+            textAlign="left"
+            letterSpacing="-1px"
+            margin="1rem 0"
+            gap="1rem"
+          >
+            입력하신 이메일 아이디로 새로 비밀번호를 변경하기 위한 메일을
+            보내드렸습니다.
+            <br />
+            <br />
+            받으신 이메일 속의 링크를 눌러 절차를 진행해주세요.
+            <br />
+            <br />
+            해당 페이지는 이제 닫으셔도 괜찮습니다.
           </Flex>
           <Button
             type="submit"
@@ -141,14 +136,55 @@ const AdminFindPasswordContainer = () => {
             color="#ffffff"
             width="100%"
             height="3rem"
-            margin="1rem 0"
-            onClick={submitEmailData}
-            isLoading={loadingState}
+            margin="1.5rem 0 1rem 0"
+            onClick={() => navigate("/adminlogin")}
           >
-            이메일 전송
+            로그인 페이지로 이동
           </Button>
-        </FormControl>
-      </form>
+        </>
+      ) : (
+        <>
+          <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
+            비밀번호 찾기
+          </Heading>
+          <Text fontSize="1rem">가입하신 이메일 아이디를 입력해주세요.</Text>
+          <form onSubmit={submitEmailData}>
+            <FormControl>
+              <Flex direction="column" margin="1.5rem 0 0.5rem 0">
+                <CommonInput
+                  id="email"
+                  title="가입하신 이메일 아이디"
+                  type="email"
+                  value={emailData}
+                  onChange={inputEmailData}
+                  margin="0.25rem 0"
+                />
+                <CommonErrorMsg
+                  type="email"
+                  value1={emailData}
+                  inputCheck={{ email: inputCheck }}
+                />
+              </Flex>
+              <Button
+                type="submit"
+                variant="solid"
+                background="mainBlue"
+                padding="0.5rem auto"
+                fontSize="1.25rem"
+                borderRadius="0.25rem"
+                color="#ffffff"
+                width="100%"
+                height="3rem"
+                margin="1rem 0"
+                onClick={submitEmailData}
+                isLoading={loadingState}
+              >
+                이메일 전송
+              </Button>
+            </FormControl>
+          </form>
+        </>
+      )}
     </Flex>
   );
 };

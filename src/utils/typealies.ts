@@ -106,6 +106,7 @@ export type StoreOption = {
   customOption2State: boolean;
   customOption3Name: string;
   customOption3State: boolean;
+  firstSetting: boolean;
 };
 
 // export class StoreOption {

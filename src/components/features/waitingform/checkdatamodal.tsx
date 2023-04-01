@@ -127,188 +127,190 @@ const CheckDataModal: React.FC<{
             작성 내용을 확인해주세요.
           </ModalHeader>
           <ModalBody>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
+            <Flex direction="column" margin="0.5rem 0 1.5rem 0">
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
               >
-                예약자명
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
-                fontWeight="600"
-              >
-                {userInfo.name}
-              </Text>
-            </Flex>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
-              >
-                연락처
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
-                fontWeight="600"
-              >
-                {" "}
-                {userInfo.tel}
-              </Text>
-            </Flex>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
-              >
-                성인
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
-                fontWeight="600"
-              >
-                {userInfo.adult}명
-              </Text>
-            </Flex>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
-              >
-                유아
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
-                fontWeight="600"
-              >
-                {userInfo.child}명
-              </Text>
-            </Flex>
-            {userInfo.pet === true ? (
-              <Flex direction="column" margin="0.5rem 0">
                 <FormLabel
                   fontSize={visionState === false ? "1rem" : "1.625rem"}
                   fontWeight="500"
                   width="30%"
                   margin="0"
                 >
-                  추가 옵션
+                  예약자명
                 </FormLabel>
-                <Flex
-                  direction="column"
-                  background="#F9F9F9"
-                  margin="0.5rem 0"
-                  padding="0.5rem"
+                <Text
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  color="subBlue"
+                  fontWeight="600"
                 >
-                  <UnorderedList>
-                    {userInfo.pet ? (
-                      <ListItem
-                        display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
-                        margin="0.5rem 0"
-                        color="mainBlue"
-                      >
-                        반려 동물이 있어요.
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                    {userInfo.separate ? (
-                      <ListItem
-                        display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
-                        margin="0.5rem 0"
-                        color="mainBlue"
-                      >
-                        자리가 나면 따로 앉아도 괜찮아요.
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                    {userInfo.custom1 ? (
-                      <ListItem
-                        display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
-                        margin="0.5rem 0"
-                        color="mainBlue"
-                      >
-                        {custom[0]}
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                    {userInfo.custom2 ? (
-                      <ListItem
-                        display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
-                        margin="0.5rem 0"
-                        color="mainBlue"
-                      >
-                        {custom[1]}
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                    {userInfo.custom3 ? (
-                      <ListItem
-                        display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
-                        margin="0.5rem 0"
-                        color="mainBlue"
-                      >
-                        {custom[2]}
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                  </UnorderedList>
-                </Flex>
+                  {userInfo.name}
+                </Text>
               </Flex>
-            ) : (
-              <></>
-            )}
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="500"
+                  width="30%"
+                  margin="0"
+                >
+                  연락처
+                </FormLabel>
+                <Text
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  color="subBlue"
+                  fontWeight="600"
+                >
+                  {" "}
+                  {userInfo.tel}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="500"
+                  width="30%"
+                  margin="0"
+                >
+                  성인
+                </FormLabel>
+                <Text
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  color="subBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.adult}명
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontWeight="500"
+                  width="30%"
+                  margin="0"
+                >
+                  유아
+                </FormLabel>
+                <Text
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  color="subBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.child}명
+                </Text>
+              </Flex>
+              {userInfo.pet === true ? (
+                <Flex direction="column" margin="0.5rem 0">
+                  <FormLabel
+                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    fontWeight="500"
+                    width="30%"
+                    margin="0"
+                  >
+                    추가 옵션
+                  </FormLabel>
+                  <Flex
+                    direction="column"
+                    background="#F9F9F9"
+                    margin="0.5rem 0"
+                    padding="0.5rem"
+                  >
+                    <UnorderedList>
+                      {userInfo.pet ? (
+                        <ListItem
+                          display="block"
+                          fontSize={
+                            visionState === false ? "0.75rem" : "1.625rem"
+                          }
+                          margin="0.5rem 0"
+                          color="mainBlue"
+                        >
+                          반려 동물이 있어요.
+                        </ListItem>
+                      ) : (
+                        <></>
+                      )}
+                      {userInfo.separate ? (
+                        <ListItem
+                          display="block"
+                          fontSize={
+                            visionState === false ? "0.75rem" : "1.625rem"
+                          }
+                          margin="0.5rem 0"
+                          color="mainBlue"
+                        >
+                          자리가 나면 따로 앉아도 괜찮아요.
+                        </ListItem>
+                      ) : (
+                        <></>
+                      )}
+                      {userInfo.custom1 ? (
+                        <ListItem
+                          display="block"
+                          fontSize={
+                            visionState === false ? "0.75rem" : "1.625rem"
+                          }
+                          margin="0.5rem 0"
+                          color="mainBlue"
+                        >
+                          {custom[0]}
+                        </ListItem>
+                      ) : (
+                        <></>
+                      )}
+                      {userInfo.custom2 ? (
+                        <ListItem
+                          display="block"
+                          fontSize={
+                            visionState === false ? "0.75rem" : "1.625rem"
+                          }
+                          margin="0.5rem 0"
+                          color="mainBlue"
+                        >
+                          {custom[1]}
+                        </ListItem>
+                      ) : (
+                        <></>
+                      )}
+                      {userInfo.custom3 ? (
+                        <ListItem
+                          display="block"
+                          fontSize={
+                            visionState === false ? "0.75rem" : "1.625rem"
+                          }
+                          margin="0.5rem 0"
+                          color="mainBlue"
+                        >
+                          {custom[2]}
+                        </ListItem>
+                      ) : (
+                        <></>
+                      )}
+                    </UnorderedList>
+                  </Flex>
+                </Flex>
+              ) : (
+                <></>
+              )}
+            </Flex>
             <Flex
               direction="row"
               gap="1rem"
