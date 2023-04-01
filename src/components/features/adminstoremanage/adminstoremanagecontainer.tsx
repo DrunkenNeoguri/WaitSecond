@@ -214,9 +214,8 @@ const AdminStoreManageContainer: React.FC = () => {
         as="article"
         direction="column"
         border="none"
-        borderRadius="1rem 1rem 0 0"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-        padding="4.5rem 1rem 3rem 1rem"
+        padding="2rem 1.5rem"
+        margin="-2rem 0"
         background="#FFFFFF"
         boxSizing="border-box"
       >
@@ -234,6 +233,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 value={storeData.storeName}
                 onChange={inputStoreOptionData}
                 margin="0.25rem 0"
+                placeholder="20자 이내"
               />
               <CommonErrorMsg
                 type="storename"
@@ -245,7 +245,7 @@ const AdminStoreManageContainer: React.FC = () => {
               <FormLabel fontSize="1rem" fontWeight="semibold">
                 배경 이미지
               </FormLabel>
-              <Box background="#8D8D8D" width="326px" height="180px" />
+              <Box background="#8D8D8D" width="100%" height="180px" />
               <Button
                 type="submit"
                 variant="solid"

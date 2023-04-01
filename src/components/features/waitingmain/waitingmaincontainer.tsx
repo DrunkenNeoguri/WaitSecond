@@ -205,6 +205,7 @@ const WaitingMainContainer: React.FC = () => {
                       value={telInput}
                       onChange={inputUserTelNumber}
                       margin="0.25rem 0"
+                      placeholder="'-' 빼고 입력해주세요."
                     />
                     <CommonErrorMsg
                       type="tel"

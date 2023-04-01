@@ -226,9 +226,8 @@ const AdminChangePasswordContainer: React.FC = () => {
         as="article"
         direction="column"
         border="none"
-        borderRadius="1rem 1rem 0 0"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-        padding="4.5rem 1.5rem"
+        padding="2rem 1.5rem"
+        margin="-2rem 0"
         background="#FFFFFF"
         boxSizing="border-box"
         height="100vh"
@@ -264,6 +263,7 @@ const AdminChangePasswordContainer: React.FC = () => {
                 onChange={inputUserData}
                 margin="0.25rem 0"
                 fontSize="1rem"
+                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <CommonErrorMsg
                 type="password"
@@ -280,6 +280,7 @@ const AdminChangePasswordContainer: React.FC = () => {
                 onChange={inputUserData}
                 margin="0.25rem 0"
                 fontSize="1rem"
+                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <CommonErrorMsg
                 type="password"
