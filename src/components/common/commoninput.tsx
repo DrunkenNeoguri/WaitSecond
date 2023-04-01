@@ -5,7 +5,6 @@ import { lowVisionState } from "../../modules/atoms/atoms";
 
 export const CommonInput = (props: TypedCommonInput) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
-
   return (
     <Flex
       direction="column"
@@ -33,7 +32,13 @@ export const CommonInput = (props: TypedCommonInput) => {
         onChange={props.onChange}
         fontSize={props.fontSize}
         width="100%"
+        isDisabled={props.isDisabled}
         _focus={{ background: "#FFFFFF" }}
+        _placeholder={{
+          color: "#accentGray",
+          fontSize: "0.75rem",
+          letterSpacing: "-0.05rem",
+        }}
       ></Input>
     </Flex>
   );

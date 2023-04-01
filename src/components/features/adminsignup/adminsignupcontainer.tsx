@@ -197,7 +197,6 @@ const AdminSignUpContainer: React.FC = () => {
       margin="0 1rem"
       border="none"
       borderRadius="1rem"
-      top="5.5rem"
       boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
     >
       <Heading as="h1" textAlign="center">
@@ -232,6 +231,7 @@ const AdminSignUpContainer: React.FC = () => {
                 value={signUpData.password!}
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
+                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <ErrorMsg
                 type="password"
@@ -246,6 +246,7 @@ const AdminSignUpContainer: React.FC = () => {
                 value={signUpData.passwordcheck!}
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
+                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <ErrorMsg
                 type="passwordcheck"
@@ -261,6 +262,7 @@ const AdminSignUpContainer: React.FC = () => {
                 value={signUpData.storename!}
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
+                placeholder="20자 이내"
               />
               <ErrorMsg
                 type="storename"

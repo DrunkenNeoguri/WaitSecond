@@ -311,7 +311,6 @@ const AdminLoginContainer = () => {
         margin="0 1rem"
         border="none"
         borderRadius="1rem"
-        top="5.5rem"
         boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
       >
         <Heading as="h1" textAlign="center">
@@ -353,7 +352,7 @@ const AdminLoginContainer = () => {
               margin="1.5rem 0 1rem 0"
               onClick={() => setIsVerified(false)}
             >
-              로그인 페이지로 이동
+              로그인 다시 하기
             </Button>
           </>
         ) : (

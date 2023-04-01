@@ -15,7 +15,15 @@ import {
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { useState } from "react";
 import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { telRegex } from "../../../utils/reqlist";
@@ -26,22 +34,36 @@ import { CommonInput } from "../../common/commoninput";
 const AdminRegisterModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+  modifyData?: UserData;
+  modify?: boolean;
+  storeuid?: string | undefined;
+}> = ({ isOpen, onClose, modifyData, modify, storeuid }) => {
   const db = getFirestore();
-  const initialState = new UserData(
-    false,
-    "",
-    "",
-    0,
-    0,
-    false,
-    false,
-    false,
-    false,
-    false,
-    0,
-    ""
+  const waitingCol = query(
+    collection(
+      db,
+      `storeList/${
+        storeuid === undefined ? loginStateCheck() : storeuid
+      }/waitingList`
+    )
   );
+  const initialState =
+    modifyData === undefined
+      ? new UserData(
+          false,
+          "",
+          "",
+          0,
+          0,
+          false,
+          false,
+          false,
+          false,
+          false,
+          0,
+          ""
+        )
+      : modifyData;
 
   const [userData, setUserData] = useState<UserData>(initialState);
   const [loadingState, setLoadingState] = useState(false);
@@ -52,14 +74,42 @@ const AdminRegisterModal: React.FC<{
   const toastMsg = useToast();
   const queryClient = useQueryClient();
 
+  // 현재 대기열 가져오기
+  const getWaitingData = async () => {
+    const waitingState = await getDocs(waitingCol).then((data) => {
+      const list: any = [];
+      data.forEach((doc) => {
+        if (doc.data().isentered === false) {
+          list.push(doc.data());
+        }
+      });
+      list.sort(function (a: any, b: any) {
+        return a.createdAt - b.createdAt;
+      });
+      return list;
+    });
+    return waitingState;
+  };
+
+  const waitingList = useQuery({
+    queryKey: ["waitingList"],
+    queryFn: getWaitingData,
+  });
+
   // 관리자가 설정한 매장 관리 정보 가져오기
   const getStoreOption = async () => {
     const storeDataState = await getDocs(collection(db, "adminList")).then(
       (data) => {
         let adminData: any;
         data.forEach((doc) => {
-          if (doc.data().uid === loginStateCheck()) {
-            return (adminData = doc.data());
+          if (storeuid === undefined) {
+            if (doc.data().uid === loginStateCheck()) {
+              return (adminData = doc.data());
+            }
+          } else if (storeuid !== undefined) {
+            if (doc.data().uid === storeuid) {
+              return (adminData = doc.data());
+            }
           }
         });
         return adminData;
@@ -181,6 +231,28 @@ const AdminRegisterModal: React.FC<{
         : null;
     }
 
+    const currentWaitingList = waitingList.data;
+    let duplicateCheck;
+    currentWaitingList.forEach((doc: UserData) => {
+      if (doc.tel === userData.tel) {
+        duplicateCheck = true;
+      }
+    });
+
+    if (duplicateCheck === true) {
+      setLoadingState(false);
+      return !toastMsg.isActive("error-duplicateNumber")
+        ? toastMsg({
+            title: "이미 등록된 정보",
+            id: "error-duplicateNumber",
+            description: "이미 해당 번호로 대기를 등록하셨습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : undefined;
+    }
+
     waitingMutation.mutate(userData);
   };
 
@@ -189,28 +261,47 @@ const AdminRegisterModal: React.FC<{
       ...userInfo,
       createdAt: new Date().getTime(),
     };
-
-    const addWaitingData = await addDoc(
-      collection(db, `storeList/${loginStateCheck()}/waitingList`),
-      sendUserData
-    )
-      .then((data) => data)
-      .catch((error) => error.message);
-    return addWaitingData;
+    if (modify === true) {
+      const modifyWaitingData = await setDoc(
+        doc(
+          db,
+          `storeList/${
+            storeuid === undefined ? loginStateCheck() : storeuid
+          }/waitingList`,
+          `${modifyData?.uid}`
+        ),
+        userData
+      )
+        .then((data) => {
+          return "modify-success";
+        })
+        .catch((error) => console.log(error.message));
+      return modifyWaitingData;
+    } else if (modify === false) {
+      const addWaitingData = await addDoc(
+        collection(db, `storeList/${loginStateCheck()}/waitingList`),
+        sendUserData
+      )
+        .then((data) => "register-success")
+        .catch((error) => error.message);
+      return addWaitingData;
+    }
   };
 
   const waitingMutation = useMutation(sendWaitingDataToDatabase, {
     onError: (error, variable) => setLoadingState(false),
     onSuccess: (data, variable, context) => {
-      setLoadingState(false);
-      setUserData(initialState);
-      setInputCheck({
-        customername: false,
-        tel: false,
-      });
-      queryClient.invalidateQueries(["waitingList"]);
-      queryClient.invalidateQueries(["storeOption"]);
-      queryClient.invalidateQueries(["currentWaitingState"]);
+      if (data === "register-success" || data === "modify-success") {
+        setLoadingState(false);
+        setUserData(initialState);
+        setInputCheck({
+          customername: false,
+          tel: false,
+        });
+        queryClient.invalidateQueries(["waitingList"]);
+        queryClient.invalidateQueries(["storeOption"]);
+        queryClient.invalidateQueries(["currentWaitingState"]);
+      }
       onClose();
     },
   });
@@ -266,6 +357,8 @@ const AdminRegisterModal: React.FC<{
                 value={userData.tel}
                 onChange={inputUserText}
                 margin="0.25rem 0"
+                placeholder="'-' 빼고 입력해주세요."
+                isDisabled={modify ? true : false}
               />
               <CommonErrorMsg
                 type="tel"

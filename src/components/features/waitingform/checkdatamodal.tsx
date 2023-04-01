@@ -106,7 +106,7 @@ const CheckDataModal: React.FC<{
                 onClick={() => {
                   onClose();
                   setRegisterState(false);
-                  navigate(`/${storeuid}/waitingstate/${userInfo.tel}`);
+                  navigate(`/store/${storeuid}/waitingstate/${userInfo.tel}`);
                 }}
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               >
@@ -127,7 +127,7 @@ const CheckDataModal: React.FC<{
             작성 내용을 확인해주세요.
           </ModalHeader>
           <ModalBody>
-            <Flex direction="column" margin="0.5rem 0 1.5rem 0">
+            <Flex direction="column" margin="0.5rem 0 1rem 0">
               <Flex
                 direction="row"
                 justifyContent="space-between"
@@ -169,7 +169,6 @@ const CheckDataModal: React.FC<{
                   color="subBlue"
                   fontWeight="600"
                 >
-                  {" "}
                   {userInfo.tel}
                 </Text>
               </Flex>
@@ -217,7 +216,11 @@ const CheckDataModal: React.FC<{
                   {userInfo.child}명
                 </Text>
               </Flex>
-              {userInfo.pet === true ? (
+              {userInfo.pet === true ||
+              userInfo.separate === true ||
+              userInfo.custom1 === true ||
+              userInfo.custom2 === true ||
+              userInfo.custom3 === true ? (
                 <Flex direction="column" margin="0.5rem 0">
                   <FormLabel
                     fontSize={visionState === false ? "1rem" : "1.625rem"}
@@ -231,80 +234,74 @@ const CheckDataModal: React.FC<{
                     direction="column"
                     background="#F9F9F9"
                     margin="0.5rem 0"
-                    padding="0.5rem"
+                    padding="1rem"
+                    gap="0.5rem"
                   >
-                    <UnorderedList>
-                      {userInfo.pet ? (
-                        <ListItem
-                          display="block"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
-                          margin="0.5rem 0"
-                          color="mainBlue"
-                        >
-                          반려 동물이 있어요.
-                        </ListItem>
-                      ) : (
-                        <></>
-                      )}
-                      {userInfo.separate ? (
-                        <ListItem
-                          display="block"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
-                          margin="0.5rem 0"
-                          color="mainBlue"
-                        >
-                          자리가 나면 따로 앉아도 괜찮아요.
-                        </ListItem>
-                      ) : (
-                        <></>
-                      )}
-                      {userInfo.custom1 ? (
-                        <ListItem
-                          display="block"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
-                          margin="0.5rem 0"
-                          color="mainBlue"
-                        >
-                          {custom[0]}
-                        </ListItem>
-                      ) : (
-                        <></>
-                      )}
-                      {userInfo.custom2 ? (
-                        <ListItem
-                          display="block"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
-                          margin="0.5rem 0"
-                          color="mainBlue"
-                        >
-                          {custom[1]}
-                        </ListItem>
-                      ) : (
-                        <></>
-                      )}
-                      {userInfo.custom3 ? (
-                        <ListItem
-                          display="block"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
-                          margin="0.5rem 0"
-                          color="mainBlue"
-                        >
-                          {custom[2]}
-                        </ListItem>
-                      ) : (
-                        <></>
-                      )}
-                    </UnorderedList>
+                    {userInfo.pet ? (
+                      <Text
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        color="mainBlue"
+                      >
+                        반려 동물이 있어요.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.separate ? (
+                      <Text
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        color="mainBlue"
+                      >
+                        자리가 나면 따로 앉아도 괜찮아요.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom1 ? (
+                      <Text
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        color="mainBlue"
+                      >
+                        {custom[0]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom2 ? (
+                      <Text
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        color="mainBlue"
+                      >
+                        {custom[1]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom3 ? (
+                      <Text
+                        display="block"
+                        fontSize={
+                          visionState === false ? "0.75rem" : "1.625rem"
+                        }
+                        color="mainBlue"
+                      >
+                        {custom[2]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
                   </Flex>
                 </Flex>
               ) : (
