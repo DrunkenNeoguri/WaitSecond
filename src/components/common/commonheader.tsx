@@ -46,7 +46,11 @@ const CommonHeader: React.FC<{
       >
         {props.page === "admin" ? (
           <>
-            <AdminRegisterModal isOpen={isOpen} onClose={onClose} />
+            <AdminRegisterModal
+              isOpen={isOpen}
+              onClose={onClose}
+              modify={false}
+            />
             <Flex
               direction="row"
               gap="0.5rem"
@@ -95,6 +99,8 @@ const CommonHeader: React.FC<{
         ) : props.page === "user" ? (
           <>
             <Button
+              display="flex"
+              gap="0.5rem"
               background="none"
               color="#ffffff"
               fontSize="1.625rem"

@@ -187,7 +187,7 @@ const WaitingFormContainer: React.FC = () => {
             duration: 5000,
             isClosable: true,
           })
-        : null;
+        : undefined;
     }
 
     if (userData.name.trim() === "") {
@@ -201,7 +201,7 @@ const WaitingFormContainer: React.FC = () => {
             duration: 5000,
             isClosable: true,
           })
-        : null;
+        : undefined;
     }
 
     if (userData.tel === "" || telRegex.test(userData.tel) === false) {
@@ -215,7 +215,7 @@ const WaitingFormContainer: React.FC = () => {
             duration: 5000,
             isClosable: true,
           })
-        : null;
+        : undefined;
     }
 
     if (userData.child === 0 && userData.adult === 0) {
@@ -229,7 +229,29 @@ const WaitingFormContainer: React.FC = () => {
             duration: 5000,
             isClosable: true,
           })
-        : null;
+        : undefined;
+    }
+
+    const currentWaitingList = waitingList.data;
+    let duplicateCheck;
+    currentWaitingList.forEach((doc: UserData) => {
+      if (doc.tel === userData.tel) {
+        duplicateCheck = true;
+      }
+    });
+
+    if (duplicateCheck === true) {
+      setLoadingState(false);
+      return !toastMsg.isActive("error-duplicateNumber")
+        ? toastMsg({
+            title: "이미 등록된 정보",
+            id: "error-duplicateNumber",
+            description: "이미 해당 번호로 대기를 등록하셨습니다.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : undefined;
     }
     return onOpen();
   };
@@ -387,6 +409,7 @@ const WaitingFormContainer: React.FC = () => {
                     value={userData.tel}
                     onChange={inputUserText}
                     margin="0.25rem 0"
+                    placeholder="'-' 빼고 입력해주세요."
                   />
                   <CommonErrorMsg
                     type="tel"

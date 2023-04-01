@@ -1,12 +1,13 @@
 import { CloseIcon, TriangleDownIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faPhone, faUserPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { StoreOption, UserData } from "../../../utils/typealies";
+import AdminRegisterModal from "./adminregistermodal";
 
 const WaitingDataBlock: React.FC<{
   admin: string;
@@ -17,6 +18,7 @@ const WaitingDataBlock: React.FC<{
 }> = ({ admin, userData, background, storeOption, waitingSetting }) => {
   const [openState, setOpenState] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // 등록된 손님 정보 지우기
   const db = getFirestore();
@@ -56,13 +58,19 @@ const WaitingDataBlock: React.FC<{
 
   return (
     <>
+      <AdminRegisterModal
+        isOpen={isOpen}
+        onClose={onClose}
+        modify={true}
+        modifyData={userData}
+      />
       <Flex
         direction="row"
         padding="0.5rem"
         justify="space-between"
         width="100%"
         backgroundColor={background}
-        borderTop="1px solid black"
+        borderBottom="1px solid black"
         onClick={() => setOpenState(!openState)}
         cursor="pointer"
       >
@@ -170,54 +178,75 @@ const WaitingDataBlock: React.FC<{
 
       {openState ? (
         <Flex
-          direction="column"
-          padding="1rem"
-          justify="flex-start"
-          width="100%"
-          fontSize="0.75rem"
           backgroundColor="#5A5A5A"
-          gap="0.5rem"
+          width="100%"
+          justifyContent="space-between"
+          padding="1rem"
         >
-          <Text color="#ffffff" marginBottom="0.25rem">
-            대기 등록 시간:{" "}
-            {`${createDataTime.getFullYear()}년 ${createDataTime.getMonth()}월 ${createDataTime.getDate()}일 ${createDataTime.getHours()}시 ${createDataTime.getMinutes()}분`}
-          </Text>
-          {!userData.pet &&
-          !userData.separate &&
-          !userData.custom1 &&
-          !userData.custom2 &&
-          !userData.custom3 ? (
-            <></>
-          ) : (
-            <>
-              <Text color="#ffffff">옵션 사항</Text>
-              {userData.pet ? (
-                <Text color="subBlue">반려 동물이 있어요.</Text>
-              ) : (
-                <></>
-              )}
-              {userData.separate ? (
-                <Text color="subBlue">자리가 나면 따로 앉아도 괜찮아요.</Text>
-              ) : (
-                <></>
-              )}
-              {userData.custom1 ? (
-                <Text color="subBlue">{storeOption.customOption1Name}</Text>
-              ) : (
-                <></>
-              )}
-              {userData.custom2 ? (
-                <Text color="subBlue">{storeOption.customOption2Name}</Text>
-              ) : (
-                <></>
-              )}
-              {userData.custom3 ? (
-                <Text color="subBlue">{storeOption.customOption3Name}</Text>
-              ) : (
-                <></>
-              )}
-            </>
-          )}
+          <Flex
+            direction="column"
+            justify="flex-start"
+            fontSize="0.75rem"
+            gap="0.5rem"
+          >
+            <Text color="#ffffff" marginBottom="0.25rem">
+              대기 등록 시간:{" "}
+              {`${createDataTime.getFullYear()}년 ${createDataTime.getMonth()}월 ${createDataTime.getDate()}일 ${createDataTime.getHours()}시 ${createDataTime.getMinutes()}분`}
+            </Text>
+            {!userData.pet &&
+            !userData.separate &&
+            !userData.custom1 &&
+            !userData.custom2 &&
+            !userData.custom3 ? (
+              <></>
+            ) : (
+              <>
+                <Text color="#ffffff">옵션 사항</Text>
+                {userData.pet ? (
+                  <Text color="subBlue">반려 동물이 있어요.</Text>
+                ) : (
+                  <></>
+                )}
+                {userData.separate ? (
+                  <Text color="subBlue">자리가 나면 따로 앉아도 괜찮아요.</Text>
+                ) : (
+                  <></>
+                )}
+                {userData.custom1 ? (
+                  <Text color="subBlue">{storeOption.customOption1Name}</Text>
+                ) : (
+                  <></>
+                )}
+                {userData.custom2 ? (
+                  <Text color="subBlue">{storeOption.customOption2Name}</Text>
+                ) : (
+                  <></>
+                )}
+                {userData.custom3 ? (
+                  <Text color="subBlue">{storeOption.customOption3Name}</Text>
+                ) : (
+                  <></>
+                )}
+              </>
+            )}
+          </Flex>
+          <Button
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            width="3rem"
+            height="3rem"
+            backgroundColor="#FFFFFF"
+            fontSize="0.625rem"
+            color="#333333"
+            fontWeight="normal"
+            gap="0.25rem"
+            onClick={onOpen}
+          >
+            <FontAwesomeIcon icon={faUserPen} fontSize="1.25rem" />
+            정보 수정
+          </Button>
         </Flex>
       ) : (
         <></>
