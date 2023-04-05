@@ -5,7 +5,7 @@ import AdminPage from "../layouts/adminpage";
 const AdminVerified: React.FC = () => {
   return (
     <AdminPage>
-      <CommonHeader page="admin" />
+      <CommonHeader page="none" />
       <AdminVerifiedContainer />
     </AdminPage>
   );
