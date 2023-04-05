@@ -13,6 +13,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  Image,
   Text,
   useDisclosure,
   useToast,
@@ -262,12 +263,14 @@ const WaitingFormContainer: React.FC = () => {
 
   return (
     <section>
-      <Box
-        background="#58a6dc"
-        display="block"
-        height="13rem"
-        marginTop="3.5rem"
-      />
+      <Box display="flex" height="13rem" marginTop="3.5rem" overflow="hidden">
+        <Image
+          src={storeOption.data?.storebg}
+          objectFit="cover"
+          height="100%"
+          width="100%"
+        />
+      </Box>
       <CheckDataModal
         isOpen={isOpen}
         loadingState={setLoadingState}
