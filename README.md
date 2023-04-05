@@ -23,13 +23,15 @@
 
 ### **📃 주요 페이지 및 기능**
 
-- 사용자 페이지
-  - 전화번호, 인원만 입력하면 가게 대기열에 추가할 수 있는 웨이팅 입력 페이지
-  - (희망) 카카오 API를 통해 내 번호로 전달되는 카톡 알림
+- 고객 페이지
+  - 필수 정보만 입력하면 매장 대기열에 등록할 수 있습니다.
+  - 기다리는 중, 수정되어야 할 사항이 있다면 수정 버튼을 통해서 언제든지 등록한 정보를 수정할 수 있습니다.
+  - 내 정보 페이지를 벗어나도, 매장 페이지에서 연락처만 입력하면 언제든 내 대기 정보를 확인할 수 있습니다.
 - 관리자 페이지
-  - 현재 대기열을 확인하고 대기 손님을 호출하거나 수정, 삭제할 수 있는 관리 페이지
-  - (희망) 카카오 API를 통해 대기 손님의 순번에 따라 카카오 API를 통해 카톡 메시지 전송
-  - 웨이팅 입력 페이지 내 애견 동반 가능 여부나 아이들 인원 파악 등 여러 조건들을 설정할 수 있는 설정 페이지
+  - 현재 대기열을 확인하고 대기 손님에게 전화를 걸거나 대기 정보를 등록, 수정, 입장 완료 처리할 수 있습니다.
+  - 기다리는 고객들의 정보와 필요에 따라 추가할 수 있는 매장 옵션 등, 매장 관리 페이지에서 내 매장과 관련한 사항을 설정할 수 있습니다.
+  - 위에서 설정한 사항들은 고객 페이지에 반영이 되며, 경우에 따라 매장의 대기 접수를 개시하거나 마감할 수 있습니다.
+  - 그 밖에도 본 사이트를 이용하기 위한 위한 기본적인 회원 가입 및 로그인, 비밀번호 찾기, 변경 등의 계정 관련 기능을 이용할 수 있습니다.
 
 ### **🖼️ 프로젝트 시연**
 
@@ -40,19 +42,15 @@
 - **Base**
   - HTML5, CSS3, JavaScript, [TypeScript](https://www.typescriptlang.org/)
 - **Frontend**
-  - [React](https://ko.reactjs.org/)
+  - [React](https://react.dev/)
   - [Recoil](https://recoiljs.org/ko/)
   - [TanStack-Query (React-Query)](https://tanstack.com/query/latest)
-  - [Jest](https://jestjs.io/)
-  - [StoryBook](https://storybook.js.org/)
+  - [Chakra UI](https://chakra-ui.com/)
+  - [FontAwesome](https://fontawesome.com/)
 - **Backend | CI/CD**
-  - [Firebase v9](https://console.firebase.google.com/u/0/)
-  - [flask](https://docs.github.com/ko/actions)
-  - [mongoDB](https://www.mongodb.com/)
+  - [Firebase Firestore](https://firebase.google.com/?hl=ko)
+  - [Firebase Auth](https://firebase.google.com/?hl=ko)
   - [vercel](https://vercel.com/)
-  - [github actions](https://docs.github.com/ko/actions)
-
-(현재 검토중입니다.)
 
 ### ℹ️ 프로젝트
 
@@ -66,10 +64,10 @@
 
 [기술 스택 의사결정 (작성중)](https://www.notion.so/4fea13e237c24e25a27eb501fb9e44ea)
 
-[브랜치 관리 및 커밋 규칙 (작성중)](https://www.notion.so/0226b56898894c66bc8d07e072ff778c)
+[브랜치 관리 및 커밋 규칙](https://www.notion.so/0226b56898894c66bc8d07e072ff778c)
 
 **👥 팀 정보**
 
 [팀/작업자 소개](https://www.notion.so/c061f6dfaba84a2c8117d367ac298285)
 
-[개발 기록 / 블로그](https://www.notion.so/16820606e543467d917e2e61c31f0923)
+[개발 기록 / 블로그](https://develop-neoguri.notion.site/Re-da4bf54e1c5e40f1b2e8a22790e2d55e)
