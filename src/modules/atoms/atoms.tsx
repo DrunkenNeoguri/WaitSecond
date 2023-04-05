@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export const testAtom = atom<string>({
-  key: "string",
-  default: "asgsag",
+export const lowVisionState = atom<boolean>({
+  key: "lowvision",
+  default: false,
 });

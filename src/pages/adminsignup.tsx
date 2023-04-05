@@ -1,14 +1,14 @@
 import CommonHeader from "../components/common/commonheader";
-import AdminLoginContainer from "../components/features/adminlogin/adminlogincontainer";
+import AdminSignUpContainer from "../components/features/adminsignup/adminsignupcontainer";
 import AdminPage from "../layouts/adminpage";
 
-const AdminLogin: React.FC = () => {
+const AdminSignUp: React.FC = () => {
   return (
     <AdminPage>
       <CommonHeader page="none" />
-      <AdminLoginContainer />
+      <AdminSignUpContainer />
     </AdminPage>
   );
 };
 
-export default AdminLogin;
+export default AdminSignUp;
