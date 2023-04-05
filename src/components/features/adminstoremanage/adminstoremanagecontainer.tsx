@@ -11,7 +11,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { getAuth } from "firebase/auth";
 import { EventObject, StoreOption } from "../../../utils/typealies";
 import {
   collection,
@@ -26,14 +25,20 @@ import CommonErrorMsg from "../../common/commonerrormsg";
 import { useNavigate } from "react-router-dom";
 import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 import CommonLoadingModal from "../../common/commonloadingmodal";
+import { loginStateCheck } from "../../../utils/verifiedcheck";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminStoreManageContainer: React.FC = () => {
+  useTitle("매장 관리 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "매장 관리 ::: 웨잇세컨드",
+  });
   const db = getFirestore();
-  const firebaseAuth = getAuth();
+  // const firebaseAuth = getAuth();
   const queryClient = useQueryClient();
   const toastMsg = useToast();
   const navigate = useNavigate();
-  const currentUser = firebaseAuth.currentUser?.uid;
+  const currentUser = loginStateCheck();
 
   // interface에서 class로 바꿀 수 있는지 확인해보기
   const initialState = {
@@ -220,7 +225,6 @@ const AdminStoreManageContainer: React.FC = () => {
           direction="column"
           border="none"
           padding="2rem 1.5rem"
-          margin="-2rem 0"
           background="#FFFFFF"
           boxSizing="border-box"
         >
@@ -254,7 +258,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 </FormLabel>
                 <Box background="#8D8D8D" width="100%" height="180px" />
                 <Button
-                  type="submit"
+                  type="button"
                   variant="solid"
                   background="mainBlue"
                   padding="0.5rem auto"
@@ -525,7 +529,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     type="text"
                     size="md"
                     background="#F9F9F9"
-                    border="1px solid #F1F1F1"
+                    borderColor="#B4B4B4"
                     width="100%"
                     _focus={{ background: "#FFFFFF" }}
                   />
@@ -597,7 +601,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     type="text"
                     size="md"
                     background="#F9F9F9"
-                    border="1px solid #F1F1F1"
+                    borderColor="#B4B4B4"
                     width="100%"
                     _focus={{ background: "#FFFFFF" }}
                   />
@@ -669,7 +673,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     type="text"
                     size="md"
                     background="#F9F9F9"
-                    border="1px solid #F1F1F1"
+                    borderColor="#B4B4B4"
                     width="100%"
                     _focus={{ background: "#FFFFFF" }}
                   />

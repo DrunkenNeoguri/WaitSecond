@@ -25,6 +25,7 @@ import { useQuery } from "@tanstack/react-query";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import CommonCloseBox from "../../common/commonclosebox";
 import CommonFullBox from "../../common/commonfullbox";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData(
@@ -98,6 +99,9 @@ const WaitingFormContainer: React.FC = () => {
     queryKey: ["storeOption"],
     queryFn: getStoreOption,
   });
+
+  useTitle(`${storeOption.data?.storeName} ::: 웨잇세컨드`);
+  useMetaTag({ title: `${storeOption.data?.storeName} ::: 웨잇세컨드` });
 
   // Func - Input User Data
   const inputUserText = (e: React.ChangeEvent) => {

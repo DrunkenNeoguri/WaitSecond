@@ -28,8 +28,13 @@ import { passwordRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
 import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminChangePasswordContainer: React.FC = () => {
+  useTitle("비밀번호 변경 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "비밀번호 변경 ::: 웨잇세컨드",
+  });
   const firebaseAuth = getAuth();
   const currentUser = firebaseAuth.currentUser!;
 
@@ -227,7 +232,6 @@ const AdminChangePasswordContainer: React.FC = () => {
         direction="column"
         border="none"
         padding="2rem 1.5rem"
-        margin="-2rem 0"
         background="#FFFFFF"
         boxSizing="border-box"
         height="100vh"

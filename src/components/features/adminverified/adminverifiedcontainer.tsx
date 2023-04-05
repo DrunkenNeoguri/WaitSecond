@@ -19,6 +19,7 @@ import { passwordRegex } from "../../../utils/reqlist";
 import { AdminData, EventObject } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminVerifiedContainer = () => {
   const initialState = new AdminData("", "", "");
@@ -33,6 +34,23 @@ const AdminVerifiedContainer = () => {
 
   const [searchParams] = useSearchParams();
 
+  useTitle(
+    `${
+      searchParams.get("mode") === "verifyEmail"
+        ? "이메일 인증 ::: 웨잇세컨드"
+        : searchParams.get("mode") === "resetPassword"
+        ? "비밀번호 초기화 ::: 웨잇세컨드"
+        : "맛집을 기다릴 땐, 웨잇세컨드!"
+    }`
+  );
+  useMetaTag({
+    title:
+      searchParams.get("mode") === "verifyEmail"
+        ? "이메일 인증 ::: 웨잇세컨드"
+        : searchParams.get("mode") === "resetPassword"
+        ? "비밀번호 초기화 ::: 웨잇세컨드"
+        : "맛집을 기다릴 땐, 웨잇세컨드!",
+  });
   const firebaseAuth = getAuth();
   const actionCode = searchParams.get("oobCode");
   const navigate = useNavigate();

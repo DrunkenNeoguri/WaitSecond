@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  Image,
   Link,
   Text,
   useToast,
@@ -20,6 +21,7 @@ import { telRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import CommonCloseBox from "../../common/commonclosebox";
 import CommonFullBox from "../../common/commonfullbox";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const WaitingMainContainer: React.FC = () => {
   const { storeuid } = useParams();
@@ -86,6 +88,9 @@ const WaitingMainContainer: React.FC = () => {
     queryFn: getStoreOption,
   });
 
+  useTitle(`${storeOption.data?.storeName} ::: 웨잇세컨드`);
+  useMetaTag({ title: `${storeOption.data?.storeName} ::: 웨잇세컨드` });
+
   const moveToWaitingStatePage = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -124,12 +129,14 @@ const WaitingMainContainer: React.FC = () => {
 
   return (
     <section>
-      <Box
-        background="#58a6dc"
-        display="block"
-        height="13rem"
-        marginTop="3.5rem"
-      />
+      <Box display="flex" height="13rem" marginTop="3.5rem" overflow="hidden">
+        <Image
+          src={storeOption.data?.storebg}
+          objectFit="cover"
+          height="100%"
+          width="100%"
+        />
+      </Box>
       <Flex
         as="article"
         direction="column"

@@ -20,7 +20,7 @@ export const CommonInput = (props: TypedCommonInput) => {
       <Input
         size="md"
         background="#F9F9F9"
-        border="1px solid #F1F1F1"
+        borderColor="#B4B4B4"
         id={props.id}
         value={props.value}
         type={props.type}
