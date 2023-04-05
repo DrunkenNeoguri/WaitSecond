@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Checkbox,
   Flex,
@@ -307,113 +308,40 @@ const AdminLoginContainer = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <Flex
-        as="section"
-        direction="column"
-        position="relative"
-        background="#ffffff"
-        padding="2rem 1.5rem"
-        margin="0 1rem"
-        border="none"
-        borderRadius="1rem"
-        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-      >
-        <Heading as="h1" textAlign="center">
-          웨잇세컨드
-        </Heading>
-        <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
-          {isVerified ? "계정 인증 이메일 전송 안내" : "관리자 로그인"}
-        </Heading>
-        {isVerified ? (
-          <>
-            <Flex
-              direction="column"
-              fontSize="1rem"
-              lineHeight="1.5rem"
-              wordBreak="keep-all"
-              textAlign="left"
-              letterSpacing="-1px"
-              margin="1rem 0"
-              gap="1rem"
-            >
-              입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
-              <br />
-              <br />
-              받으신 이메일 속의 링크를 눌러 인증을 진행해주세요.
-              <br />
-              <br />
-              해당 페이지는 이제 닫으셔도 괜찮습니다.
-            </Flex>
-            <Button
-              type="submit"
-              variant="solid"
-              background="mainBlue"
-              padding="0.5rem auto"
-              fontSize="1.25rem"
-              borderRadius="0.25rem"
-              color="#ffffff"
-              width="100%"
-              height="3rem"
-              margin="1.5rem 0 1rem 0"
-              onClick={() => setIsVerified(false)}
-            >
-              로그인 다시 하기
-            </Button>
-          </>
-        ) : (
-          <form onSubmit={submitLoginData}>
-            <FormControl>
-              <CommonInput
-                id="email"
-                title="이메일 아이디"
-                type="email"
-                value={loginData.email!}
-                onChange={inputLoginData}
-                margin="0.25rem 0"
+      <Box as="article" padding="2rem 0">
+        <Flex
+          direction="column"
+          background="#ffffff"
+          padding="2rem 1.5rem"
+          margin="0 1rem"
+          borderRadius="1rem"
+          boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+        >
+          <Heading as="h1" textAlign="center">
+            웨잇세컨드
+          </Heading>
+          <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
+            {isVerified ? "계정 인증 이메일 전송 안내" : "관리자 로그인"}
+          </Heading>
+          {isVerified ? (
+            <>
+              <Flex
+                direction="column"
                 fontSize="1rem"
-              />
-              <CommonErrorMsg
-                type="email"
-                value1={loginData.email!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
-              <CommonInput
-                id="password"
-                title="비밀번호"
-                type="password"
-                value={loginData.password!}
-                onChange={inputLoginData}
-                margin="0.25rem 0"
-                fontSize="1rem"
-                maxLength={20}
-              />
-              <CommonErrorMsg
-                type="password"
-                value1={loginData.password!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
-              <Flex direction="row" justify="space-between" margin="0.75rem 0">
-                <Flex direction="row">
-                  <Checkbox
-                    size="md"
-                    id="autoLogin"
-                    onChange={() => setSaveEmailState(!saveEmailState)}
-                    isChecked={saveEmailState ? true : false}
-                  ></Checkbox>
-                  <FormLabel
-                    htmlFor="autoLogin"
-                    margin="0 0.5rem"
-                    cursor="pointer"
-                  >
-                    이메일 저장
-                  </FormLabel>
-                </Flex>
-
-                <Link as={ReactRouterLink} to="/adminfindpassword">
-                  비밀번호 찾기
-                </Link>
+                lineHeight="1.5rem"
+                wordBreak="keep-all"
+                textAlign="left"
+                letterSpacing="-1px"
+                margin="1rem 0"
+                gap="1rem"
+              >
+                입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
+                <br />
+                <br />
+                받으신 이메일 속의 링크를 눌러 인증을 진행해주세요.
+                <br />
+                <br />
+                해당 페이지는 이제 닫으셔도 괜찮습니다.
               </Flex>
               <Button
                 type="submit"
@@ -426,30 +354,106 @@ const AdminLoginContainer = () => {
                 width="100%"
                 height="3rem"
                 margin="1.5rem 0 1rem 0"
-                onClick={submitLoginData}
-                isLoading={loadingState}
+                onClick={() => setIsVerified(false)}
               >
-                로그인
+                로그인 다시 하기
               </Button>
-              <Button
-                type="submit"
-                variant="solid"
-                background="#5A5A5A"
-                padding="0.5rem auto"
-                fontSize="1.25rem"
-                borderRadius="0.25rem"
-                color="#ffffff"
-                width="100%"
-                height="3rem"
-                margin="0.5 01rem 0"
-                onClick={() => navigate("/adminsignup")}
-              >
-                회원가입
-              </Button>
-            </FormControl>
-          </form>
-        )}
-      </Flex>
+            </>
+          ) : (
+            <form onSubmit={submitLoginData}>
+              <FormControl>
+                <CommonInput
+                  id="email"
+                  title="이메일 아이디"
+                  type="email"
+                  value={loginData.email!}
+                  onChange={inputLoginData}
+                  margin="0.25rem 0"
+                  fontSize="1rem"
+                />
+                <CommonErrorMsg
+                  type="email"
+                  value1={loginData.email!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
+                <CommonInput
+                  id="password"
+                  title="비밀번호"
+                  type="password"
+                  value={loginData.password!}
+                  onChange={inputLoginData}
+                  margin="0.25rem 0"
+                  fontSize="1rem"
+                  maxLength={20}
+                />
+                <CommonErrorMsg
+                  type="password"
+                  value1={loginData.password!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
+                <Flex
+                  direction="row"
+                  justify="space-between"
+                  margin="0.75rem 0"
+                >
+                  <Flex direction="row">
+                    <Checkbox
+                      size="md"
+                      id="autoLogin"
+                      onChange={() => setSaveEmailState(!saveEmailState)}
+                      isChecked={saveEmailState ? true : false}
+                    ></Checkbox>
+                    <FormLabel
+                      htmlFor="autoLogin"
+                      margin="0 0.5rem"
+                      cursor="pointer"
+                    >
+                      이메일 저장
+                    </FormLabel>
+                  </Flex>
+
+                  <Link as={ReactRouterLink} to="/adminfindpassword">
+                    비밀번호 찾기
+                  </Link>
+                </Flex>
+                <Button
+                  type="submit"
+                  variant="solid"
+                  background="mainBlue"
+                  padding="0.5rem auto"
+                  fontSize="1.25rem"
+                  borderRadius="0.25rem"
+                  color="#ffffff"
+                  width="100%"
+                  height="3rem"
+                  margin="1.5rem 0 1rem 0"
+                  onClick={submitLoginData}
+                  isLoading={loadingState}
+                >
+                  로그인
+                </Button>
+                <Button
+                  type="submit"
+                  variant="solid"
+                  background="#5A5A5A"
+                  padding="0.5rem auto"
+                  fontSize="1.25rem"
+                  borderRadius="0.25rem"
+                  color="#ffffff"
+                  width="100%"
+                  height="3rem"
+                  margin="0.5 01rem 0"
+                  onClick={() => navigate("/adminsignup")}
+                >
+                  회원가입
+                </Button>
+              </FormControl>
+            </form>
+          )}
+        </Flex>
+      </Box>
     </>
   );
 };

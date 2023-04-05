@@ -1,4 +1,11 @@
-import { Button, Flex, FormControl, Heading, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  Heading,
+  useToast,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { CommonInput } from "../../common/commoninput";
 import { AdminData, EventObject, StoreOption } from "../../../utils/typealies";
@@ -187,155 +194,154 @@ const AdminSignUpContainer: React.FC = () => {
   };
 
   return (
-    <Flex
-      as="section"
-      direction="column"
-      position="relative"
-      background="#ffffff"
-      padding="2rem 1.5rem"
-      margin="0 1rem"
-      border="none"
-      borderRadius="1rem"
-      boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-    >
-      <Heading as="h1" textAlign="center">
-        웨잇세컨드
-      </Heading>
-      {!signUpState ? (
-        <>
-          <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
-            회원가입
-          </Heading>
-          <form onSubmit={submitSignUpData}>
-            <FormControl>
-              <CommonInput
-                direction="column"
-                id="email"
-                title="이메일 아이디"
-                type="email"
-                value={signUpData.email}
-                onChange={inputSignUpData}
-                margin="0.25rem 0"
-              />
-              <CommonErrorMsg
-                type="email"
-                value1={signUpData.email!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
+    <Box as="article" padding="2rem 0">
+      <Flex
+        direction="column"
+        background="#ffffff"
+        padding="2rem 1.5rem"
+        margin="0 1rem"
+        borderRadius="1rem"
+        boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+      >
+        <Heading as="h1" textAlign="center">
+          웨잇세컨드
+        </Heading>
+        {!signUpState ? (
+          <>
+            <Heading as="h2" fontSize="1.25rem" padding="2rem 0">
+              회원가입
+            </Heading>
+            <form onSubmit={submitSignUpData}>
+              <FormControl>
+                <CommonInput
+                  direction="column"
+                  id="email"
+                  title="이메일 아이디"
+                  type="email"
+                  value={signUpData.email}
+                  onChange={inputSignUpData}
+                  margin="0.25rem 0"
+                />
+                <CommonErrorMsg
+                  type="email"
+                  value1={signUpData.email!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
 
-              <CommonInput
-                id="password"
-                title="비밀번호"
-                type="password"
-                value={signUpData.password!}
-                onChange={inputSignUpData}
-                margin="0.25rem 0"
-                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
-                maxLength={20}
-              />
-              <CommonErrorMsg
-                type="password"
-                value1={signUpData.password!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
+                <CommonInput
+                  id="password"
+                  title="비밀번호"
+                  type="password"
+                  value={signUpData.password!}
+                  onChange={inputSignUpData}
+                  margin="0.25rem 0"
+                  placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                  maxLength={20}
+                />
+                <CommonErrorMsg
+                  type="password"
+                  value1={signUpData.password!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
 
-              <CommonInput
-                id="passwordcheck"
-                title="비밀번호 확인"
-                type="password"
-                value={signUpData.passwordcheck!}
-                onChange={inputSignUpData}
-                margin="0.25rem 0"
-                placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
-                maxLength={20}
-              />
-              <CommonErrorMsg
-                type="passwordcheck"
-                value1={signUpData.passwordcheck!}
-                value2={signUpData.password!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
+                <CommonInput
+                  id="passwordcheck"
+                  title="비밀번호 확인"
+                  type="password"
+                  value={signUpData.passwordcheck!}
+                  onChange={inputSignUpData}
+                  margin="0.25rem 0"
+                  placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                  maxLength={20}
+                />
+                <CommonErrorMsg
+                  type="passwordcheck"
+                  value1={signUpData.passwordcheck!}
+                  value2={signUpData.password!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
 
-              <CommonInput
-                id="storename"
-                title="가게명"
-                type="text"
-                value={signUpData.storename!}
-                onChange={inputSignUpData}
-                margin="0.25rem 0"
-                placeholder="20자 이내"
-                maxLength={20}
-              />
-              <CommonErrorMsg
-                type="storename"
-                value1={signUpData.storename!}
-                inputCheck={inputCheck}
-                fontSize="0.75rem"
-              />
+                <CommonInput
+                  id="storename"
+                  title="가게명"
+                  type="text"
+                  value={signUpData.storename!}
+                  onChange={inputSignUpData}
+                  margin="0.25rem 0"
+                  placeholder="20자 이내"
+                  maxLength={20}
+                />
+                <CommonErrorMsg
+                  type="storename"
+                  value1={signUpData.storename!}
+                  inputCheck={inputCheck}
+                  fontSize="0.75rem"
+                />
 
-              <Button
-                type="submit"
-                variant="solid"
-                background="mainBlue"
-                padding="0.5rem auto"
-                fontSize="1.25rem"
-                borderRadius="0.25rem"
-                color="#ffffff"
-                width="100%"
-                height="3rem"
-                marginTop="1rem"
-                onClick={submitSignUpData}
-                isLoading={loadingState}
-              >
-                다음으로
-              </Button>
-            </FormControl>
-          </form>
-        </>
-      ) : (
-        <>
-          <Heading as="h2" fontSize="1.25rem" padding="2rem 0 1rem 0">
-            계정 인증 이메일 전송 안내
-          </Heading>
-          <Flex
-            direction="column"
-            fontSize="1rem"
-            lineHeight="1.5rem"
-            wordBreak="keep-all"
-            textAlign="left"
-            letterSpacing="-1px"
-            margin="1rem 0"
-            gap="1rem"
-          >
-            입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
-            <br />
-            <br />
-            받으신 이메일 속의 링크를 눌러 인증을 진행해주세요.
-            <br />
-            <br />
-            해당 페이지는 이제 닫으셔도 괜찮습니다.
-          </Flex>
-          <Button
-            type="submit"
-            variant="solid"
-            background="mainBlue"
-            padding="0.5rem auto"
-            fontSize="1.25rem"
-            borderRadius="0.25rem"
-            color="#ffffff"
-            width="100%"
-            height="3rem"
-            margin="1.5rem 0 1rem 0"
-            onClick={() => navigate("/adminlogin")}
-          >
-            로그인 페이지로 이동
-          </Button>
-        </>
-      )}
-    </Flex>
+                <Button
+                  type="submit"
+                  variant="solid"
+                  background="mainBlue"
+                  padding="0.5rem auto"
+                  fontSize="1.25rem"
+                  borderRadius="0.25rem"
+                  color="#ffffff"
+                  width="100%"
+                  height="3rem"
+                  marginTop="1rem"
+                  onClick={submitSignUpData}
+                  isLoading={loadingState}
+                >
+                  다음으로
+                </Button>
+              </FormControl>
+            </form>
+          </>
+        ) : (
+          <>
+            <Heading as="h2" fontSize="1.25rem" padding="2rem 0 1rem 0">
+              계정 인증 이메일 전송 안내
+            </Heading>
+            <Flex
+              direction="column"
+              fontSize="1rem"
+              lineHeight="1.5rem"
+              wordBreak="keep-all"
+              textAlign="left"
+              letterSpacing="-1px"
+              margin="1rem 0"
+              gap="1rem"
+            >
+              입력하신 이메일 아이디로 계정 인증을 위한 메일을 보내드렸습니다.
+              <br />
+              <br />
+              받으신 이메일 속의 링크를 눌러 인증을 진행해주세요.
+              <br />
+              <br />
+              해당 페이지는 이제 닫으셔도 괜찮습니다.
+            </Flex>
+            <Button
+              type="submit"
+              variant="solid"
+              background="mainBlue"
+              padding="0.5rem auto"
+              fontSize="1.25rem"
+              borderRadius="0.25rem"
+              color="#ffffff"
+              width="100%"
+              height="3rem"
+              margin="1.5rem 0 1rem 0"
+              onClick={() => navigate("/adminlogin")}
+            >
+              로그인 페이지로 이동
+            </Button>
+          </>
+        )}
+      </Flex>
+    </Box>
   );
 };
 

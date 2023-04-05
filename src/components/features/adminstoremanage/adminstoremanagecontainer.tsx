@@ -6,6 +6,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  Image,
   Input,
   Text,
   useToast,
@@ -256,7 +257,14 @@ const AdminStoreManageContainer: React.FC = () => {
                 <FormLabel fontSize="1rem" fontWeight="semibold">
                   배경 이미지
                 </FormLabel>
-                <Box background="#8D8D8D" width="100%" height="180px" />
+                <Box background="#8D8D8D" width="100%" height="12rem">
+                  <Image
+                    src={storeData.storebg}
+                    objectFit="cover"
+                    height="100%"
+                    width="100%"
+                  />
+                </Box>
                 <Button
                   type="button"
                   variant="solid"
