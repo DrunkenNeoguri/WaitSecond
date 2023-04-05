@@ -1,9 +1,9 @@
-import { Button, Heading, Text } from "@chakra-ui/react";
+import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../modules/atoms/atoms";
 
-const CommonCloseBox = () => {
+const CommonCloseBox: React.FC<{}> = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const { storeuid } = useParams();
   const location = useLocation();
@@ -11,22 +11,24 @@ const CommonCloseBox = () => {
 
   return (
     <>
-      <Heading
-        as="h2"
-        fontSize="1.25rem"
-        letterSpacing="-0.05rem"
-        padding="2rem 0"
-        textAlign="center"
-      >
-        대기 접수 마감 안내
-      </Heading>
-      <Text as="p" fontSize="1rem" textAlign="center" lineHeight="1.5rem">
-        현재 매장 내 대기 접수 마감된 상태입니다. <br />
-        다음에 다시 이용해주십시오.
-        <br />
-        <br />
-        감사합니다.
-      </Text>
+      <Flex direction="column" padding="1rem 0" gap="1rem" wordBreak="keep-all">
+        <Heading
+          as="h2"
+          fontSize={visionState ? "1.625rem" : "1.25rem"}
+          letterSpacing="-0.05rem"
+          textAlign="center"
+        >
+          대기 접수 마감 안내
+        </Heading>
+        <Text
+          as="p"
+          fontSize={visionState ? "1.625rem" : "1rem"}
+          textAlign="center"
+          lineHeight={visionState ? "2.25rem" : "1.5rem"}
+        >
+          금일 대기 접수는 마감되었습니다.
+        </Text>
+      </Flex>
       {location.pathname === `/store/${storeuid}/waitingform` ? (
         <Button
           type="button"

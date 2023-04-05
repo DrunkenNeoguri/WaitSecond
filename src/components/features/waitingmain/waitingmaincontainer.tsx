@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  Image,
   Link,
   Text,
   useToast,
@@ -20,6 +21,7 @@ import { telRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import CommonCloseBox from "../../common/commonclosebox";
 import CommonFullBox from "../../common/commonfullbox";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const WaitingMainContainer: React.FC = () => {
   const { storeuid } = useParams();
@@ -86,6 +88,9 @@ const WaitingMainContainer: React.FC = () => {
     queryFn: getStoreOption,
   });
 
+  useTitle(`${storeOption.data?.storeName} ::: 웨잇세컨드`);
+  useMetaTag({ title: `${storeOption.data?.storeName} ::: 웨잇세컨드` });
+
   const moveToWaitingStatePage = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -124,12 +129,14 @@ const WaitingMainContainer: React.FC = () => {
 
   return (
     <section>
-      <Box
-        background="#58a6dc"
-        display="block"
-        height="13rem"
-        marginTop="3.5rem"
-      />
+      <Box display="flex" height="13rem" marginTop="3.5rem" overflow="hidden">
+        <Image
+          src={storeOption.data?.storebg}
+          objectFit="cover"
+          height="100%"
+          width="100%"
+        />
+      </Box>
       <Flex
         as="article"
         direction="column"
@@ -137,6 +144,7 @@ const WaitingMainContainer: React.FC = () => {
         padding="1rem"
         border="none"
         top="-4rem"
+        wordBreak="keep-all"
       >
         <Heading
           as="h1"
@@ -148,92 +156,101 @@ const WaitingMainContainer: React.FC = () => {
             ? "불러오는중불러오는중불러오는중불러오는중"
             : storeOption.data.storeName}
         </Heading>
+
+        <Flex
+          direction="row"
+          justify="space-between"
+          align="center"
+          fontSize={visionState ? "1.625rem" : "1.5rem"}
+          fontWeight="semibold"
+          letterSpacing="-0.1rem"
+          margin="0.5rem 0 1rem 0"
+        >
+          <Text>현재 대기팀</Text>
+          <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
+            {waitingList.data === undefined
+              ? "확인 중"
+              : waitingList.data.length === 0
+              ? "없음"
+              : `${waitingList.data.length} 팀`}
+          </Text>
+        </Flex>
         {storeOption.data?.waitingState ? (
-          storeOption.data.maximumWaitingTeamCount <=
+          storeOption.data!.maximumWaitingTeamCount <=
           waitingList.data.length ? (
             <CommonFullBox data={waitingList.data} />
           ) : (
-            <>
-              <Flex
-                direction="row"
-                justify="space-between"
-                align="center"
-                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                fontWeight="semibold"
-                letterSpacing="-0.1rem"
-                margin="0.5rem 0 1rem 0"
+            <Flex direction="column" fontSize="1rem" margin="1rem 0">
+              <Text
+                fontSize={visionState ? "1.625rem" : "1rem"}
+                color="mainBlue"
               >
-                <Text>현재 대기팀</Text>
-                <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
-                  {waitingList.data === undefined
-                    ? "확인 중"
-                    : waitingList.data.length === 0
-                    ? "없음"
-                    : `${waitingList.data.length} 팀`}
-                </Text>
-              </Flex>
-              <Flex direction="column" fontSize="1rem" margin="1rem 0">
-                <Text>대기 등록을 원하시면</Text>
-                <Link
-                  as={ReactRouterLink}
-                  to={`${location.pathname}/waitingform`}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  background="mainBlue"
-                  fontWeight="semibold"
-                  fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                  color="#FFFFFF"
-                  padding="0.5rem auto"
-                  margin="1rem 0"
-                  borderRadius="0.25rem"
-                  height="3rem"
-                  width="100%"
-                  _hover={{ textDecoration: "none", background: "#E2E8F0" }}
-                >
-                  대기 등록
-                </Link>
-              </Flex>
-              <Flex direction="column" fontSize="1rem" margin="1rem 0">
-                <Text>이미 대기 등록을 하셨다면</Text>
-                <form onSubmit={moveToWaitingStatePage}>
-                  <Flex direction="column" margin="0.5rem 0 0.5rem 0">
-                    <CommonInput
-                      id="tel"
-                      title="등록하신 연락처"
-                      type="tel"
-                      value={telInput}
-                      onChange={inputUserTelNumber}
-                      margin="0.25rem 0"
-                      placeholder="'-' 빼고 입력해주세요."
-                    />
-                    <CommonErrorMsg
-                      type="tel"
-                      value1={telInput}
-                      inputCheck={{ tel: inputCheck }}
-                    />
-                  </Flex>
-                  <Button
-                    type="submit"
-                    background="mainBlue"
-                    fontWeight="semibold"
-                    fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-                    color="#FFFFFF"
-                    padding="0.5rem auto"
-                    margin="0.5rem 0"
-                    borderRadius="0.25rem"
-                    height="3rem"
-                    width="100%"
-                  >
-                    대기 상태 확인
-                  </Button>
-                </form>
-              </Flex>
-            </>
+                대기 등록을 원하시면
+              </Text>
+              <Link
+                as={ReactRouterLink}
+                to={`${location.pathname}/waitingform`}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                background="mainBlue"
+                fontWeight="semibold"
+                fontSize={visionState ? "1.625rem" : "1.5rem"}
+                color="#FFFFFF"
+                padding="0.5rem auto"
+                margin="1rem 0"
+                borderRadius="0.25rem"
+                height="3rem"
+                width="100%"
+                _hover={{ textDecoration: "none", background: "#E2E8F0" }}
+              >
+                대기 등록
+              </Link>
+            </Flex>
           )
         ) : (
           <CommonCloseBox />
         )}
+        <Flex direction="column" fontSize="1rem" margin="1rem 0">
+          <Text fontSize={visionState ? "1.625rem" : "1rem"} color="mainBlue">
+            이미 대기 등록을 하셨다면
+          </Text>
+          <form onSubmit={moveToWaitingStatePage}>
+            <Flex direction="column" margin="0.5rem 0 0.5rem 0">
+              <CommonInput
+                id="tel"
+                title="등록하신 연락처"
+                type="tel"
+                value={telInput}
+                onChange={inputUserTelNumber}
+                margin="0.25rem 0"
+                placeholder="'-' 빼고 입력해주세요."
+                fontSize={visionState ? "1.625rem" : "1rem"}
+                holderSize={visionState ? "1.625rem" : "0.75rem"}
+              />
+              <CommonErrorMsg
+                type="tel"
+                value1={telInput}
+                inputCheck={{ tel: inputCheck }}
+                fontSize={visionState ? "1.625rem" : "0.75rem"}
+              />
+            </Flex>
+            <Button
+              type="submit"
+              background="mainBlue"
+              fontWeight="semibold"
+              fontSize={visionState ? "1.625rem" : "1.5rem"}
+              color="#FFFFFF"
+              padding="0.5rem auto"
+              margin="0.5rem 0"
+              borderRadius="0.25rem"
+              height="3rem"
+              width="100%"
+            >
+              대기 상태 확인
+            </Button>
+          </form>
+        </Flex>
       </Flex>
     </section>
   );

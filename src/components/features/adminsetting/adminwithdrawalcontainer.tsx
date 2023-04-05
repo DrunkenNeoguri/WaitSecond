@@ -32,8 +32,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { CommonInput } from "../../common/commoninput";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminWithdrawalContainer: React.FC = () => {
+  useTitle("회원 탈퇴 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "회원 탈퇴 ::: 웨잇세컨드",
+  });
   const initialState = new AdminData("", "");
   const [userData, setUserData] = useState(initialState);
   const [withdrawalState, setWithdrawalState] = useState(false);
@@ -258,6 +263,7 @@ const AdminWithdrawalContainer: React.FC = () => {
                       type="email"
                       value1={userData.email!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                     <CommonInput
                       id="password"
@@ -267,11 +273,13 @@ const AdminWithdrawalContainer: React.FC = () => {
                       onChange={inputUserData}
                       margin="0.25rem 0"
                       fontSize="1rem"
+                      maxLength={20}
                     />
                     <CommonErrorMsg
                       type="password"
                       value1={userData.password!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                   </Flex>
                   <Flex direction="column">
@@ -322,7 +330,6 @@ const AdminWithdrawalContainer: React.FC = () => {
         direction="column"
         border="none"
         padding="2rem 1.5rem"
-        margin="-2rem 0"
         background="#FFFFFF"
         boxSizing="border-box"
         height="100vh"

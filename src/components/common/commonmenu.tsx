@@ -66,11 +66,12 @@ const CommonMenu: React.FC<{
       top="0"
       zIndex="5"
       overflow="scroll"
+      wordBreak="keep-all"
     >
       <Flex
         direction="column"
         height="100vh"
-        background="#4E95FF"
+        background="mainBlue"
         width="70vw"
         align="flex-start"
         padding="1rem"
@@ -104,6 +105,7 @@ const CommonMenu: React.FC<{
             color="#ffffff"
             as={ReactRouterLink}
             to="/adminwaitinglist"
+            onClick={() => close(false)}
           >
             현재 대기 상황
           </Link>
@@ -114,6 +116,7 @@ const CommonMenu: React.FC<{
             color="#ffffff"
             as={ReactRouterLink}
             to="/adminstoremanage"
+            onClick={() => close(false)}
           >
             매장 관리
           </Link>
@@ -124,6 +127,7 @@ const CommonMenu: React.FC<{
             color="#ffffff"
             as={ReactRouterLink}
             to="/adminsetting"
+            onClick={() => close(false)}
           >
             설정
           </Link>

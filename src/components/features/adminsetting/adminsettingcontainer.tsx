@@ -3,8 +3,13 @@ import { Flex, Link, useToast } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 import { useQuery } from "@tanstack/react-query";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminSettingContainer: React.FC = () => {
+  useTitle("설정 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "설정 ::: 웨잇세컨드",
+  });
   const toastMsg = useToast();
   const navigate = useNavigate();
 
@@ -43,10 +48,9 @@ const AdminSettingContainer: React.FC = () => {
       direction="column"
       border="none"
       padding="2rem 1.5rem"
-      margin="-2rem 0"
       background="#FFFFFF"
       boxSizing="border-box"
-      height="100vh"
+      height="100%"
     >
       <Flex direction="column" padding="1rem 0" gap="2.5rem">
         <Link

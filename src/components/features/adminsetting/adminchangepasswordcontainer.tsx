@@ -28,8 +28,13 @@ import { passwordRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
 import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminChangePasswordContainer: React.FC = () => {
+  useTitle("비밀번호 변경 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "비밀번호 변경 ::: 웨잇세컨드",
+  });
   const firebaseAuth = getAuth();
   const currentUser = firebaseAuth.currentUser!;
 
@@ -227,7 +232,6 @@ const AdminChangePasswordContainer: React.FC = () => {
         direction="column"
         border="none"
         padding="2rem 1.5rem"
-        margin="-2rem 0"
         background="#FFFFFF"
         boxSizing="border-box"
         height="100vh"
@@ -249,9 +253,10 @@ const AdminChangePasswordContainer: React.FC = () => {
                 fontSize="1rem"
               />
               <CommonErrorMsg
-                type="password"
+                type="currentpassword"
                 value1={userData.currentpassword!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
             <Flex direction="column" padding="0.25rem 0">
@@ -269,6 +274,7 @@ const AdminChangePasswordContainer: React.FC = () => {
                 type="password"
                 value1={userData.password!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
             <Flex direction="column" padding="0.25rem 0">
@@ -283,9 +289,10 @@ const AdminChangePasswordContainer: React.FC = () => {
                 placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <CommonErrorMsg
-                type="password"
+                type="passwordcheck"
                 value1={userData.passwordcheck!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
 
