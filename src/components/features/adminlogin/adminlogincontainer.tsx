@@ -371,6 +371,7 @@ const AdminLoginContainer = () => {
                 type="email"
                 value1={loginData.email!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
               <CommonInput
                 id="password"
@@ -380,11 +381,13 @@ const AdminLoginContainer = () => {
                 onChange={inputLoginData}
                 margin="0.25rem 0"
                 fontSize="1rem"
+                maxLength={20}
               />
               <CommonErrorMsg
                 type="password"
                 value1={loginData.password!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
               <Flex direction="row" justify="space-between" margin="0.75rem 0">
                 <Flex direction="row">

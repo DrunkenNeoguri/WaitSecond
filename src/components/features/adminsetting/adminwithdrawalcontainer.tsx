@@ -258,6 +258,7 @@ const AdminWithdrawalContainer: React.FC = () => {
                       type="email"
                       value1={userData.email!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                     <CommonInput
                       id="password"
@@ -267,11 +268,13 @@ const AdminWithdrawalContainer: React.FC = () => {
                       onChange={inputUserData}
                       margin="0.25rem 0"
                       fontSize="1rem"
+                      maxLength={20}
                     />
                     <CommonErrorMsg
                       type="password"
                       value1={userData.password!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                   </Flex>
                   <Flex direction="column">

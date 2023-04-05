@@ -249,9 +249,10 @@ const AdminChangePasswordContainer: React.FC = () => {
                 fontSize="1rem"
               />
               <CommonErrorMsg
-                type="password"
+                type="currentpassword"
                 value1={userData.currentpassword!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
             <Flex direction="column" padding="0.25rem 0">
@@ -269,6 +270,7 @@ const AdminChangePasswordContainer: React.FC = () => {
                 type="password"
                 value1={userData.password!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
             <Flex direction="column" padding="0.25rem 0">
@@ -283,9 +285,10 @@ const AdminChangePasswordContainer: React.FC = () => {
                 placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
               />
               <CommonErrorMsg
-                type="password"
+                type="passwordcheck"
                 value1={userData.passwordcheck!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
             </Flex>
 

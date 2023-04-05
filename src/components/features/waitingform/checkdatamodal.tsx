@@ -5,8 +5,6 @@ import {
   FormLabel,
   Text,
   Button,
-  ListItem,
-  UnorderedList,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -80,7 +78,7 @@ const CheckDataModal: React.FC<{
           <ModalHeader
             as="h2"
             textAlign="center"
-            fontSize="1rem"
+            fontSize={visionState ? "1.625rem" : "1rem"}
             letterSpacing="-0.05rem"
             color="mainBlue"
           >
@@ -88,7 +86,7 @@ const CheckDataModal: React.FC<{
           </ModalHeader>
           <ModalBody
             textAlign="center"
-            fontSize={visionState === false ? "1rem" : "1.625rem"}
+            fontSize={visionState ? "1.625rem" : "1rem"}
             letterSpacing="-0.05rem"
           >
             <Text margin="1rem 0">
@@ -119,7 +117,7 @@ const CheckDataModal: React.FC<{
         <ModalContent padding="2rem 0 1rem 0" margin="auto 1rem">
           <ModalHeader
             as="h2"
-            fontSize={visionState === false ? "1rem" : "1.625rem"}
+            fontSize={visionState ? "1.625rem" : "1rem"}
             textAlign="center"
             fontWeight="bold"
             letterSpacing="-0.05rem"
@@ -135,16 +133,15 @@ const CheckDataModal: React.FC<{
                 margin="0.5rem 0"
               >
                 <FormLabel
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   fontWeight="500"
-                  width="30%"
                   margin="0"
                 >
                   예약자명
                 </FormLabel>
                 <Text
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
-                  color="subBlue"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
                   fontWeight="600"
                 >
                   {userInfo.name}
@@ -157,16 +154,15 @@ const CheckDataModal: React.FC<{
                 margin="0.5rem 0"
               >
                 <FormLabel
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   fontWeight="500"
-                  width="30%"
                   margin="0"
                 >
                   연락처
                 </FormLabel>
                 <Text
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
-                  color="subBlue"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
                   fontWeight="600"
                 >
                   {userInfo.tel}
@@ -179,16 +175,15 @@ const CheckDataModal: React.FC<{
                 margin="0.5rem 0"
               >
                 <FormLabel
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   fontWeight="500"
-                  width="30%"
                   margin="0"
                 >
                   성인
                 </FormLabel>
                 <Text
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
-                  color="subBlue"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
                   fontWeight="600"
                 >
                   {userInfo.adult}명
@@ -201,16 +196,15 @@ const CheckDataModal: React.FC<{
                 margin="0.5rem 0"
               >
                 <FormLabel
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   fontWeight="500"
-                  width="30%"
                   margin="0"
                 >
                   유아
                 </FormLabel>
                 <Text
-                  fontSize={visionState === false ? "1rem" : "1.625rem"}
-                  color="subBlue"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
                   fontWeight="600"
                 >
                   {userInfo.child}명
@@ -223,9 +217,8 @@ const CheckDataModal: React.FC<{
               userInfo.custom3 === true ? (
                 <Flex direction="column" margin="0.5rem 0">
                   <FormLabel
-                    fontSize={visionState === false ? "1rem" : "1.625rem"}
+                    fontSize={visionState ? "1.625rem" : "1rem"}
                     fontWeight="500"
-                    width="30%"
                     margin="0"
                   >
                     추가 옵션
@@ -240,9 +233,7 @@ const CheckDataModal: React.FC<{
                     {userInfo.pet ? (
                       <Text
                         display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         color="mainBlue"
                       >
                         반려 동물이 있어요.
@@ -253,9 +244,7 @@ const CheckDataModal: React.FC<{
                     {userInfo.separate ? (
                       <Text
                         display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         color="mainBlue"
                       >
                         자리가 나면 따로 앉아도 괜찮아요.
@@ -266,9 +255,7 @@ const CheckDataModal: React.FC<{
                     {userInfo.custom1 ? (
                       <Text
                         display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         color="mainBlue"
                       >
                         {custom[0]}
@@ -279,9 +266,7 @@ const CheckDataModal: React.FC<{
                     {userInfo.custom2 ? (
                       <Text
                         display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         color="mainBlue"
                       >
                         {custom[1]}
@@ -292,9 +277,7 @@ const CheckDataModal: React.FC<{
                     {userInfo.custom3 ? (
                       <Text
                         display="block"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         color="mainBlue"
                       >
                         {custom[2]}
@@ -321,7 +304,7 @@ const CheckDataModal: React.FC<{
                 padding="1.5rem"
                 borderRadius="0.25rem"
                 width="100%"
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                fontSize={visionState ? "1.625rem" : "1.25rem"}
                 onClick={(e) => submitUserWaitingData(e, userInfo)}
               >
                 맞습니다
@@ -334,7 +317,7 @@ const CheckDataModal: React.FC<{
                 borderRadius="0.25rem"
                 width="100%"
                 onClick={closeModal}
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                fontSize={visionState ? "1.625rem" : "1.25rem"}
               >
                 아니에요
               </Button>

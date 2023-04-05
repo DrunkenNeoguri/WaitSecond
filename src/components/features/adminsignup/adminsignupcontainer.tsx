@@ -1,11 +1,4 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  Heading,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, FormControl, Heading, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { CommonInput } from "../../common/commoninput";
 import { AdminData, EventObject, StoreOption } from "../../../utils/typealies";
@@ -18,7 +11,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
-import ErrorMsg from "../../common/commonerrormsg";
+import CommonErrorMsg from "../../common/commonerrormsg";
 
 const AdminSignUpContainer: React.FC = () => {
   const initialState = new AdminData("", "", "", "", "");
@@ -218,10 +211,11 @@ const AdminSignUpContainer: React.FC = () => {
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
               />
-              <ErrorMsg
+              <CommonErrorMsg
                 type="email"
                 value1={signUpData.email!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
 
               <CommonInput
@@ -232,11 +226,13 @@ const AdminSignUpContainer: React.FC = () => {
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
                 placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                maxLength={20}
               />
-              <ErrorMsg
+              <CommonErrorMsg
                 type="password"
                 value1={signUpData.password!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
 
               <CommonInput
@@ -247,12 +243,14 @@ const AdminSignUpContainer: React.FC = () => {
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
                 placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                maxLength={20}
               />
-              <ErrorMsg
+              <CommonErrorMsg
                 type="passwordcheck"
                 value1={signUpData.passwordcheck!}
                 value2={signUpData.password!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
 
               <CommonInput
@@ -263,11 +261,13 @@ const AdminSignUpContainer: React.FC = () => {
                 onChange={inputSignUpData}
                 margin="0.25rem 0"
                 placeholder="20자 이내"
+                maxLength={20}
               />
-              <ErrorMsg
+              <CommonErrorMsg
                 type="storename"
                 value1={signUpData.storename!}
                 inputCheck={inputCheck}
+                fontSize="0.75rem"
               />
 
               <Button

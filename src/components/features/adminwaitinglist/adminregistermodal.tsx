@@ -30,14 +30,16 @@ import { telRegex } from "../../../utils/reqlist";
 import { EventObject, UserData } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
+import { useRecoilValue } from "recoil";
+import { lowVisionState } from "../../../modules/atoms/atoms";
 
 const AdminRegisterModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  modifyData?: UserData;
+  userTel?: string;
   modify?: boolean;
   storeuid?: string | undefined;
-}> = ({ isOpen, onClose, modifyData, modify, storeuid }) => {
+}> = ({ isOpen, onClose, userTel, modify, storeuid }) => {
   const db = getFirestore();
   const waitingCol = query(
     collection(
@@ -47,30 +49,29 @@ const AdminRegisterModal: React.FC<{
       }/waitingList`
     )
   );
-  const initialState =
-    modifyData === undefined
-      ? new UserData(
-          false,
-          "",
-          "",
-          0,
-          0,
-          false,
-          false,
-          false,
-          false,
-          false,
-          0,
-          ""
-        )
-      : modifyData;
+  const initialState = new UserData(
+    false,
+    "",
+    "",
+    0,
+    0,
+    false,
+    false,
+    false,
+    false,
+    false,
+    0,
+    ""
+  );
 
   const [userData, setUserData] = useState<UserData>(initialState);
   const [loadingState, setLoadingState] = useState(false);
+  const [duplicateCheck, setDuplicateCheck] = useState(false);
   const [inputCheck, setInputCheck] = useState({
     customername: false,
     tel: false,
   });
+  const visionState = useRecoilValue<boolean>(lowVisionState);
   const toastMsg = useToast();
   const queryClient = useQueryClient();
 
@@ -80,7 +81,8 @@ const AdminRegisterModal: React.FC<{
       const list: any = [];
       data.forEach((doc) => {
         if (doc.data().isentered === false) {
-          list.push(doc.data());
+          const userData = doc.data();
+          list.push({ ...userData, uid: doc.id });
         }
       });
       list.sort(function (a: any, b: any) {
@@ -94,7 +96,16 @@ const AdminRegisterModal: React.FC<{
   const waitingList = useQuery({
     queryKey: ["waitingList"],
     queryFn: getWaitingData,
+    onSuccess(data) {
+      data.forEach((doc: UserData) => {
+        if (doc.tel === userTel) {
+          setDuplicateCheck(true);
+          setUserData(doc);
+        }
+      });
+    },
   });
+  console.log(duplicateCheck);
 
   // 관리자가 설정한 매장 관리 정보 가져오기
   const getStoreOption = async () => {
@@ -232,25 +243,28 @@ const AdminRegisterModal: React.FC<{
     }
 
     const currentWaitingList = waitingList.data;
-    let duplicateCheck;
-    currentWaitingList.forEach((doc: UserData) => {
-      if (doc.tel === userData.tel) {
-        duplicateCheck = true;
-      }
-    });
 
-    if (duplicateCheck === true) {
-      setLoadingState(false);
-      return !toastMsg.isActive("error-duplicateNumber")
-        ? toastMsg({
-            title: "이미 등록된 정보",
-            id: "error-duplicateNumber",
-            description: "이미 해당 번호로 대기를 등록하셨습니다.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          })
-        : undefined;
+    // let duplicateCheck;
+    // currentWaitingList.forEach((doc: UserData) => {
+    //   if (doc.tel === userData.tel) {
+    //     duplicateCheck = true;
+    //   }
+    // });
+
+    if (modify !== true) {
+      if (duplicateCheck === true) {
+        setLoadingState(false);
+        return !toastMsg.isActive("error-duplicateNumber")
+          ? toastMsg({
+              title: "이미 등록된 정보",
+              id: "error-duplicateNumber",
+              description: "이미 해당 번호로 대기를 등록하셨습니다.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : undefined;
+      }
     }
 
     waitingMutation.mutate(userData);
@@ -268,7 +282,7 @@ const AdminRegisterModal: React.FC<{
           `storeList/${
             storeuid === undefined ? loginStateCheck() : storeuid
           }/waitingList`,
-          `${modifyData?.uid}`
+          `${userInfo?.uid}`
         ),
         userData
       )
@@ -324,7 +338,7 @@ const AdminRegisterModal: React.FC<{
         margin="2rem 1rem"
       >
         <ModalHeader
-          fontSize="1.25rem"
+          fontSize={visionState ? "1.625rem" : "1.25rem"}
           fontWeight="semibold"
           padding="0 1.5rem"
         >
@@ -344,11 +358,14 @@ const AdminRegisterModal: React.FC<{
                 value={userData.name}
                 onChange={inputUserText}
                 margin="0.25rem 0"
+                maxLength={15}
+                fontSize={visionState ? "1.625rem" : "1rem"}
               />
               <CommonErrorMsg
                 type="customername"
                 value1={userData.name!}
                 inputCheck={inputCheck}
+                fontSize={visionState ? "1.625rem" : "0.75rem"}
               />
               <CommonInput
                 id="tel"
@@ -359,29 +376,41 @@ const AdminRegisterModal: React.FC<{
                 margin="0.25rem 0"
                 placeholder="'-' 빼고 입력해주세요."
                 isDisabled={modify ? true : false}
+                fontSize={visionState ? "1.625rem" : "1rem"}
               />
               <CommonErrorMsg
                 type="tel"
                 value1={userData.tel}
                 inputCheck={inputCheck}
+                fontSize={visionState ? "1.625rem" : "0.75rem"}
               />
               <Flex direction="column" margin="0.5rem 0 0.5rem 0">
-                <Text fontWeight="bold" textAlign="left" margin="0.5rem 0">
-                  인원을 선택하세요. (최대 인원: {data?.maximumTeamMemberCount}
+                <Text
+                  fontWeight="bold"
+                  textAlign="left"
+                  margin="0.5rem 0"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                >
+                  인원을 선택하세요.{visionState ? <br /> : " "}(최대 인원:{" "}
+                  {data?.maximumTeamMemberCount}
                   명)
                 </Text>
                 <Flex justify="space-between" align="center" margin="0.5rem 0">
-                  <FormLabel fontSize="1rem" fontWeight="semibold" margin="0">
+                  <FormLabel
+                    fontSize={visionState ? "1.625rem" : "1rem"}
+                    fontWeight="semibold"
+                    margin="0"
+                  >
                     성　인
                   </FormLabel>
-                  <Flex justify="space-between" align="cneter">
+                  <Flex justify="space-between" align="center">
                     <Button
                       size="sm"
                       id="adult"
                       value={-1}
                       onClick={changeMemberCount}
                       background="subBlue"
-                      fontSize="0.875rem"
+                      fontSize={visionState ? "1.625rem" : "0.875rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
@@ -392,7 +421,7 @@ const AdminRegisterModal: React.FC<{
                       justify="center"
                       align="center"
                       height="auto"
-                      fontSize="1rem"
+                      fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#000000"
                       padding="0 1rem"
                       width="5rem"
@@ -406,7 +435,7 @@ const AdminRegisterModal: React.FC<{
                       value={1}
                       onClick={changeMemberCount}
                       background="subBlue"
-                      fontSize="1rem"
+                      fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
@@ -416,17 +445,21 @@ const AdminRegisterModal: React.FC<{
                   </Flex>
                 </Flex>
                 <Flex justify="space-between" align="center" margin="0.5rem 0">
-                  <FormLabel fontSize="1rem" fontWeight="semibold" margin="0">
+                  <FormLabel
+                    fontSize={visionState ? "1.625rem" : "1rem"}
+                    fontWeight="semibold"
+                    margin="0"
+                  >
                     유　아
                   </FormLabel>
-                  <Flex justify="space-between" align="cneter">
+                  <Flex justify="space-between" align="center">
                     <Button
                       size="sm"
                       id="child"
                       value={-1}
                       onClick={changeMemberCount}
                       background="subBlue"
-                      fontSize="0.875rem"
+                      fontSize={visionState ? "1.625rem" : "0.875rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
@@ -437,7 +470,7 @@ const AdminRegisterModal: React.FC<{
                       justify="center"
                       align="center"
                       height="auto"
-                      fontSize="1rem"
+                      fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#000000"
                       padding="0 1rem"
                       width="5rem"
@@ -451,7 +484,7 @@ const AdminRegisterModal: React.FC<{
                       value={1}
                       onClick={changeMemberCount}
                       background="subBlue"
-                      fontSize="1rem"
+                      fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
@@ -478,11 +511,11 @@ const AdminRegisterModal: React.FC<{
                     <Flex
                       align="center"
                       margin="0.25rem 0"
-                      fontSize="0.75rem"
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="pet"
                         onChange={(e: React.ChangeEvent) =>
                           changeCheckState(e, userData.pet!)
@@ -490,6 +523,7 @@ const AdminRegisterModal: React.FC<{
                         borderRadius="0.5rem"
                         isChecked={userData.pet === false ? false : true}
                         variant="customBlue"
+                        margin={visionState ? "0.5rem 0 auto 0" : "0"}
                       />
                       <FormLabel
                         fontWeight="500"
@@ -497,7 +531,7 @@ const AdminRegisterModal: React.FC<{
                         margin="0 0.5rem"
                         htmlFor="pet"
                         cursor="pointer"
-                        fontSize="0.75rem"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                       >
                         반려 동물이 있어요.
                       </FormLabel>
@@ -509,11 +543,11 @@ const AdminRegisterModal: React.FC<{
                     <Flex
                       align="center"
                       margin="0.25rem 0"
-                      fontSize="0.75rem"
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="separate"
                         onChange={(e: React.ChangeEvent) =>
                           changeCheckState(e, userData.separate!)
@@ -521,6 +555,7 @@ const AdminRegisterModal: React.FC<{
                         borderRadius="0.5rem"
                         isChecked={userData.separate === false ? false : true}
                         variant="customBlue"
+                        margin={visionState ? "0.5rem 0 auto 0" : "0"}
                       />
                       <FormLabel
                         fontWeight="500"
@@ -528,7 +563,7 @@ const AdminRegisterModal: React.FC<{
                         margin="0 0.5rem"
                         htmlFor="separate"
                         cursor="pointer"
-                        fontSize="0.75rem"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                       >
                         자리가 나면 따로 앉아도 괜찮아요.
                       </FormLabel>
@@ -540,11 +575,11 @@ const AdminRegisterModal: React.FC<{
                     <Flex
                       align="center"
                       margin="0.25rem 0"
-                      fontSize="0.75rem"
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="custom1"
                         onChange={(e: React.ChangeEvent) =>
                           changeCheckState(e, userData.custom1!)
@@ -552,6 +587,7 @@ const AdminRegisterModal: React.FC<{
                         borderRadius="0.5rem"
                         isChecked={userData.custom1 === false ? false : true}
                         variant="customBlue"
+                        margin={visionState ? "0.5rem 0 auto 0" : "0"}
                       />
                       <FormLabel
                         fontWeight="500"
@@ -559,7 +595,7 @@ const AdminRegisterModal: React.FC<{
                         margin="0 0.5rem"
                         htmlFor="custom1"
                         cursor="pointer"
-                        fontSize="0.75rem"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                       >
                         {data?.customOption1Name}
                       </FormLabel>
@@ -571,11 +607,11 @@ const AdminRegisterModal: React.FC<{
                     <Flex
                       align="center"
                       margin="0.25rem 0"
-                      fontSize="0.75rem"
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="custom2"
                         onChange={(e: React.ChangeEvent) =>
                           changeCheckState(e, userData.custom2!)
@@ -583,6 +619,7 @@ const AdminRegisterModal: React.FC<{
                         borderRadius="0.5rem"
                         isChecked={userData.custom2 === false ? false : true}
                         variant="customBlue"
+                        margin={visionState ? "0.5rem 0 auto 0" : "0"}
                       />
                       <FormLabel
                         fontWeight="500"
@@ -590,7 +627,7 @@ const AdminRegisterModal: React.FC<{
                         margin="0 0.5rem"
                         htmlFor="custom2"
                         cursor="pointer"
-                        fontSize="0.75rem"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                       >
                         {data?.customOption2Name}
                       </FormLabel>
@@ -602,11 +639,11 @@ const AdminRegisterModal: React.FC<{
                     <Flex
                       align="center"
                       margin="0.25rem 0"
-                      fontSize="0.75rem"
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="custom3"
                         onChange={(e: React.ChangeEvent) =>
                           changeCheckState(e, userData.custom3!)
@@ -614,6 +651,7 @@ const AdminRegisterModal: React.FC<{
                         borderRadius="0.5rem"
                         isChecked={userData.custom3 === false ? false : true}
                         variant="customBlue"
+                        margin={visionState ? "0.5rem 0 auto 0" : "0"}
                       />
                       <FormLabel
                         fontWeight="500"
@@ -621,7 +659,7 @@ const AdminRegisterModal: React.FC<{
                         margin="0 0.5rem"
                         htmlFor="custom3"
                         cursor="pointer"
-                        fontSize="0.75rem"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                       >
                         {data?.customOption3Name}
                       </FormLabel>
@@ -635,7 +673,7 @@ const AdminRegisterModal: React.FC<{
                 <Button
                   type="submit"
                   background="mainBlue"
-                  fontSize="1rem"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   color="#FFFFFF"
                   padding="0.5rem auto"
                   margin="0.5rem 0"
@@ -649,7 +687,7 @@ const AdminRegisterModal: React.FC<{
                 <Button
                   type="button"
                   background="accentGray"
-                  fontSize="1rem"
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   color="#FFFFFF"
                   padding="0.5rem auto"
                   margin="0.5rem 0"
