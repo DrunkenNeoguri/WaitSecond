@@ -8,22 +8,28 @@ import AdminVerified from "../pages/adminverified";
 import WaitingForm from "../pages/waitingform";
 import WaitingState from "../pages/waitingstate";
 import AdminStoreManage from "../pages/adminstoremanage";
+import AdminSetting from "../pages/adminsetting";
+import WaitingMain from "../pages/waitingmain";
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/:store/waitingform" element={<WaitingForm />} />
+        <Route path="/store/:storeuid" element={<WaitingMain />} />
+        <Route path="/store/:storeuid/waitingform" element={<WaitingForm />} />
         <Route
-          path="/:store/waitingstate/:telnumber"
+          path="/store/:storeuid/waitingstate/:telnumber"
           element={<WaitingState />}
         />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/adminsignup" element={<AdminSignUp />} />
         <Route path="/adminverified" element={<AdminVerified />} />
         <Route path="/adminfindpassword" element={<AdminFindPassword />} />
-        <Route path="/:store/adminwaitinglist" element={<AdminWaitingList />} />
-        <Route path="/:store/adminstoremanage" element={<AdminStoreManage />} />
+        <Route path="/adminwaitinglist" element={<AdminWaitingList />} />
+        <Route path="/adminstoremanage" element={<AdminStoreManage />} />
+        <Route path="/adminsetting" element={<AdminSetting />} />
+        <Route path="/adminsetting/findpassword" element={<AdminSetting />} />
+        <Route path="/adminsetting/withdrawal" element={<AdminSetting />} />
       </Routes>
     </BrowserRouter>
   );

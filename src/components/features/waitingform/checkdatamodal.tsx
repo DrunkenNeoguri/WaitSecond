@@ -1,75 +1,47 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { UserData } from "../../../utils/typealies";
 import {
-  Box,
   Flex,
   FormLabel,
-  Heading,
   Text,
   Button,
-  ListItem,
-  ListIcon,
-  UnorderedList,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 const CheckDataModal: React.FC<{
   userInfo: UserData;
-  close: Dispatch<SetStateAction<boolean>>;
-}> = ({ userInfo, close }) => {
+  isOpen: boolean;
+  loadingState: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
+  custom: string[];
+}> = ({ userInfo, isOpen, onClose, custom, loadingState }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
 
-  const [time, setTime] = useState(3);
-  const timeRef = useRef(time);
-
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { store } = useParams();
+  const { storeuid } = useParams();
 
   const db = getFirestore();
-
-  useEffect(() => {
-    // setInterval 속에서 useState를 사용하는 경우, state의 값이 변경되지 않고 초기값을 유지하게 됨을 알 수 있다.
-    // 데이터가 갱신되지만, useEffect 안의 내용은 의존성 배열에 포함되지 않는다면 변화되지 않기 때문이다.
-    // 이때를 위해서 변화된 값을 참고하게 만들기 위해 useRef를 사용하도록 한다.
-
-    const timer = setInterval(() => {
-      setTime((timeRef.current -= 1));
-      // 위와 같이 작성해두면, timeRef의 현재값이 계속해서 setState를 통해서 적용될 것이다.
-      // 렌더링이 일어나도, timeRef가 계속해서 현재의 값을 참조하게 되므로 useEffect 속에 변화된 값을 받아올 수 있게 된다.
-      if (timeRef.current < 1) {
-        clearInterval(timer);
-        setRegisterState(false);
-        close(false);
-        navigate(`/${store}/waitingstate/${userInfo.tel}`);
-
-        // 해당 내용에서 react-router를 통한 페이지 이동 구현할 것.
-        // 버튼 쪽에도 함수 넣을 것.
-        // https://bsnn.tistory.com/50
-      }
-    }, 1000);
-    // }
-  }, []);
 
   const sendWaitingDataToDatabase = async (userInfo: UserData) => {
     const sendUserData = {
       ...userInfo,
       createdAt: new Date().getTime(),
     };
-    const addWaitingData = await setDoc(
-      doc(db, `${store}`, userInfo.tel),
+
+    const addWaitingData = await addDoc(
+      collection(db, `storeList/${storeuid}/waitingList`),
       sendUserData
     )
       .then((data) => data)
@@ -81,6 +53,7 @@ const CheckDataModal: React.FC<{
     onError: (error, variable) => console.log(error, variable),
     onSuccess: (data, variable, context) => {
       queryClient.invalidateQueries(["waitingList"]);
+      queryClient.invalidateQueries(["storeOption"]);
       setRegisterState(true);
     },
   });
@@ -90,221 +63,279 @@ const CheckDataModal: React.FC<{
     waitingMutation.mutate(userData);
   };
 
+  const closeModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    loadingState(false);
+  };
+
   return (
-    <Box
-      background="rgba(38, 38, 38, 40%)"
-      display="block"
-      width="100vw"
-      height="100vh"
-      position="fixed"
-      top="0"
-      zIndex="5"
-      overflow="scroll"
-    >
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+
       {registerState === true ? (
-        <Flex
-          direction="column"
-          background="#ffffff"
-          margin="10vh 1rem"
-          padding="3rem 1.5rem"
-          justify="center"
-          borderRadius="0.5rem"
-        >
-          <Heading as="h1" textAlign="center" fontSize="2rem">
-            등록이 완료되었습니다!
-          </Heading>
-          <Text
-            textAlign="center"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          >
-            5초 뒤에 자동으로 대기 상황 페이지로 이동합니다.
-          </Text>
-          <Button
-            type="button"
-            background="#5a5a5a"
-            color="#ffffff"
-            padding="1.5rem"
-            borderRadius="0.25rem"
-            onClick={() => {
-              close(false);
-              setRegisterState(false);
-              navigate(`/asgs/waitingstate/${userInfo.tel}`);
-            }}
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-          >
-            바로 이동하기 ({time})
-          </Button>
-        </Flex>
-      ) : (
-        <Flex
-          direction="column"
-          background="#ffffff"
-          margin="10vh 1rem"
-          padding="3rem 1.5rem"
-          justify="center"
-          borderRadius="0.5rem"
-        >
-          <Heading
+        <ModalContent wordBreak="keep-all" padding="2rem 0" margin="auto 1rem">
+          <ModalHeader
             as="h2"
-            fontSize={visionState === false ? "1.25rem" : "1.625rem"}
             textAlign="center"
-            marginBottom="1.5rem"
+            fontSize={visionState ? "1.625rem" : "1rem"}
+            letterSpacing="-0.05rem"
+            color="mainBlue"
           >
-            작성 내용을{visionState === false ? " " : <br />}확인해주세요.
-          </Heading>
-          <Flex direction="column">
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
+            등록이 완료되었습니다!
+          </ModalHeader>
+          <ModalBody
+            textAlign="center"
+            fontSize={visionState ? "1.625rem" : "1rem"}
+            letterSpacing="-0.05rem"
+          >
+            <Text margin="1rem 0">
+              아래 버튼을 누르시면 등록하신 대기 정보를 확인하실 수 있습니다.
+            </Text>
+            <ModalFooter justifyContent="center" padding="0 1rem">
+              <Button
+                type="button"
+                background="accentGray"
+                color="#ffffff"
+                padding="1.5rem"
+                margin="0.5rem 0"
+                borderRadius="0.25rem"
+                width="100%"
+                onClick={() => {
+                  onClose();
+                  setRegisterState(false);
+                  navigate(`/store/${storeuid}/waitingstate/${userInfo.tel}`);
+                }}
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
               >
-                성함
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
-                fontWeight="600"
+                바로 이동하기
+              </Button>
+            </ModalFooter>
+          </ModalBody>
+        </ModalContent>
+      ) : (
+        <ModalContent padding="2rem 0 1rem 0" margin="auto 1rem">
+          <ModalHeader
+            as="h2"
+            fontSize={visionState ? "1.625rem" : "1rem"}
+            textAlign="center"
+            fontWeight="bold"
+            letterSpacing="-0.05rem"
+          >
+            작성 내용을 확인해주세요.
+          </ModalHeader>
+          <ModalBody>
+            <Flex direction="column" margin="0.5rem 0 1rem 0">
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
               >
-                {userInfo.name}
-              </Text>
-            </Flex>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
-              >
-                연락처
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
-                fontWeight="600"
-              >
-                {" "}
-                {userInfo.tel}
-              </Text>
-            </Flex>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              margin="0.5rem 0"
-            >
-              <FormLabel
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                fontWeight="500"
-                width="30%"
-                margin="0"
-              >
-                인원
-              </FormLabel>
-              <Text
-                fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-                color="#58a6dc"
-                fontWeight="600"
-              >
-                {userInfo.member}명
-              </Text>
-            </Flex>
-            {userInfo.pet === true || userInfo.child === true ? (
-              <Flex direction="column" margin="0.5rem 0">
                 <FormLabel
-                  fontSize={visionState === false ? "1.25rem" : "1.625rem"}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
                   fontWeight="500"
-                  width="30%"
                   margin="0"
                 >
-                  옵션
+                  예약자명
                 </FormLabel>
-                <Flex direction="column">
-                  <UnorderedList>
-                    {userInfo.child === true ? (
-                      <ListItem
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
-                        fontSize={
-                          visionState === false ? "1.25rem" : "1.625rem"
-                        }
-                        margin="1rem 0"
-                      >
-                        <ListIcon as={CheckCircleIcon} />
-                        <Text color="#58a6dc" fontWeight="600">
-                          아이
-                        </Text>
-                        가 있어요.
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                    {userInfo.pet === true ? (
-                      <ListItem
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
-                        fontSize={
-                          visionState === false ? "1.25rem" : "1.625rem"
-                        }
-                        margin="1rem 0"
-                      >
-                        <ListIcon as={CheckCircleIcon} />
-                        <Text color="#58a6dc" fontWeight="600">
-                          반려 동물
-                        </Text>
-                        이 있어요.
-                      </ListItem>
-                    ) : (
-                      <></>
-                    )}
-                  </UnorderedList>
-                </Flex>
+                <Text
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.name}
+                </Text>
               </Flex>
-            ) : (
-              <></>
-            )}
-          </Flex>
-          <Flex direction="row" gap="1rem" margin="1rem 0 0 0" justify="center">
-            <Button
-              type="button"
-              background="#58a6dc"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-              onClick={(e) => submitUserWaitingData(e, userInfo)}
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  fontWeight="500"
+                  margin="0"
+                >
+                  연락처
+                </FormLabel>
+                <Text
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.tel}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  fontWeight="500"
+                  margin="0"
+                >
+                  성인
+                </FormLabel>
+                <Text
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.adult}명
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                margin="0.5rem 0"
+              >
+                <FormLabel
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  fontWeight="500"
+                  margin="0"
+                >
+                  유아
+                </FormLabel>
+                <Text
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  color="mainBlue"
+                  fontWeight="600"
+                >
+                  {userInfo.child}명
+                </Text>
+              </Flex>
+              {userInfo.pet === true ||
+              userInfo.separate === true ||
+              userInfo.custom1 === true ||
+              userInfo.custom2 === true ||
+              userInfo.custom3 === true ? (
+                <Flex direction="column" margin="0.5rem 0">
+                  <FormLabel
+                    fontSize={visionState ? "1.625rem" : "1rem"}
+                    fontWeight="500"
+                    margin="0"
+                  >
+                    추가 옵션
+                  </FormLabel>
+                  <Flex
+                    direction="column"
+                    background="#F9F9F9"
+                    margin="0.5rem 0"
+                    padding="1rem"
+                    gap="0.5rem"
+                  >
+                    {userInfo.pet ? (
+                      <Text
+                        display="block"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
+                        color="mainBlue"
+                      >
+                        반려 동물이 있어요.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.separate ? (
+                      <Text
+                        display="block"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
+                        color="mainBlue"
+                      >
+                        자리가 나면 따로 앉아도 괜찮아요.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom1 ? (
+                      <Text
+                        display="block"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
+                        color="mainBlue"
+                      >
+                        {custom[0]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom2 ? (
+                      <Text
+                        display="block"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
+                        color="mainBlue"
+                      >
+                        {custom[1]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                    {userInfo.custom3 ? (
+                      <Text
+                        display="block"
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
+                        color="mainBlue"
+                      >
+                        {custom[2]}
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                  </Flex>
+                </Flex>
+              ) : (
+                <></>
+              )}
+            </Flex>
+            <Flex
+              direction="row"
+              gap="1rem"
+              margin="0.5rem 0"
+              justify="space-between"
             >
-              맞습니다
-            </Button>
-            <Button
-              type="button"
-              background="#5a5a5a"
-              color="#ffffff"
-              padding="1.5rem"
-              borderRadius="0.25rem"
-              onClick={() => close(false)}
-              fontSize={visionState === false ? "1.25rem" : "1.625rem"}
-            >
-              아니에요
-            </Button>
-          </Flex>
-        </Flex>
+              <Button
+                type="button"
+                background="#58a6dc"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                width="100%"
+                fontSize={visionState ? "1.625rem" : "1.25rem"}
+                onClick={(e) => submitUserWaitingData(e, userInfo)}
+              >
+                맞습니다
+              </Button>
+              <Button
+                type="button"
+                background="#5a5a5a"
+                color="#ffffff"
+                padding="1.5rem"
+                borderRadius="0.25rem"
+                width="100%"
+                onClick={closeModal}
+                fontSize={visionState ? "1.625rem" : "1.25rem"}
+              >
+                아니에요
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
       )}
-    </Box>
+    </Modal>
   );
 };
 
 export default CheckDataModal;
+
+// <Flex
+// direction="column"
+// background="#ffffff"
+// margin="10vh 1rem"
+// padding="3rem 1.5rem"
+// justify="center"
+// borderRadius="0.5rem"
+// >
