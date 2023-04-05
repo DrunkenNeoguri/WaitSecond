@@ -12,8 +12,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import CommonErrorMsg from "../../common/commonerrormsg";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminSignUpContainer: React.FC = () => {
+  useTitle("회원가입 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "회원가입 ::: 웨잇세컨드",
+  });
   const initialState = new AdminData("", "", "", "", "");
 
   const navigate = useNavigate();
@@ -47,7 +52,8 @@ const AdminSignUpContainer: React.FC = () => {
         const adminData: StoreOption = {
           uid: uid,
           storeName: userData.storename!,
-          storebg: "",
+          storebg:
+            "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
           waitingState: false,
           maximumTeamMemberCount: 4,
           maximumWaitingTeamCount: 10,

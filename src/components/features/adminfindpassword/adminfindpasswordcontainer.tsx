@@ -14,8 +14,13 @@ import { emailRegex } from "../../../utils/reqlist";
 import { EventObject } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminFindPasswordContainer = () => {
+  useTitle("비밀번호 찾기 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "비밀번호 찾기 ::: 웨잇세컨드",
+  });
   const [emailData, setEmailData] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
   const [loadingState, setLoadingState] = useState(false);

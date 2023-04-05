@@ -30,6 +30,7 @@ import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
 import AdminRegisterModal from "../adminwaitinglist/adminregistermodal";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
@@ -85,6 +86,9 @@ const WaitingStateContainer = () => {
     queryKey: ["storeOption"],
     queryFn: getStoreOption,
   });
+
+  useTitle(`${storeOption.data?.storeName} ::: 웨잇세컨드`);
+  useMetaTag({ title: `${storeOption.data?.storeName} ::: 웨잇세컨드` });
 
   // findIndex = 배 열 내에서 조건에 해당하는 데이터의 index를 반환함.
   const currentUserIdx = waitingList.data?.findIndex(

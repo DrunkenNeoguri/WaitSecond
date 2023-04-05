@@ -21,8 +21,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import CommonLoadingModal from "../../common/commonloadingmodal";
 import CommonBlankBox from "../../common/commonblankbox";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminWaitingListContainer = () => {
+  useTitle("현재 대기 상황 ::: 웨잇세컨드");
+  useMetaTag({ title: "현재 대기 상황 ::: 웨잇세컨드" });
   const db = getFirestore();
   const queryClient = useQueryClient();
   const toastMsg = useToast();
@@ -223,8 +226,14 @@ const AdminWaitingListContainer = () => {
         background="#F2F2F2"
         height="100%"
         margin="2.25rem 0 0.5rem 0"
+        overflow="scroll"
       >
-        <Flex direction="column" align="center" fontSize="1.25rem">
+        <Flex
+          direction="column"
+          align="center"
+          fontSize="1.25rem"
+          marginBottom="3.5rem"
+        >
           {data?.length === 0 ? (
             <CommonBlankBox waitingSetting={waitingSetting} />
           ) : (

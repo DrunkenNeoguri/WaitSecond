@@ -39,8 +39,13 @@ import {
   getFirestore,
   setDoc,
 } from "firebase/firestore";
+import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminLoginContainer = () => {
+  useTitle("로그인 ::: 웨잇세컨드");
+  useMetaTag({
+    title: "로그인 ::: 웨잇세컨드",
+  });
   const initialState = new AdminData(
     localStorage.getItem("email") === null
       ? ""
