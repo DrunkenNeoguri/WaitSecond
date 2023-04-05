@@ -69,11 +69,11 @@ const CommonHeader: React.FC<{
                 <>
                   <Box
                     background="#FFFFFF"
-                    color="#333333"
                     padding="0.25rem 1rem"
                     fontSize="1rem"
                     fontWeight="semibold"
                     borderRadius="0.25rem"
+                    color="#333333"
                   >
                     {`${nowDate.getFullYear()}.
                     ${
@@ -122,10 +122,10 @@ const CommonHeader: React.FC<{
                 color: "#5ABFB7",
               }}
             >
-              <FontAwesomeIcon
+              {/* <FontAwesomeIcon
                 icon={faLanguage}
                 style={{ height: "2.25rem", width: "2.25rem" }}
-              />
+              /> */}
             </Button>
           </>
         ) : location.pathname !== "/adminlogin" ? (

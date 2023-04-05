@@ -62,7 +62,7 @@ const WaitingDataBlock: React.FC<{
         isOpen={isOpen}
         onClose={onClose}
         modify={true}
-        modifyData={userData}
+        userTel={userData.tel}
       />
       <Flex
         direction="row"
@@ -239,7 +239,6 @@ const WaitingDataBlock: React.FC<{
             height="3rem"
             backgroundColor="#FFFFFF"
             fontSize="0.625rem"
-            color="#333333"
             fontWeight="normal"
             gap="0.25rem"
             onClick={onOpen}
