@@ -206,7 +206,7 @@ const WaitingStateContainer = () => {
           isOpen={isOpen}
           onClose={closeToModal}
           modify={true}
-          modifyData={currentUserData}
+          userTel={currentUserData.tel}
           storeuid={storeuid}
         />
       ) : (
@@ -291,6 +291,7 @@ const WaitingStateContainer = () => {
           border="none"
           borderRadius="1rem"
           boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+          wordBreak="keep-all"
         >
           <Heading
             as="h1"
@@ -366,7 +367,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
+                color="mainBlue"
                 fontWeight="bold"
               >
                 {currentUserData.name}
@@ -388,7 +389,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
+                color="mainBlue"
                 fontWeight="bold"
               >
                 {" "}
@@ -411,7 +412,7 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
+                color="mainBlue"
                 fontWeight="bold"
               >
                 {currentUserData.adult}명
@@ -433,94 +434,101 @@ const WaitingStateContainer = () => {
               </FormLabel>
               <Text
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
-                color="subBlue"
+                color="mainBlue"
                 fontWeight="bold"
               >
                 {currentUserData.child}명
               </Text>
             </Flex>
           </Flex>
-          <Box margin="0.5rem 0 0 0">
-            <FormLabel
-              fontSize={visionState === false ? "1rem" : "1.625rem"}
-              fontWeight="normal"
-              width="30%"
-              margin="0"
-            >
-              추가 옵션
-            </FormLabel>
-            <Flex
-              direction="column"
-              background="#F9F9F9"
-              margin="0.5rem 0"
-              padding="0.5rem"
-            >
-              <UnorderedList
+          {currentUserData.pet ||
+          currentUserData.separate ||
+          currentUserData.custom1 ||
+          currentUserData.custom2 ||
+          currentUserData.custom3 ? (
+            <Box margin="0.5rem 0 0 0">
+              <FormLabel
                 fontSize={visionState === false ? "1rem" : "1.625rem"}
+                fontWeight="normal"
+                margin="0"
               >
-                {currentUserData.pet ? (
-                  <ListItem
-                    display="block"
-                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
-                    margin="0.5rem 0"
-                    color="mainBlue"
-                  >
-                    반려 동물이 있어요.
-                  </ListItem>
-                ) : (
-                  <></>
-                )}
-                {currentUserData.separate ? (
-                  <ListItem
-                    display="block"
-                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
-                    margin="0.5rem 0"
-                    color="mainBlue"
-                  >
-                    자리가 나면 따로 앉아도 괜찮아요.
-                  </ListItem>
-                ) : (
-                  <></>
-                )}
-                {currentUserData.custom1 ? (
-                  <ListItem
-                    display="block"
-                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
-                    margin="0.5rem 0"
-                    color="mainBlue"
-                  >
-                    {storeOption.data.customOption1Name}
-                  </ListItem>
-                ) : (
-                  <></>
-                )}
-                {currentUserData.custom2 ? (
-                  <ListItem
-                    display="block"
-                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
-                    margin="0.5rem 0"
-                    color="mainBlue"
-                  >
-                    {storeOption.data.customOption2Name}
-                  </ListItem>
-                ) : (
-                  <></>
-                )}
-                {currentUserData.custom3 ? (
-                  <ListItem
-                    display="block"
-                    fontSize={visionState === false ? "0.75rem" : "1.625rem"}
-                    margin="0.5rem 0"
-                    color="mainBlue"
-                  >
-                    {storeOption.data.customOption3Name}
-                  </ListItem>
-                ) : (
-                  <></>
-                )}
-              </UnorderedList>
-            </Flex>
-          </Box>
+                추가 옵션
+              </FormLabel>
+              <Flex
+                direction="column"
+                background="#F9F9F9"
+                margin="0.5rem 0"
+                padding="0.5rem"
+              >
+                <UnorderedList
+                  fontSize={visionState === false ? "1rem" : "1.625rem"}
+                >
+                  {currentUserData.pet ? (
+                    <ListItem
+                      display="block"
+                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      margin="0.5rem 0"
+                      color="mainBlue"
+                    >
+                      반려 동물이 있어요.
+                    </ListItem>
+                  ) : (
+                    <></>
+                  )}
+                  {currentUserData.separate ? (
+                    <ListItem
+                      display="block"
+                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      margin="0.5rem 0"
+                      color="mainBlue"
+                    >
+                      자리가 나면 따로 앉아도 괜찮아요.
+                    </ListItem>
+                  ) : (
+                    <></>
+                  )}
+                  {currentUserData.custom1 ? (
+                    <ListItem
+                      display="block"
+                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      margin="0.5rem 0"
+                      color="mainBlue"
+                    >
+                      {storeOption.data.customOption1Name}
+                    </ListItem>
+                  ) : (
+                    <></>
+                  )}
+                  {currentUserData.custom2 ? (
+                    <ListItem
+                      display="block"
+                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      margin="0.5rem 0"
+                      color="mainBlue"
+                    >
+                      {storeOption.data.customOption2Name}
+                    </ListItem>
+                  ) : (
+                    <></>
+                  )}
+                  {currentUserData.custom3 ? (
+                    <ListItem
+                      display="block"
+                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      margin="0.5rem 0"
+                      color="mainBlue"
+                    >
+                      {storeOption.data.customOption3Name}
+                    </ListItem>
+                  ) : (
+                    <></>
+                  )}
+                </UnorderedList>
+              </Flex>
+            </Box>
+          ) : (
+            <></>
+          )}
           <Flex
             direction={visionState === false ? "row" : "column"}
             justify="space-between"

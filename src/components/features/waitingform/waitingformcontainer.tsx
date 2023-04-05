@@ -61,7 +61,7 @@ const WaitingFormContainer: React.FC = () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
       data.forEach((doc) => {
-        if (doc.data().isentered === false) {
+        if (!doc.data().isentered) {
           list.push(doc.data());
         }
       });
@@ -105,10 +105,10 @@ const WaitingFormContainer: React.FC = () => {
     const { id, value }: EventObject = e.target;
     setUserData({ ...userData, [id]: value });
 
-    if (e.target.id === "name" && inputCheck.customername === false) {
+    if (e.target.id === "name" && !inputCheck.customername) {
       setInputCheck({ ...inputCheck, customername: true });
     }
-    if (e.target.id === "tel" && inputCheck.tel === false) {
+    if (e.target.id === "tel" && !inputCheck.tel) {
       setInputCheck({ ...inputCheck, tel: true });
     }
   };
@@ -176,7 +176,7 @@ const WaitingFormContainer: React.FC = () => {
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingState(true);
-    if (agreeState === false) {
+    if (!agreeState) {
       setLoadingState(false);
       return !toastMsg.isActive("error-infoCheck")
         ? toastMsg({
@@ -204,7 +204,7 @@ const WaitingFormContainer: React.FC = () => {
         : undefined;
     }
 
-    if (userData.tel === "" || telRegex.test(userData.tel) === false) {
+    if (userData.tel === "" || !telRegex.test(userData.tel)) {
       setLoadingState(false);
       return !toastMsg.isActive("error-telCheck")
         ? toastMsg({
@@ -282,6 +282,7 @@ const WaitingFormContainer: React.FC = () => {
         padding="1rem"
         border="none"
         top="-4rem"
+        wordBreak="keep-all"
       >
         <Heading
           as="h1"
@@ -303,7 +304,7 @@ const WaitingFormContainer: React.FC = () => {
                 direction="row"
                 justify="space-between"
                 align="center"
-                fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                fontSize={visionState ? "1.625rem" : "1.5rem"}
                 fontWeight="semibold"
                 letterSpacing="-0.1rem"
                 margin="0.5rem 0 1rem 0"
@@ -325,13 +326,12 @@ const WaitingFormContainer: React.FC = () => {
                         icon={faBell}
                         style={{
                           color: "orange",
-                          fontSize:
-                            visionState === false ? "1.5rem" : "1.625rem",
+                          fontSize: visionState ? "1.625rem" : "1.5rem",
                         }}
                       />
                       <Text
                         margin="0.5rem"
-                        fontSize={visionState === false ? "1rem" : "1.625rem"}
+                        fontSize={visionState ? "1.625rem" : "1rem"}
                         textAlign="center"
                         color="mainBlue"
                         fontWeight="bold"
@@ -342,18 +342,32 @@ const WaitingFormContainer: React.FC = () => {
                     <Text
                       background="#F9F9F9"
                       borderRadius="0.25rem"
-                      fontSize={visionState === false ? "0.75rem" : "1.625rem"}
+                      fontSize={visionState ? "1.625rem" : "0.75rem"}
                       letterSpacing="-0.05rem"
-                      lineHeight={visionState === false ? "1.5rem" : "2.25rem"}
+                      lineHeight={visionState ? "2.25rem" : "1.5rem"}
                       padding="0.5rem"
                       whiteSpace="pre-wrap"
                       textAlign="left"
                     >
                       대기 등록을 위해 성함과 연락처를 수집하고 있습니다.
-                      <br />
+                      {visionState ? (
+                        <>
+                          <br />
+                          <br />
+                        </>
+                      ) : (
+                        <br />
+                      )}
                       수집한 정보는 대기 취소 버튼을 누르시거나, 입장 후
                       관리자가 입장 완료 버튼을 누르면 삭제됩니다.
-                      <br />
+                      {visionState ? (
+                        <>
+                          <br />
+                          <br />
+                        </>
+                      ) : (
+                        <br />
+                      )}
                       잘못된 정보를 입력하셨을 시, 매장 입장에 제한이 생길 수
                       있습니다.
                     </Text>
@@ -364,16 +378,14 @@ const WaitingFormContainer: React.FC = () => {
                       margin="0.5rem 0"
                     >
                       <Checkbox
-                        size="md"
+                        size={visionState ? "lg" : "md"}
                         id="agree"
                         onChange={changeAgreeState}
-                        isChecked={agreeState === false ? false : true}
+                        isChecked={!agreeState ? false : true}
                       />
                       <FormLabel
                         htmlFor="agree"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
+                        fontSize={visionState ? "1.625rem" : "0.75rem"}
                         margin="0 0.5rem"
                         cursor="pointer"
                       >
@@ -396,11 +408,14 @@ const WaitingFormContainer: React.FC = () => {
                     value={userData.name}
                     onChange={inputUserText}
                     margin="0.25rem 0"
+                    maxLength={15}
+                    fontSize={visionState ? "1.625rem" : "1rem"}
                   />
                   <CommonErrorMsg
                     type="customername"
                     value1={userData.name!}
                     inputCheck={inputCheck}
+                    fontSize={visionState ? "1.5rem" : "0.75rem"}
                   />
                   <CommonInput
                     id="tel"
@@ -410,15 +425,23 @@ const WaitingFormContainer: React.FC = () => {
                     onChange={inputUserText}
                     margin="0.25rem 0"
                     placeholder="'-' 빼고 입력해주세요."
+                    fontSize={visionState ? "1.625rem" : "1rem"}
+                    holderSize={visionState ? "1.625rem" : "0.75rem"}
                   />
                   <CommonErrorMsg
                     type="tel"
                     value1={userData.tel}
                     inputCheck={inputCheck}
+                    fontSize={visionState ? "1.5rem" : "0.75rem"}
                   />
                   <Flex direction="column" margin="1.5rem 0 0.5rem 0">
-                    <Text fontWeight="bold" textAlign="left" margin="0.5rem 0">
-                      인원을 선택하세요. (최대 인원:{" "}
+                    <Text
+                      fontWeight="bold"
+                      textAlign="left"
+                      margin="0.5rem 0"
+                      fontSize={visionState ? "1.625rem" : "1rem"}
+                    >
+                      인원을 선택하세요.{visionState ? <br /> : " "}(최대 인원:{" "}
                       {storeOption.data?.maximumTeamMemberCount}명)
                     </Text>
                     <Flex
@@ -427,22 +450,20 @@ const WaitingFormContainer: React.FC = () => {
                       margin="0.5rem 0"
                     >
                       <FormLabel
-                        fontSize={visionState === false ? "1rem" : "1.625rem"}
+                        fontSize={visionState ? "1.625rem" : "1rem"}
                         fontWeight="semibold"
                         margin="0"
                       >
                         성　인
                       </FormLabel>
-                      <Flex justify="space-between" align="cneter">
+                      <Flex justify="space-between" align="center">
                         <Button
                           size="sm"
                           id="adult"
                           value={-1}
                           onClick={changeMemberCount}
                           background="subBlue"
-                          fontSize={
-                            visionState === false ? "0.875rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.875rem"}
                           color="#FFFFFF"
                           borderRadius="0.25rem"
                           padding="0"
@@ -453,7 +474,7 @@ const WaitingFormContainer: React.FC = () => {
                           justify="center"
                           align="center"
                           height="auto"
-                          fontSize={visionState === false ? "1rem" : "1.625rem"}
+                          fontSize={visionState ? "1.625rem" : "1rem"}
                           color="#000000"
                           padding="0 1rem"
                           width="5rem"
@@ -467,7 +488,7 @@ const WaitingFormContainer: React.FC = () => {
                           value={1}
                           onClick={changeMemberCount}
                           background="subBlue"
-                          fontSize={visionState === false ? "1rem" : "1.625rem"}
+                          fontSize={visionState ? "1.625rem" : "1rem"}
                           color="#FFFFFF"
                           borderRadius="0.25rem"
                           padding="0"
@@ -482,22 +503,20 @@ const WaitingFormContainer: React.FC = () => {
                       margin="0.5rem 0"
                     >
                       <FormLabel
-                        fontSize={visionState === false ? "1rem" : "1.625rem"}
+                        fontSize={visionState ? "1.625rem" : "1rem"}
                         fontWeight="semibold"
                         margin="0"
                       >
                         유　아
                       </FormLabel>
-                      <Flex justify="space-between" align="cneter">
+                      <Flex justify="space-between" align="center">
                         <Button
                           size="sm"
                           id="child"
                           value={-1}
                           onClick={changeMemberCount}
                           background="subBlue"
-                          fontSize={
-                            visionState === false ? "0.875rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.875rem"}
                           color="#FFFFFF"
                           borderRadius="0.25rem"
                           padding="0"
@@ -508,7 +527,7 @@ const WaitingFormContainer: React.FC = () => {
                           justify="center"
                           align="center"
                           height="auto"
-                          fontSize={visionState === false ? "1rem" : "1.625rem"}
+                          fontSize={visionState ? "1.625rem" : "1rem"}
                           color="#000000"
                           padding="0 1rem"
                           width="5rem"
@@ -522,7 +541,7 @@ const WaitingFormContainer: React.FC = () => {
                           value={1}
                           onClick={changeMemberCount}
                           background="subBlue"
-                          fontSize={visionState === false ? "1rem" : "1.625rem"}
+                          fontSize={visionState ? "1.625rem" : "1rem"}
                           color="#FFFFFF"
                           borderRadius="0.25rem"
                           padding="0"
@@ -541,20 +560,18 @@ const WaitingFormContainer: React.FC = () => {
                       <Flex
                         align="center"
                         margin="0.25rem 0"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
                         letterSpacing="-0.05rem"
                       >
                         <Checkbox
-                          size="md"
+                          size={visionState ? "lg" : "md"}
                           id="pet"
                           onChange={(e: React.ChangeEvent) =>
                             changeCheckState(e, userData.pet!)
                           }
                           borderRadius="0.5rem"
-                          isChecked={userData.pet === false ? false : true}
+                          isChecked={!userData.pet ? false : true}
                           variant="customBlue"
+                          margin={visionState ? "0.5rem 0 auto 0" : "0"}
                         />
                         <FormLabel
                           fontWeight="500"
@@ -562,9 +579,7 @@ const WaitingFormContainer: React.FC = () => {
                           margin="0 0.5rem"
                           htmlFor="pet"
                           cursor="pointer"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
                         >
                           반려 동물이 있어요.
                         </FormLabel>
@@ -576,20 +591,18 @@ const WaitingFormContainer: React.FC = () => {
                       <Flex
                         align="center"
                         margin="0.25rem 0"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
                         letterSpacing="-0.05rem"
                       >
                         <Checkbox
-                          size="md"
+                          size={visionState ? "lg" : "md"}
                           id="separate"
                           onChange={(e: React.ChangeEvent) =>
                             changeCheckState(e, userData.separate!)
                           }
                           borderRadius="0.5rem"
-                          isChecked={userData.separate === false ? false : true}
+                          isChecked={!userData.separate ? false : true}
                           variant="customBlue"
+                          margin={visionState ? "0.5rem 0 auto 0" : "0"}
                         />
                         <FormLabel
                           fontWeight="500"
@@ -597,9 +610,7 @@ const WaitingFormContainer: React.FC = () => {
                           margin="0 0.5rem"
                           htmlFor="separate"
                           cursor="pointer"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
                         >
                           자리가 나면 따로 앉아도 괜찮아요.
                         </FormLabel>
@@ -611,20 +622,18 @@ const WaitingFormContainer: React.FC = () => {
                       <Flex
                         align="center"
                         margin="0.25rem 0"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
                         letterSpacing="-0.05rem"
                       >
                         <Checkbox
-                          size="md"
+                          size={visionState ? "lg" : "md"}
                           id="custom1"
                           onChange={(e: React.ChangeEvent) =>
                             changeCheckState(e, userData.custom1!)
                           }
                           borderRadius="0.5rem"
-                          isChecked={userData.custom1 === false ? false : true}
+                          isChecked={!userData.custom1 ? false : true}
                           variant="customBlue"
+                          margin={visionState ? "0.5rem 0 auto 0" : "0"}
                         />
                         <FormLabel
                           fontWeight="500"
@@ -632,9 +641,7 @@ const WaitingFormContainer: React.FC = () => {
                           margin="0 0.5rem"
                           htmlFor="custom1"
                           cursor="pointer"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
                         >
                           {storeOption.data.customOption1Name}
                         </FormLabel>
@@ -646,20 +653,18 @@ const WaitingFormContainer: React.FC = () => {
                       <Flex
                         align="center"
                         margin="0.25rem 0"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
                         letterSpacing="-0.05rem"
                       >
                         <Checkbox
-                          size="md"
+                          size={visionState ? "lg" : "md"}
                           id="custom2"
                           onChange={(e: React.ChangeEvent) =>
                             changeCheckState(e, userData.custom2!)
                           }
                           borderRadius="0.5rem"
-                          isChecked={userData.custom2 === false ? false : true}
+                          isChecked={!userData.custom2 ? false : true}
                           variant="customBlue"
+                          margin={visionState ? "0.5rem 0 auto 0" : "0"}
                         />
                         <FormLabel
                           fontWeight="500"
@@ -667,9 +672,7 @@ const WaitingFormContainer: React.FC = () => {
                           margin="0 0.5rem"
                           htmlFor="custom2"
                           cursor="pointer"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
                         >
                           {storeOption.data.customOption2Name}
                         </FormLabel>
@@ -681,20 +684,18 @@ const WaitingFormContainer: React.FC = () => {
                       <Flex
                         align="center"
                         margin="0.25rem 0"
-                        fontSize={
-                          visionState === false ? "0.75rem" : "1.625rem"
-                        }
                         letterSpacing="-0.05rem"
                       >
                         <Checkbox
-                          size="md"
+                          size={visionState ? "lg" : "md"}
                           id="custom3"
                           onChange={(e: React.ChangeEvent) =>
                             changeCheckState(e, userData.custom3!)
                           }
                           borderRadius="0.5rem"
-                          isChecked={userData.custom3 === false ? false : true}
+                          isChecked={!userData.custom3 ? false : true}
                           variant="customBlue"
+                          margin={visionState ? "0.5rem 0 auto 0" : "0"}
                         />
                         <FormLabel
                           fontWeight="500"
@@ -702,9 +703,7 @@ const WaitingFormContainer: React.FC = () => {
                           margin="0 0.5rem"
                           htmlFor="custom3"
                           cursor="pointer"
-                          fontSize={
-                            visionState === false ? "0.75rem" : "1.625rem"
-                          }
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
                         >
                           {storeOption.data.customOption3Name}
                         </FormLabel>
@@ -716,7 +715,7 @@ const WaitingFormContainer: React.FC = () => {
                   <Button
                     type="submit"
                     background="mainBlue"
-                    fontSize={visionState === false ? "1.5rem" : "1.625rem"}
+                    fontSize={visionState ? "1.625rem" : "1.5rem"}
                     color="#FFFFFF"
                     padding="0.5rem auto"
                     margin="1rem 0"

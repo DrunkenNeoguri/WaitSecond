@@ -15,7 +15,8 @@ const CommonErrorMsg: React.FC<{
     tel?: boolean;
     custom?: boolean;
   };
-}> = ({ type, value1, value2, inputCheck }) => {
+  fontSize: string;
+}> = ({ type, value1, value2, inputCheck, fontSize }) => {
   let errorMsg = "　";
 
   switch (type) {
@@ -28,7 +29,7 @@ const CommonErrorMsg: React.FC<{
       break;
     }
     case "currentpassword": {
-      if (!inputCheck?.password) errorMsg = "　";
+      if (!inputCheck?.currentpassword) errorMsg = "　";
       else if (value1.trim() === "")
         errorMsg = "입력란을 빈칸으로 둘 수 없습니다.";
       else if (passwordRegex.test(value1) === false)
@@ -87,7 +88,7 @@ const CommonErrorMsg: React.FC<{
   }
 
   return (
-    <Text color="red" letterSpacing="-0.05rem" fontSize="0.75rem">
+    <Text color="red" letterSpacing="-0.05rem" fontSize={fontSize}>
       {errorMsg!}
     </Text>
   );

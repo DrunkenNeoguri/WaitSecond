@@ -5,7 +5,7 @@ function AdminPage(props: Props) {
     <section
       style={{
         background: "#F2F2F2",
-        height: "100%",
+        height: "100vh",
         padding: "5.5rem 0 3rem 0",
       }}
     >

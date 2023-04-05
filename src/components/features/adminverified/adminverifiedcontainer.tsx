@@ -220,11 +220,13 @@ const AdminVerifiedContainer = () => {
                       onChange={inputPasswordData}
                       margin="0.25rem 0"
                       placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                      maxLength={20}
                     />
                     <CommonErrorMsg
                       type="password"
                       value1={passwordData.password!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                   </Flex>
                   <Flex direction="column" margin="1rem 0 0.5rem 0">
@@ -236,12 +238,14 @@ const AdminVerifiedContainer = () => {
                       onChange={inputPasswordData}
                       margin="0.25rem 0 0 0"
                       placeholder="숫자, 영어 소문자, 특수문자 포함 20자 이내"
+                      maxLength={20}
                     />
                     <CommonErrorMsg
                       type="passwordcheck"
                       value1={passwordData.passwordcheck!}
                       value2={passwordData.password!}
                       inputCheck={inputCheck}
+                      fontSize="0.75rem"
                     />
                   </Flex>
                   <Button

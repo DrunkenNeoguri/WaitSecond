@@ -162,6 +162,7 @@ const AdminFindPasswordContainer = () => {
                   type="email"
                   value1={emailData}
                   inputCheck={{ email: inputCheck }}
+                  fontSize="0.75rem"
                 />
               </Flex>
               <Button

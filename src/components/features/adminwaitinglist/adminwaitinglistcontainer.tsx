@@ -19,6 +19,8 @@ import {
   tokenExpirationCheck,
 } from "../../../utils/verifiedcheck";
 import { useNavigate } from "react-router-dom";
+import CommonLoadingModal from "../../common/commonloadingmodal";
+import CommonBlankBox from "../../common/commonblankbox";
 
 const AdminWaitingListContainer = () => {
   const db = getFirestore();
@@ -27,6 +29,7 @@ const AdminWaitingListContainer = () => {
   const navigate = useNavigate();
 
   const [waitingSetting, setWaitingSetting] = useState("entering");
+  const [loadingState, setLoadingState] = useState(true);
   const [listState, setlistState] = useState(false);
   const [receiveState, setReceiveState] = useState(false);
 
@@ -143,6 +146,9 @@ const AdminWaitingListContainer = () => {
   const storeOption = useQuery({
     queryKey: ["currentStoreOption"],
     queryFn: getStoreOption,
+    onSuccess(data) {
+      setLoadingState(false);
+    },
   });
 
   // 관리자 대기 접수 개시 및 마감 처리
@@ -186,6 +192,7 @@ const AdminWaitingListContainer = () => {
 
   return (
     <>
+      {loadingState ? <CommonLoadingModal /> : <></>}
       <Flex
         direction="row"
         justify="space-between"
@@ -214,22 +221,26 @@ const AdminWaitingListContainer = () => {
         as="article"
         direction="column"
         background="#F2F2F2"
-        minHeight="75vh"
+        height="100%"
         margin="2.25rem 0 0.5rem 0"
       >
         <Flex direction="column" align="center" fontSize="1.25rem">
-          {data?.map((elem: UserData, index: number) => {
-            return (
-              <WaitingDataBlock
-                key={index}
-                userData={elem}
-                admin={loginStateCheck()}
-                storeOption={storeOption.data?.data}
-                background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
-                waitingSetting={waitingSetting}
-              />
-            );
-          })}
+          {data?.length === 0 ? (
+            <CommonBlankBox waitingSetting={waitingSetting} />
+          ) : (
+            data?.map((elem: UserData, index: number) => {
+              return (
+                <WaitingDataBlock
+                  key={index}
+                  userData={elem}
+                  admin={loginStateCheck()}
+                  storeOption={storeOption.data?.data}
+                  background={index % 2 === 0 ? "#FFFFFF" : "#F4F4F4"}
+                  waitingSetting={waitingSetting}
+                />
+              );
+            })
+          )}
         </Flex>
       </Flex>
       <Flex
