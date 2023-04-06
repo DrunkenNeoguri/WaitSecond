@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 
 export const useTitle = (text: string) => {
-  // useState를 통해 탭 이름을 적용할 값인 title과 이를 세팅해줄 setTitle를 생성
-  const [title, setTitle] = useState(text);
-
   useEffect(() => {
-    // 문서의 title Selector를 가져옴
     const htmlTitle = document.querySelector("title")!;
-    // useState의 title 값을 innerHTML을 통해 HTML 문서에 적용
-    htmlTitle.innerHTML = title;
-  }, [title]);
-  // 위의 useEffect는 title 값이 바뀔때마다 적용된다.
+    htmlTitle.innerHTML = text;
 
-  // setTitle을 외부로 보내줌으로서, useTitle을 쓸 때마다 해당 값을 받아와 title이 갱신되도록 함.
-  return setTitle;
+    return () => {
+      htmlTitle.innerHTML = "맛집을 기다릴 땐, 웨잇세컨드!";
+    };
+  }, [text]);
 };
 
 export const useMetaTag = (prop: {

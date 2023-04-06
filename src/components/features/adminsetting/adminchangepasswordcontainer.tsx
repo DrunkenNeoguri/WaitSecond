@@ -38,7 +38,7 @@ const AdminChangePasswordContainer: React.FC = () => {
   const firebaseAuth = getAuth();
   const currentUser = firebaseAuth.currentUser!;
 
-  const initialState = new AdminData(currentUser.email!, "", "");
+  const initialState = new AdminData(currentUser.email!, "", "", "");
   const [userData, setUserData] = useState(initialState);
   const [inputCheck, setInputCheck] = useState({
     currentpassword: false,
@@ -217,12 +217,31 @@ const AdminChangePasswordContainer: React.FC = () => {
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>비밀번호 변경 완료</ModalHeader>
+        <ModalContent margin="auto 1rem" padding="1rem 0" wordBreak="keep-all">
+          <ModalHeader
+            fontSize="1.25rem"
+            fontWeight="semibold"
+            padding="1rem 1.5rem"
+          >
+            비밀번호 변경 완료
+          </ModalHeader>
           <ModalBody>정상적으로 비밀번호가 변경됐습니다.</ModalBody>
 
           <ModalFooter>
-            <Button onClick={() => navigate("/adminsetting")}>닫기</Button>
+            <Button
+              type="button"
+              background="mainBlue"
+              fontSize="1rem"
+              color="#FFFFFF"
+              padding="0.5rem auto"
+              margin="0.5rem 0"
+              borderRadius="0.25rem"
+              width="100%"
+              size="md"
+              onClick={() => navigate("/adminsetting")}
+            >
+              닫기
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -291,6 +310,7 @@ const AdminChangePasswordContainer: React.FC = () => {
               <CommonErrorMsg
                 type="passwordcheck"
                 value1={userData.passwordcheck!}
+                value2={userData.password}
                 inputCheck={inputCheck}
                 fontSize="0.75rem"
               />
