@@ -11,11 +11,13 @@ import AdminStoreManage from "../pages/adminstoremanage";
 import AdminSetting from "../pages/adminsetting";
 import WaitingMain from "../pages/waitingmain";
 import ErrorPage from "../pages/errorpage";
+import Main from "../pages/main";
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Main />} />
         <Route path="/store/:storeuid" element={<WaitingMain />} />
         <Route path="/store/:storeuid/waitingform" element={<WaitingForm />} />
         <Route
