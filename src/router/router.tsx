@@ -10,6 +10,7 @@ import WaitingState from "../pages/waitingstate";
 import AdminStoreManage from "../pages/adminstoremanage";
 import AdminSetting from "../pages/adminsetting";
 import WaitingMain from "../pages/waitingmain";
+import ErrorPage from "../pages/errorpage";
 
 const Router = () => {
   return (
@@ -30,6 +31,7 @@ const Router = () => {
         <Route path="/adminsetting" element={<AdminSetting />} />
         <Route path="/adminsetting/findpassword" element={<AdminSetting />} />
         <Route path="/adminsetting/withdrawal" element={<AdminSetting />} />
+        <Route path="/*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

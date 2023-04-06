@@ -409,11 +409,14 @@ const AdminRegisterModal: React.FC<{
                       id="adult"
                       value={-1}
                       onClick={changeMemberCount}
-                      background="subBlue"
+                      background="mainBlue"
                       fontSize={visionState ? "1.625rem" : "0.875rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <FontAwesomeIcon icon={faMinus} />
                     </Button>
@@ -434,11 +437,14 @@ const AdminRegisterModal: React.FC<{
                       id="adult"
                       value={1}
                       onClick={changeMemberCount}
-                      background="subBlue"
+                      background="mainBlue"
                       fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <FontAwesomeIcon icon={faPlus} />
                     </Button>
@@ -458,11 +464,14 @@ const AdminRegisterModal: React.FC<{
                       id="child"
                       value={-1}
                       onClick={changeMemberCount}
-                      background="subBlue"
+                      background="mainBlue"
                       fontSize={visionState ? "1.625rem" : "0.875rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <FontAwesomeIcon icon={faMinus} />
                     </Button>
@@ -483,11 +492,14 @@ const AdminRegisterModal: React.FC<{
                       id="child"
                       value={1}
                       onClick={changeMemberCount}
-                      background="subBlue"
+                      background="mainBlue"
                       fontSize={visionState ? "1.625rem" : "1rem"}
                       color="#FFFFFF"
                       borderRadius="0.25rem"
                       padding="0"
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <FontAwesomeIcon icon={faPlus} />
                     </Button>

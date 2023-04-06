@@ -28,6 +28,7 @@ import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
 import CommonLoadingModal from "../../common/commonloadingmodal";
 import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import CommonSwitchButton from "../../common/commonswitchbutton";
 
 const AdminStoreManageContainer: React.FC = () => {
   useTitle("매장 관리 ::: 웨잇세컨드");
@@ -287,48 +288,12 @@ const AdminStoreManageContainer: React.FC = () => {
                 </FormLabel>
                 <Flex direction="row" justify="space-between" align="center">
                   <Text fontSize="0.875rem">현재 대기 접수 여부</Text>
-                  <Flex>
-                    <Button
-                      id="waitingState"
-                      borderRadius="0.25rem 0 0 0.25rem"
-                      padding="0px 1.5rem"
-                      background={
-                        storeData.waitingState ? "mainBlue" : "#FFFFFF"
-                      }
-                      color={storeData.waitingState ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderLeft="2px solid"
-                      borderColor={
-                        storeData.waitingState ? "mainBlue" : "mainGray"
-                      }
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, true)}
-                    >
-                      가능
-                    </Button>
-                    <Button
-                      id="waitingState"
-                      borderRadius="0 0.25rem 0.25rem 0"
-                      padding="0 1.5rem"
-                      background={
-                        !storeData.waitingState ? "mainBlue" : "#FFFFFF"
-                      }
-                      color={!storeData.waitingState ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderRight="2px solid"
-                      borderColor={
-                        !storeData.waitingState ? "mainBlue" : "mainGray"
-                      }
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, false)}
-                    >
-                      불가
-                    </Button>
-                  </Flex>
+                  <CommonSwitchButton
+                    id="waitingState"
+                    attribute={storeData.waitingState}
+                    on={(e) => switchStoreOptionValue(e, true)}
+                    off={(e) => switchStoreOptionValue(e, false)}
+                  />
                 </Flex>
                 <Flex direction="row" justify="space-between" align="center">
                   <Text fontSize="0.875rem">최대 대기 접수 가능 인원</Text>
@@ -341,6 +306,9 @@ const AdminStoreManageContainer: React.FC = () => {
                       size="sm"
                       value={-1}
                       onClick={changeStoreOptionCounter}
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <MinusIcon />
                     </Button>
@@ -353,6 +321,9 @@ const AdminStoreManageContainer: React.FC = () => {
                       size="sm"
                       value={1}
                       onClick={changeStoreOptionCounter}
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <AddIcon />
                     </Button>
@@ -369,6 +340,9 @@ const AdminStoreManageContainer: React.FC = () => {
                       size="sm"
                       value={-1}
                       onClick={changeStoreOptionCounter}
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <MinusIcon />
                     </Button>
@@ -381,6 +355,9 @@ const AdminStoreManageContainer: React.FC = () => {
                       size="sm"
                       value={1}
                       onClick={changeStoreOptionCounter}
+                      _hover={{
+                        background: "subBlue",
+                      }}
                     >
                       <AddIcon />
                     </Button>
@@ -388,87 +365,21 @@ const AdminStoreManageContainer: React.FC = () => {
                 </Flex>
                 <Flex direction="row" justify="space-between" align="center">
                   <Text fontSize="0.875rem">반려 동물 동반</Text>
-                  <Flex>
-                    <Button
-                      id="petAllow"
-                      borderRadius="0.25rem 0 0 0.25rem"
-                      padding="0px 1.5rem"
-                      background={storeData.petAllow ? "mainBlue" : "#FFFFFF"}
-                      color={storeData.petAllow ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderLeft="2px solid"
-                      borderColor={storeData.petAllow ? "mainBlue" : "mainGray"}
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, true)}
-                    >
-                      가능
-                    </Button>
-                    <Button
-                      id="petAllow"
-                      borderRadius="0 0.25rem 0.25rem 0"
-                      padding="0px 1.5rem"
-                      background={!storeData.petAllow ? "mainBlue" : "#FFFFFF"}
-                      color={!storeData.petAllow ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderRight="2px solid"
-                      borderColor={
-                        !storeData.petAllow ? "mainBlue" : "mainGray"
-                      }
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, false)}
-                    >
-                      불가
-                    </Button>
-                  </Flex>
+                  <CommonSwitchButton
+                    id="petAllow"
+                    attribute={storeData.petAllow}
+                    on={(e) => switchStoreOptionValue(e, true)}
+                    off={(e) => switchStoreOptionValue(e, false)}
+                  />
                 </Flex>
                 <Flex direction="row" justify="space-between" align="center">
                   <Text fontSize="0.875rem">테이블 인원 따로 앉기</Text>
-                  <Flex>
-                    <Button
-                      id="teamSeparate"
-                      borderRadius="0.25rem 0 0 0.25rem"
-                      padding="0px 1.5rem"
-                      background={
-                        storeData.teamSeparate ? "mainBlue" : "#FFFFFF"
-                      }
-                      color={storeData.teamSeparate ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderLeft="2px solid"
-                      borderColor={
-                        storeData.teamSeparate ? "mainBlue" : "mainGray"
-                      }
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, true)}
-                    >
-                      가능
-                    </Button>
-                    <Button
-                      id="teamSeparate"
-                      borderRadius="0 0.25rem 0.25rem 0"
-                      padding="0px 1.5rem"
-                      background={
-                        !storeData.teamSeparate ? "mainBlue" : "#FFFFFF"
-                      }
-                      color={!storeData.teamSeparate ? "#FFFFFF" : "#333333"}
-                      borderTop="2px solid"
-                      borderBottom="2px solid"
-                      borderRight="2px solid"
-                      borderColor={
-                        !storeData.teamSeparate ? "mainBlue" : "mainGray"
-                      }
-                      fontSize="0.75rem"
-                      size="sm"
-                      onClick={(e) => switchStoreOptionValue(e, false)}
-                    >
-                      불가
-                    </Button>
-                  </Flex>
+                  <CommonSwitchButton
+                    id="teamSeparate"
+                    attribute={storeData.teamSeparate}
+                    on={(e) => switchStoreOptionValue(e, true)}
+                    off={(e) => switchStoreOptionValue(e, false)}
+                  />
                 </Flex>
               </Flex>
 
@@ -481,54 +392,12 @@ const AdminStoreManageContainer: React.FC = () => {
                     <FormLabel htmlFor="customOption1Name" fontSize="0.875rem">
                       옵션 1
                     </FormLabel>
-                    <Flex>
-                      <Button
-                        id="customOption1State"
-                        borderRadius="0.25rem 0 0 0.25rem"
-                        padding="0px 1.5rem"
-                        background={
-                          storeData.customOption1State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          storeData.customOption1State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderLeft="2px solid"
-                        borderColor={
-                          storeData.customOption1State ? "mainBlue" : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, true)}
-                      >
-                        가능
-                      </Button>
-                      <Button
-                        id="customOption1State"
-                        borderRadius="0 0.25rem 0.25rem 0"
-                        padding="0px 1.5rem"
-                        background={
-                          !storeData.customOption1State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          !storeData.customOption1State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderRight="2px solid"
-                        borderColor={
-                          !storeData.customOption1State
-                            ? "mainBlue"
-                            : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, false)}
-                      >
-                        불가
-                      </Button>
-                    </Flex>
+                    <CommonSwitchButton
+                      id="customOption1State"
+                      attribute={storeData.customOption1State}
+                      on={(e) => switchStoreOptionValue(e, true)}
+                      off={(e) => switchStoreOptionValue(e, false)}
+                    />
                   </Flex>
                   <Input
                     id="customOption1Name"
@@ -553,54 +422,12 @@ const AdminStoreManageContainer: React.FC = () => {
                     <FormLabel htmlFor="customOption2Name" fontSize="0.875rem">
                       옵션 2
                     </FormLabel>
-                    <Flex>
-                      <Button
-                        id="customOption2State"
-                        borderRadius="0.25rem 0 0 0.25rem"
-                        padding="0px 1.5rem"
-                        background={
-                          storeData.customOption2State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          storeData.customOption2State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderLeft="2px solid"
-                        borderColor={
-                          storeData.customOption2State ? "mainBlue" : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, true)}
-                      >
-                        가능
-                      </Button>
-                      <Button
-                        id="customOption2State"
-                        borderRadius="0 0.25rem 0.25rem 0"
-                        padding="0px 1.5rem"
-                        background={
-                          !storeData.customOption2State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          !storeData.customOption2State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderRight="2px solid"
-                        borderColor={
-                          !storeData.customOption2State
-                            ? "mainBlue"
-                            : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, false)}
-                      >
-                        불가
-                      </Button>
-                    </Flex>
+                    <CommonSwitchButton
+                      id="customOption2State"
+                      attribute={storeData.customOption2State}
+                      on={(e) => switchStoreOptionValue(e, true)}
+                      off={(e) => switchStoreOptionValue(e, false)}
+                    />
                   </Flex>
                   <Input
                     id="customOption2Name"
@@ -625,54 +452,12 @@ const AdminStoreManageContainer: React.FC = () => {
                     <FormLabel htmlFor="customOption3Name" fontSize="0.875rem">
                       옵션 3
                     </FormLabel>
-                    <Flex>
-                      <Button
-                        id="customOption3State"
-                        borderRadius="0.25rem 0 0 0.25rem"
-                        padding="0px 1.5rem"
-                        background={
-                          storeData.customOption3State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          storeData.customOption3State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderLeft="2px solid"
-                        borderColor={
-                          storeData.customOption3State ? "mainBlue" : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, true)}
-                      >
-                        가능
-                      </Button>
-                      <Button
-                        id="customOption3State"
-                        borderRadius="0 0.25rem 0.25rem 0"
-                        padding="0px 1.5rem"
-                        background={
-                          !storeData.customOption3State ? "mainBlue" : "#FFFFFF"
-                        }
-                        color={
-                          !storeData.customOption3State ? "#FFFFFF" : "#333333"
-                        }
-                        borderTop="2px solid"
-                        borderBottom="2px solid"
-                        borderRight="2px solid"
-                        borderColor={
-                          !storeData.customOption3State
-                            ? "mainBlue"
-                            : "mainGray"
-                        }
-                        fontSize="0.75rem"
-                        size="sm"
-                        onClick={(e) => switchStoreOptionValue(e, false)}
-                      >
-                        불가
-                      </Button>
-                    </Flex>
+                    <CommonSwitchButton
+                      id="customOption3State"
+                      attribute={storeData.customOption3State}
+                      on={(e) => switchStoreOptionValue(e, true)}
+                      off={(e) => switchStoreOptionValue(e, false)}
+                    />
                   </Flex>
                   <Input
                     id="customOption3Name"

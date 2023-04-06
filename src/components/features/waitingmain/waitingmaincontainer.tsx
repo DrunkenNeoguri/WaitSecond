@@ -22,6 +22,7 @@ import CommonErrorMsg from "../../common/commonerrormsg";
 import CommonCloseBox from "../../common/commonclosebox";
 import CommonFullBox from "../../common/commonfullbox";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import ErrorPageContainer from "../errorpage/errorpagecontainer";
 
 const WaitingMainContainer: React.FC = () => {
   const { storeuid } = useParams();
@@ -31,6 +32,7 @@ const WaitingMainContainer: React.FC = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [telInput, setTelInput] = useState("");
   const [inputCheck, setInputCheck] = useState(false);
+  const [pageError, setPageError] = useState(false);
 
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
@@ -78,6 +80,7 @@ const WaitingMainContainer: React.FC = () => {
           return (adminData = doc.data());
         }
       });
+      console.log(adminData);
       return adminData!;
     });
     return storeDataState;
@@ -86,9 +89,17 @@ const WaitingMainContainer: React.FC = () => {
   const storeOption = useQuery({
     queryKey: ["storeOption"],
     queryFn: getStoreOption,
+    onError(error) {
+      setPageError(true);
+    },
   });
 
-  useTitle(`${storeOption.data?.storeName} ::: 웨잇세컨드`);
+  useTitle(
+    storeOption.data?.storeName !== undefined
+      ? `${storeOption.data?.storeName} ::: 웨잇세컨드`
+      : "맛집을 기다릴 땐, 웨잇세컨드!"
+  );
+
   useMetaTag({ title: `${storeOption.data?.storeName} ::: 웨잇세컨드` });
 
   const moveToWaitingStatePage = (e: React.FormEvent) => {
@@ -124,9 +135,16 @@ const WaitingMainContainer: React.FC = () => {
         : null;
     }
 
-    navigate(`/store/${location.pathname}/waitingstate/${telInput}`);
+    navigate(`${location.pathname}/waitingstate/${telInput}`);
   };
 
+  if (pageError === true) {
+    return (
+      <Box padding="4rem 0" height="100vh">
+        <ErrorPageContainer />
+      </Box>
+    );
+  }
   return (
     <section>
       <Box display="flex" height="13rem" marginTop="3.5rem" overflow="hidden">
@@ -152,9 +170,7 @@ const WaitingMainContainer: React.FC = () => {
           letterSpacing="-0.05rem"
           padding="1rem 0"
         >
-          {storeOption.data === undefined
-            ? "불러오는중불러오는중불러오는중불러오는중"
-            : storeOption.data.storeName}
+          {storeOption.data === undefined ? "" : storeOption.data.storeName}
         </Heading>
 
         <Flex
