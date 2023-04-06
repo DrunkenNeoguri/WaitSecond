@@ -299,7 +299,7 @@ const CheckDataModal: React.FC<{
             >
               <Button
                 type="button"
-                background="#58a6dc"
+                background="mainBlue"
                 color="#ffffff"
                 padding="1.5rem"
                 borderRadius="0.25rem"
@@ -311,7 +311,7 @@ const CheckDataModal: React.FC<{
               </Button>
               <Button
                 type="button"
-                background="#5a5a5a"
+                background="accentGray"
                 color="#ffffff"
                 padding="1.5rem"
                 borderRadius="0.25rem"

@@ -19,6 +19,7 @@ import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminFindPasswordContainer = () => {
   useTitle("비밀번호 찾기 ::: 웨잇세컨드");
+
   useMetaTag({
     title: "비밀번호 찾기 ::: 웨잇세컨드",
   });
