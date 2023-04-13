@@ -43,6 +43,7 @@ const CommonHeader: React.FC<{
         position="fixed"
         zIndex="3"
         top="0"
+        maxWidth="40rem"
       >
         {props.page === "admin" ? (
           <>

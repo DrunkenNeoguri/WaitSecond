@@ -32,6 +32,7 @@ import { StoreOption, UserData } from "../../../utils/typealies";
 import AdminRegisterModal from "../adminwaitinglist/adminregistermodal";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 import ErrorPageContainer from "../errorpage/errorpagecontainer";
+import { RepeatIcon } from "@chakra-ui/icons";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
@@ -227,12 +228,12 @@ const WaitingStateContainer = () => {
         {waitingList.data === undefined || storeOption.data === undefined ? (
           <Flex
             direction="column"
+            background="#ffffff"
             padding="3rem 1rem"
-            margin="2rem 1rem"
+            margin="4.5rem 1rem"
             borderRadius="1rem"
             boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
-            align="center"
-            background="#FFFFFF"
+            wordBreak="keep-all"
           >
             <Skeleton textAlign="center" height="2.5rem" width="50vw" />
 
@@ -297,12 +298,22 @@ const WaitingStateContainer = () => {
             as="article"
             direction="column"
             background="#ffffff"
-            padding="3rem 1rem"
-            margin="2rem 1rem"
+            padding="1rem 1rem 3rem 1rem"
+            margin="4.5rem 1rem"
             borderRadius="1rem"
             boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
             wordBreak="keep-all"
           >
+            <Button
+              type="button"
+              margin="0 0 2rem auto"
+              padding="0"
+              background="none"
+              fontSize="1rem"
+              onClick={() => waitingList.refetch()}
+            >
+              <RepeatIcon />
+            </Button>
             <Heading
               as="h1"
               textAlign="center"
@@ -337,8 +348,8 @@ const WaitingStateContainer = () => {
                 color="mainBlue"
               >
                 {currentUserIdx === 0
-                  ? `입장하실 차례입니다.\n매장에 방문해 매장 직원에게 말씀해주세요.`
-                  : `순서가 가까워졌어요.\n매장 근처에서 기다려주세요.`}
+                  ? `잠시만 기다려주세요.\n입장 준비가 완료되는대로\n연락 등으로 안내 드리겠습니다.`
+                  : `순서가 가까워졌어요.\n준비가 되는 대로 매장 직원이\n호출이나 연락을 드릴 예정입니다.`}
               </Text>
             ) : (
               <></>

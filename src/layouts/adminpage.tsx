@@ -12,6 +12,8 @@ function AdminPage(props: Props) {
           location.pathname === "/adminwaitinglist"
             ? "5.5rem 0 3rem 0"
             : "3.5rem 0 0 0",
+        maxWidth: "40rem",
+        margin: "0 auto",
       }}
     >
       {props.children}

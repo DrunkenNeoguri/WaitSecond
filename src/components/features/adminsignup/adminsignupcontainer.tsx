@@ -66,6 +66,7 @@ const AdminSignUpContainer: React.FC = () => {
           maximumWaitingTeamCount: 10,
           petAllow: false,
           teamSeparate: false,
+          outdoorSeat: false,
           customOption1Name: "",
           customOption1State: false,
           customOption2Name: "",
