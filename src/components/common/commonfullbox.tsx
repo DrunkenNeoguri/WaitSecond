@@ -1,30 +1,8 @@
-import { Flex, Heading, Text } from "@chakra-ui/react";
-import { useRecoilValue } from "recoil";
-import { lowVisionState } from "../../modules/atoms/atoms";
+import { Heading, Text } from "@chakra-ui/react";
 
 const CommonFullBox = (data: any) => {
-  const visionState = useRecoilValue<boolean>(lowVisionState);
-
   return (
     <>
-      <Flex
-        direction="row"
-        justify="space-between"
-        align="center"
-        fontSize={visionState === false ? "1.5rem" : "1.625rem"}
-        fontWeight="semibold"
-        letterSpacing="-0.1rem"
-        margin="0.5rem 0 1rem 0"
-      >
-        <Text>현재 대기팀</Text>
-        <Text fontSize="1.75rem" fontWeight="700" color="mainBlue">
-          {data === undefined
-            ? "확인 중"
-            : data.data.length === 0
-            ? "없음"
-            : `${data.data.length} 팀`}
-        </Text>
-      </Flex>
       <Heading
         as="h2"
         fontSize="1.25rem"

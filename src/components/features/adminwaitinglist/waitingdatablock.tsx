@@ -1,5 +1,13 @@
 import { CloseIcon, TriangleDownIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Link,
+  Text,
+  useBreakpointValue,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faPhone, faUserPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -56,6 +64,11 @@ const WaitingDataBlock: React.FC<{
 
   const createDataTime = new Date(userData.createdAt!);
 
+  const userTel = useBreakpointValue({
+    base: userData.tel.substring(userData.tel.length - 4, userData.tel.length),
+    desktop: userData.tel,
+  });
+
   return (
     <>
       <AdminRegisterModal
@@ -80,23 +93,18 @@ const WaitingDataBlock: React.FC<{
             align="center"
             gap="0.5rem"
             margin="0.5rem"
-            fontSize="1rem"
+            fontSize={{ base: "1rem", desktop: "1.25rem" }}
             pointerEvents="none"
           >
             <Text fontWeight="bold">{userData.name}</Text> 님
             <Box height="1rem" width="2px" background="accentGray" />
-            <Text fontWeight="bold" fontSize="1rem">
-              {userData.tel.substring(
-                userData.tel.length - 4,
-                userData.tel.length
-              )}
-            </Text>
+            <Text fontWeight="bold">{userTel}</Text>
           </Flex>
           <Flex
             direction="row"
             gap="0.5rem"
             alignItems="center"
-            fontSize="0.75rem"
+            fontSize={{ base: "0.75rem", desktop: "1rem" }}
             margin="0.25rem 0.5rem"
             pointerEvents="none"
           >
@@ -134,10 +142,10 @@ const WaitingDataBlock: React.FC<{
               <Button
                 display="flex"
                 flexDirection="column"
-                width="3rem"
-                height="3rem"
+                width={{ base: "3rem", desktop: "3.75rem" }}
+                height={{ base: "3rem", desktop: "3.75rem" }}
                 backgroundColor="green"
-                fontSize="0.625rem"
+                fontSize={{ base: "0.625rem", desktop: "0.825rem" }}
                 color="#ffffff"
                 fontWeight="normal"
                 gap="0.375rem"
@@ -151,10 +159,10 @@ const WaitingDataBlock: React.FC<{
           <Button
             display="flex"
             flexDirection="column"
-            width="3rem"
-            height="3rem"
+            width={{ base: "3rem", desktop: "3.75rem" }}
+            height={{ base: "3rem", desktop: "3.75rem" }}
             backgroundColor={userData.isentered ? "errorRed" : "mainBlue"}
-            fontSize="0.625rem"
+            fontSize={{ base: "0.625rem", desktop: "0.825rem" }}
             color="#ffffff"
             fontWeight="normal"
             gap={userData.isentered ? "0.5rem" : "0.25rem"}
@@ -186,7 +194,7 @@ const WaitingDataBlock: React.FC<{
           <Flex
             direction="column"
             justify="flex-start"
-            fontSize="0.75rem"
+            fontSize={{ base: "0.75rem", desktop: "1rem" }}
             gap="0.5rem"
           >
             <Text color="#ffffff" marginBottom="0.25rem">
@@ -235,10 +243,10 @@ const WaitingDataBlock: React.FC<{
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            width="3rem"
-            height="3rem"
+            width={{ base: "3rem", desktop: "3.75rem" }}
+            height={{ base: "3rem", desktop: "3.75rem" }}
             backgroundColor="#FFFFFF"
-            fontSize="0.625rem"
+            fontSize={{ base: "0.625rem", desktop: "0.825rem" }}
             fontWeight="normal"
             gap="0.25rem"
             onClick={onOpen}

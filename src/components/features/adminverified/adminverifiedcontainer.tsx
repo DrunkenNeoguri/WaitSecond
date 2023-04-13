@@ -165,6 +165,7 @@ const AdminVerifiedContainer = () => {
             margin="0 1rem"
             borderRadius="1rem"
             boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+            wordBreak="keep-all"
           >
             <Heading as="h1" textAlign="center" marginBottom="2rem">
               웨잇세컨드
@@ -215,6 +216,7 @@ const AdminVerifiedContainer = () => {
             margin="0 1rem"
             borderRadius="1rem"
             boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+            wordBreak="keep-all"
           >
             {!changeState ? (
               <>
@@ -341,6 +343,7 @@ const AdminVerifiedContainer = () => {
             margin="0 1rem"
             borderRadius="1rem"
             boxShadow="0px 4px 6px rgba(90, 90, 90, 30%)"
+            wordBreak="keep-all"
           >
             <Heading as="h1" textAlign="center" marginBottom="2rem">
               웨잇세컨드

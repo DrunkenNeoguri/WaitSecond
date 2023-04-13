@@ -28,6 +28,7 @@ import CommonCloseBox from "../../common/commonclosebox";
 import CommonFullBox from "../../common/commonfullbox";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 import ErrorPageContainer from "../errorpage/errorpagecontainer";
+import CommonCustomOption from "../../common/commoncustomoption";
 
 const WaitingFormContainer: React.FC = () => {
   const initialState = new UserData(
@@ -36,6 +37,7 @@ const WaitingFormContainer: React.FC = () => {
     "",
     0,
     0,
+    false,
     false,
     false,
     false,
@@ -269,6 +271,7 @@ const WaitingFormContainer: React.FC = () => {
     }
     return onOpen();
   };
+
   if (pageError === true) {
     return (
       <Box padding="4rem 0" height="100vh">
@@ -591,161 +594,60 @@ const WaitingFormContainer: React.FC = () => {
                       background="#F9F9F9"
                       padding="0.75rem"
                     >
-                      {storeOption.data?.petAllow ? (
-                        <Flex
-                          align="center"
-                          margin="0.25rem 0"
-                          letterSpacing="-0.05rem"
-                        >
-                          <Checkbox
-                            size={visionState ? "lg" : "md"}
-                            id="pet"
-                            onChange={(e: React.ChangeEvent) =>
-                              changeCheckState(e, userData.pet!)
-                            }
-                            borderRadius="0.5rem"
-                            isChecked={!userData.pet ? false : true}
-                            variant="customBlue"
-                            margin={visionState ? "0.5rem 0 auto 0" : "0"}
-                          />
-                          <FormLabel
-                            fontWeight="500"
-                            width="auto"
-                            margin="0 0.5rem"
-                            htmlFor="pet"
-                            cursor="pointer"
-                            fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          >
-                            반려 동물이 있어요.
-                          </FormLabel>
-                        </Flex>
-                      ) : (
-                        <></>
-                      )}
-                      {storeOption.data?.teamSeparate ? (
-                        <Flex
-                          align="center"
-                          margin="0.25rem 0"
-                          letterSpacing="-0.05rem"
-                        >
-                          <Checkbox
-                            size={visionState ? "lg" : "md"}
-                            id="separate"
-                            onChange={(e: React.ChangeEvent) =>
-                              changeCheckState(e, userData.separate!)
-                            }
-                            borderRadius="0.5rem"
-                            isChecked={!userData.separate ? false : true}
-                            variant="customBlue"
-                            margin={visionState ? "0.5rem 0 auto 0" : "0"}
-                          />
-                          <FormLabel
-                            fontWeight="500"
-                            width="auto"
-                            margin="0 0.5rem"
-                            htmlFor="separate"
-                            cursor="pointer"
-                            fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          >
-                            자리가 나면 따로 앉아도 괜찮아요.
-                          </FormLabel>
-                        </Flex>
-                      ) : (
-                        <></>
-                      )}
-                      {storeOption.data?.customOption1State ? (
-                        <Flex
-                          align="center"
-                          margin="0.25rem 0"
-                          letterSpacing="-0.05rem"
-                        >
-                          <Checkbox
-                            size={visionState ? "lg" : "md"}
-                            id="custom1"
-                            onChange={(e: React.ChangeEvent) =>
-                              changeCheckState(e, userData.custom1!)
-                            }
-                            borderRadius="0.5rem"
-                            isChecked={!userData.custom1 ? false : true}
-                            variant="customBlue"
-                            margin={visionState ? "0.5rem 0 auto 0" : "0"}
-                          />
-                          <FormLabel
-                            fontWeight="500"
-                            width="auto"
-                            margin="0 0.5rem"
-                            htmlFor="custom1"
-                            cursor="pointer"
-                            fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          >
-                            {storeOption.data.customOption1Name}
-                          </FormLabel>
-                        </Flex>
-                      ) : (
-                        <></>
-                      )}
-                      {storeOption.data?.customOption2State ? (
-                        <Flex
-                          align="center"
-                          margin="0.25rem 0"
-                          letterSpacing="-0.05rem"
-                        >
-                          <Checkbox
-                            size={visionState ? "lg" : "md"}
-                            id="custom2"
-                            onChange={(e: React.ChangeEvent) =>
-                              changeCheckState(e, userData.custom2!)
-                            }
-                            borderRadius="0.5rem"
-                            isChecked={!userData.custom2 ? false : true}
-                            variant="customBlue"
-                            margin={visionState ? "0.5rem 0 auto 0" : "0"}
-                          />
-                          <FormLabel
-                            fontWeight="500"
-                            width="auto"
-                            margin="0 0.5rem"
-                            htmlFor="custom2"
-                            cursor="pointer"
-                            fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          >
-                            {storeOption.data.customOption2Name}
-                          </FormLabel>
-                        </Flex>
-                      ) : (
-                        <></>
-                      )}
-                      {storeOption.data?.customOption3State ? (
-                        <Flex
-                          align="center"
-                          margin="0.25rem 0"
-                          letterSpacing="-0.05rem"
-                        >
-                          <Checkbox
-                            size={visionState ? "lg" : "md"}
-                            id="custom3"
-                            onChange={(e: React.ChangeEvent) =>
-                              changeCheckState(e, userData.custom3!)
-                            }
-                            borderRadius="0.5rem"
-                            isChecked={!userData.custom3 ? false : true}
-                            variant="customBlue"
-                            margin={visionState ? "0.5rem 0 auto 0" : "0"}
-                          />
-                          <FormLabel
-                            fontWeight="500"
-                            width="auto"
-                            margin="0 0.5rem"
-                            htmlFor="custom3"
-                            cursor="pointer"
-                            fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          >
-                            {storeOption.data.customOption3Name}
-                          </FormLabel>
-                        </Flex>
-                      ) : (
-                        <></>
-                      )}
+                      <CommonCustomOption
+                        state={storeOption.data?.petAllow}
+                        id="pet"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.pet!)
+                        }
+                        text="반려 동물이 있어요."
+                        isChecked={userData.pet!}
+                      />
+                      <CommonCustomOption
+                        state={storeOption.data?.teamSeparate}
+                        id="separate"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.separate!)
+                        }
+                        text="자리가 나면 따로 앉아도 괜찮아요."
+                        isChecked={userData.separate!}
+                      />
+                      <CommonCustomOption
+                        state={storeOption.data?.outdoorSeat}
+                        id="outdoorseat"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.outdoorseat!)
+                        }
+                        text="야외석으로 안내해주세요."
+                        isChecked={userData.outdoorseat!}
+                      />
+                      <CommonCustomOption
+                        state={storeOption.data?.customOption1State}
+                        id="custom1"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.custom1!)
+                        }
+                        text={storeOption.data.customOption1Name}
+                        isChecked={userData.custom1!}
+                      />
+                      <CommonCustomOption
+                        state={storeOption.data?.customOption2State}
+                        id="custom2"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.custom2!)
+                        }
+                        text={storeOption.data.customOption2Name}
+                        isChecked={userData.custom2!}
+                      />{" "}
+                      <CommonCustomOption
+                        state={storeOption.data?.customOption3State}
+                        id="custom3"
+                        onChange={(e: React.ChangeEvent) =>
+                          changeCheckState(e, userData.custom3!)
+                        }
+                        text={storeOption.data.customOption3Name}
+                        isChecked={userData.custom3!}
+                      />
                     </Flex>
                     <Button
                       type="submit"

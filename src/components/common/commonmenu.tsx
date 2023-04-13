@@ -131,6 +131,19 @@ const CommonMenu: React.FC<{
           >
             설정
           </Link>
+          <Box height="0.125rem" background="#FFFFFF" />
+
+          <Link
+            fontSize="1.25rem"
+            fontWeight="semibold"
+            color="#ffffff"
+            as={ReactRouterLink}
+            to={`/store/${loginStateCheck()}`}
+            target="_blank"
+            onClick={() => close(false)}
+          >
+            내 매장 페이지
+          </Link>
         </Flex>
         <Flex margin="auto 0 0 0">
           <Button

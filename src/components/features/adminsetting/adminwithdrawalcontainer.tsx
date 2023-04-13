@@ -195,6 +195,19 @@ const AdminWithdrawalContainer: React.FC = () => {
             isClosable: true,
           })
         : null;
+    } else if (userData.email !== currentUser?.email) {
+      setLoadingState(false);
+      return !toastMsg.isActive("error-emailIncorrect")
+        ? toastMsg({
+            title: "계정 불일치",
+            id: "error-emailCheck",
+            description:
+              "현재 로그인하신 계정의 이메일과 입력하신 이메일 아이디가 동일하지 않습니다. 이메일을 정확하게 입력했는지 확인해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
     } else if (passwordRegex.test(userData.password!) === false) {
       setLoadingState(false);
       return !toastMsg.isActive("error-passwordCheck")
@@ -252,7 +265,7 @@ const AdminWithdrawalContainer: React.FC = () => {
                   <Flex direction="column" padding="1.5rem 0 0.5rem 0">
                     <CommonInput
                       id="email"
-                      title="이메일"
+                      title="이메일 아이디"
                       type="email"
                       value={userData.email!}
                       onChange={inputUserData}

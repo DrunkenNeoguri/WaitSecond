@@ -1,6 +1,6 @@
+import CommonFooter from "../components/common/commonfooter";
 import CommonHeader from "../components/common/commonheader";
 import WaitingStateContainer from "../components/features/waitingstate/waitingstatecontainer";
-import AdminPage from "../layouts/adminpage";
 import UserPage from "../layouts/userpage";
 
 function WaitingState() {
@@ -8,6 +8,7 @@ function WaitingState() {
     <UserPage>
       <CommonHeader page="user" />
       <WaitingStateContainer />
+      <CommonFooter />
     </UserPage>
   );
 }

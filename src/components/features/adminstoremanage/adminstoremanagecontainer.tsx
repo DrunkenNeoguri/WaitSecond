@@ -52,6 +52,7 @@ const AdminStoreManageContainer: React.FC = () => {
     maximumWaitingTeamCount: 1,
     petAllow: false,
     teamSeparate: false,
+    outdoorSeat: false,
     customOption1Name: "",
     customOption1State: false,
     customOption2Name: "",
@@ -377,6 +378,15 @@ const AdminStoreManageContainer: React.FC = () => {
                   <CommonSwitchButton
                     id="teamSeparate"
                     attribute={storeData.teamSeparate}
+                    on={(e) => switchStoreOptionValue(e, true)}
+                    off={(e) => switchStoreOptionValue(e, false)}
+                  />
+                </Flex>
+                <Flex direction="row" justify="space-between" align="center">
+                  <Text fontSize="0.875rem">야외석 이용 가능 여부</Text>
+                  <CommonSwitchButton
+                    id="outdoorSeat"
+                    attribute={storeData.outdoorSeat}
                     on={(e) => switchStoreOptionValue(e, true)}
                     off={(e) => switchStoreOptionValue(e, false)}
                   />
