@@ -1,6 +1,7 @@
 import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link as ReactRouterLink } from "react-router-dom";
+import CommonFooter from "../../common/commonfooter";
 
 const MainContainer: React.FC = () => {
   return (
@@ -217,31 +218,7 @@ const MainContainer: React.FC = () => {
           </Link>
         </Box>
       </Flex>
-      <Flex
-        direction="column"
-        width="100%"
-        background="accentGray"
-        padding="1.5rem 0"
-        color="#FFFFFF"
-        textAlign="center"
-        gap="1rem"
-      >
-        <Text fontSize="0.75rem">
-          Copyright ⓒ 2023 @DrunkenNeoguri All right reserved.
-        </Text>
-        <Flex
-          direction="row"
-          justifyContent="space-between"
-          margin="0 3rem"
-          fontSize="0.75rem"
-        >
-          <Link href="https://github.com/DrunkenNeoguri">개발자 깃허브</Link>
-          <Link href="mailto:developneoguri@gmail.com">개발자 이메일</Link>
-          <Link href="https://develop-neoguri.notion.site/Re-da4bf54e1c5e40f1b2e8a22790e2d55e">
-            개발자 블로그
-          </Link>
-        </Flex>
-      </Flex>
+      <CommonFooter />
     </Flex>
   );
 };

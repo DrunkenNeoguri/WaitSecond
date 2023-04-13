@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -73,7 +73,7 @@ const AdminWaitingListContainer = () => {
     collection(db, `storeList/${loginStateCheck()}/waitingList`)
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getDocs(waitingCol)
       .then((data) => {
         const list: any = [];
@@ -208,6 +208,7 @@ const AdminWaitingListContainer = () => {
         width="100%"
         top="3.5rem"
         borderBottom="1px solid black"
+        maxWidth="40rem"
       >
         <Text letterSpacing="-0.1rem">
           {waitingSetting === "entering" ? "현재 대기팀" : "입장 완료팀"}
@@ -261,6 +262,7 @@ const AdminWaitingListContainer = () => {
         justifyContent="space-evenly"
         height="3.5rem"
         borderTop="1px Solid #424242"
+        maxWidth="40rem"
       >
         <Button
           color={storeOption.data?.data.waitingState ? "errorRed" : "mainBlue"}

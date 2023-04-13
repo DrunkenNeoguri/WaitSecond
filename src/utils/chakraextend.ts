@@ -1,6 +1,9 @@
 import { extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
+  breakpoints: {
+    desktop: "30rem",
+  },
   styles: {
     global: {
       body: {

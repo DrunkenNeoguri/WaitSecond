@@ -66,8 +66,8 @@
 
 [브랜치 관리 및 커밋 규칙](https://www.notion.so/0226b56898894c66bc8d07e072ff778c)
 
-**👥 팀 정보**
+**👥 개발자 정보**
 
-[팀/작업자 소개](https://www.notion.so/c061f6dfaba84a2c8117d367ac298285)
+[작업자 이력서](https://my.surfit.io/w/1380177787)
 
 [개발 기록 / 블로그](https://develop-neoguri.notion.site/Re-da4bf54e1c5e40f1b2e8a22790e2d55e)

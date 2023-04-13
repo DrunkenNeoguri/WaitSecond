@@ -58,6 +58,7 @@ export class UserData {
   child: number;
   pet?: boolean;
   separate?: boolean;
+  outdoorseat?: boolean;
   custom1?: boolean;
   custom2?: boolean;
   custom3?: boolean;
@@ -72,6 +73,7 @@ export class UserData {
     child: number,
     pet: boolean,
     seperate: boolean,
+    outdoorseat: boolean,
     custom1?: boolean,
     custom2?: boolean,
     custom3?: boolean,
@@ -85,6 +87,7 @@ export class UserData {
     this.child = child;
     this.pet = pet;
     this.separate = seperate;
+    this.outdoorseat = outdoorseat;
     this.custom1 = custom1;
     this.custom2 = custom2;
     this.custom3 = custom3;
@@ -102,6 +105,7 @@ export type StoreOption = {
   maximumWaitingTeamCount: number;
   petAllow: boolean;
   teamSeparate: boolean;
+  outdoorSeat: boolean;
   customOption1Name: string;
   customOption1State: boolean;
   customOption2Name: string;

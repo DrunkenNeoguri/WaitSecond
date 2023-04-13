@@ -90,7 +90,14 @@ const CheckDataModal: React.FC<{
             letterSpacing="-0.05rem"
           >
             <Text margin="1rem 0">
-              아래 버튼을 누르시면 등록하신 대기 정보를 확인하실 수 있습니다.
+              입장하실 차례가 되면 전화나
+              <br />
+              외부 호출로 안내드리겠습니다.
+              <br />
+              <br />
+              아래 버튼을 누르시면 등록하신
+              <br />
+              대기 정보를 확인하실 수 있습니다.
             </Text>
             <ModalFooter justifyContent="center" padding="0 1rem">
               <Button
