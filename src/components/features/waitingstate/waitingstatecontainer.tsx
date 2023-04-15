@@ -306,7 +306,7 @@ const WaitingStateContainer = () => {
           >
             <Button
               type="button"
-              margin="0 0 2rem auto"
+              margin="0 0 1rem auto"
               padding="0"
               background="none"
               fontSize="1rem"
@@ -360,7 +360,7 @@ const WaitingStateContainer = () => {
               height="0.125rem"
               borderRadius="1rem"
               boxSizing="border-box"
-              margin="1rem 1rem"
+              margin="1rem"
             />
             <Heading
               as="h2"
@@ -414,7 +414,10 @@ const WaitingStateContainer = () => {
                   fontWeight="bold"
                 >
                   {" "}
-                  {currentUserData.tel}
+                  {currentUserData.tel.replace(
+                    /(\d{3})(\d{3,4})(\d{4})/,
+                    "$1-$2-$3"
+                  )}
                 </Text>
               </Flex>
               <Flex

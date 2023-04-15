@@ -14,34 +14,13 @@ const CommonMenu: React.FC<{
   const firebaseAuth = getAuth();
   const navigate = useNavigate();
   const toastMsg = useToast();
-  // const currentUser = firebaseAuth.currentUser?.uid;
-
-  // 관리자가 설정한 매장 관리 정보 가져오기
-  const getStoreOption = async () => {
-    const storeDataState = await getDocs(collection(db, "adminList")).then(
-      (data) => {
-        let adminData: any;
-        data.forEach((doc) => {
-          if (doc.data().uid === loginStateCheck()) {
-            return (adminData = doc.data());
-          }
-        });
-        return adminData;
-      }
-    );
-    return storeDataState;
-  };
-
-  const { data } = useQuery({
-    queryKey: ["storeOption"],
-    queryFn: getStoreOption,
-  });
 
   const signOutToPage = (e: React.MouseEvent) => {
     e.preventDefault();
     signOut(firebaseAuth).then(() => {
       const sessionKey = `firebase:authUser:${firebaseConfig.apiKey}:[DEFAULT]`;
       sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem("storeName");
       if (!toastMsg.isActive("success-logout")) {
         toastMsg({
           title: "로그아웃",
@@ -85,7 +64,9 @@ const CommonMenu: React.FC<{
         >
           <Flex>
             <Text fontWeight="semibold" margin="0 0.25rem">
-              {`${data.storeName} 님`}
+              {sessionStorage.getItem("storeName") === undefined
+                ? ""
+                : `${sessionStorage.getItem("storeName")} 님`}
             </Text>
           </Flex>
           <Button background="none" padding="0" onClick={() => close(false)}>
