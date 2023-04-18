@@ -172,7 +172,7 @@ const CheckDataModal: React.FC<{
                   color="mainBlue"
                   fontWeight="600"
                 >
-                  {userInfo.tel}
+                  {userInfo.tel.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3")}
                 </Text>
               </Flex>
               <Flex
@@ -337,12 +337,3 @@ const CheckDataModal: React.FC<{
 };
 
 export default CheckDataModal;
-
-// <Flex
-// direction="column"
-// background="#ffffff"
-// margin="10vh 1rem"
-// padding="3rem 1.5rem"
-// justify="center"
-// borderRadius="0.5rem"
-// >

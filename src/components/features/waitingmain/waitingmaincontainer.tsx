@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, getFirestore, query } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  getFirestore,
+  query,
+} from "firebase/firestore";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
@@ -38,13 +45,41 @@ const WaitingMainContainer: React.FC = () => {
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
 
+  useLayoutEffect(() => {
+    getDocs(waitingCol)
+      .then((data) => {
+        const list: any = [];
+        data.forEach((doc) => {
+          const userData = doc.data();
+          list.push([userData, doc.id]);
+          return list;
+        });
+        return list;
+      })
+      .then((list) => {
+        const nowDate = new Date().getDate();
+        list.forEach((document: any) => {
+          const dataDate = new Date(document[0].createdAt!).getDate();
+          if (nowDate !== dataDate) {
+            deleteDoc(
+              doc(db, `storeList/${storeuid}/waitingList`, document[1])
+            );
+          }
+        });
+      });
+  }, []);
+
   // 현재 대기열 가져오기
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
+      const nowDate = new Date().getDate();
       data.forEach((doc) => {
         if (doc.data().isentered === false) {
-          list.push(doc.data());
+          const dataDate = new Date(doc.data().createdAt!).getDate();
+          if (nowDate === dataDate) {
+            list.push(doc.data());
+          }
         }
       });
       list.sort(function (a: any, b: any) {

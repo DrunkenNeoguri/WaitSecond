@@ -1,47 +1,33 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Link, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Link,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
-import { useQuery } from "@tanstack/react-query";
 import { loginStateCheck } from "../../utils/verifiedcheck";
 import { firebaseConfig } from "../../utils/firestore.setting";
+import CommonQRCodeModal from "./commonqrcodemodal";
 const CommonMenu: React.FC<{
   close: Dispatch<SetStateAction<boolean>>;
 }> = ({ close }) => {
-  const db = getFirestore();
   const firebaseAuth = getAuth();
   const navigate = useNavigate();
   const toastMsg = useToast();
-  // const currentUser = firebaseAuth.currentUser?.uid;
-
-  // 관리자가 설정한 매장 관리 정보 가져오기
-  const getStoreOption = async () => {
-    const storeDataState = await getDocs(collection(db, "adminList")).then(
-      (data) => {
-        let adminData: any;
-        data.forEach((doc) => {
-          if (doc.data().uid === loginStateCheck()) {
-            return (adminData = doc.data());
-          }
-        });
-        return adminData;
-      }
-    );
-    return storeDataState;
-  };
-
-  const { data } = useQuery({
-    queryKey: ["storeOption"],
-    queryFn: getStoreOption,
-  });
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const signOutToPage = (e: React.MouseEvent) => {
     e.preventDefault();
     signOut(firebaseAuth).then(() => {
       const sessionKey = `firebase:authUser:${firebaseConfig.apiKey}:[DEFAULT]`;
       sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem("storeName");
       if (!toastMsg.isActive("success-logout")) {
         toastMsg({
           title: "로그아웃",
@@ -56,6 +42,11 @@ const CommonMenu: React.FC<{
     });
   };
 
+  const openQRCodeModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onOpen();
+  };
+
   return (
     <Box
       background="rgba(38, 38, 38, 40%)"
@@ -68,11 +59,14 @@ const CommonMenu: React.FC<{
       overflow="scroll"
       wordBreak="keep-all"
     >
+      <CommonQRCodeModal isOpen={isOpen} onClose={onClose} />
+
       <Flex
         direction="column"
         height="100vh"
         background="mainBlue"
         width="70vw"
+        maxWidth="30rem"
         align="flex-start"
         padding="1rem"
       >
@@ -85,7 +79,9 @@ const CommonMenu: React.FC<{
         >
           <Flex>
             <Text fontWeight="semibold" margin="0 0.25rem">
-              {`${data.storeName} 님`}
+              {sessionStorage.getItem("storeName") === undefined
+                ? ""
+                : `${sessionStorage.getItem("storeName")} 님`}
             </Text>
           </Flex>
           <Button background="none" padding="0" onClick={() => close(false)}>
@@ -95,6 +91,7 @@ const CommonMenu: React.FC<{
         <Flex
           direction="column"
           width="50vw"
+          maxWidth="20rem"
           padding="4rem 0"
           gap="1rem"
           margin="0 0.25rem"
@@ -145,14 +142,31 @@ const CommonMenu: React.FC<{
             내 매장 페이지
           </Link>
         </Flex>
-        <Flex margin="auto 0 0 0">
+        <Flex
+          direction="column"
+          margin="auto 0 0 0"
+          gap="0.5rem"
+          align="flex-start"
+        >
           <Button
             background="none"
             border="none"
             fontSize="1rem"
             color="#FFFFFF"
-            padding="0 0.25rem"
+            padding="0"
+            onClick={openQRCodeModal}
+            _hover={{ background: "none", textDecoration: "underline" }}
+          >
+            임시 QR 코드 발급
+          </Button>
+          <Button
+            background="none"
+            border="none"
+            fontSize="1rem"
+            color="#FFFFFF"
+            padding="0"
             onClick={signOutToPage}
+            _hover={{ background: "none", textDecoration: "underline" }}
           >
             로그아웃
           </Button>

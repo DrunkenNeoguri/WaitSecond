@@ -12,6 +12,17 @@ export const loginStateCheck = () => {
   }
 };
 
+export const getEmailinSessionStorage = () => {
+  const sessionKey = `firebase:authUser:${firebaseConfig.apiKey}:[DEFAULT]`;
+  const loginState = sessionStorage.getItem(sessionKey);
+
+  if (loginState === null) {
+    return "";
+  } else {
+    return JSON.parse(loginState).email;
+  }
+};
+
 export const tokenExpirationCheck = async () => {
   const firebaseAuth = getAuth();
   const expirationCheck = await firebaseAuth.currentUser
@@ -23,6 +34,7 @@ export const tokenExpirationCheck = async () => {
       if (nowTime >= expirationTime) {
         const sessionKey = `firebase:authUser:${firebaseConfig.apiKey}:[DEFAULT]`;
         sessionStorage.removeItem(sessionKey);
+        sessionStorage.removeItem("storeName");
         return true;
       } else {
         firebaseAuth.currentUser?.getIdToken(true);

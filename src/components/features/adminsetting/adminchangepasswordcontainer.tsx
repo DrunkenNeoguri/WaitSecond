@@ -27,7 +27,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { passwordRegex } from "../../../utils/reqlist";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
-import { tokenExpirationCheck } from "../../../utils/verifiedcheck";
+import {
+  getEmailinSessionStorage,
+  tokenExpirationCheck,
+} from "../../../utils/verifiedcheck";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 
 const AdminChangePasswordContainer: React.FC = () => {
@@ -37,8 +40,8 @@ const AdminChangePasswordContainer: React.FC = () => {
   });
   const firebaseAuth = getAuth();
   const currentUser = firebaseAuth.currentUser!;
+  const initialState = new AdminData(getEmailinSessionStorage(), "", "", "");
 
-  const initialState = new AdminData(currentUser.email!, "", "", "");
   const [userData, setUserData] = useState(initialState);
   const [inputCheck, setInputCheck] = useState({
     currentpassword: false,

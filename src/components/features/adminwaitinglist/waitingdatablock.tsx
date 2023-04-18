@@ -66,7 +66,7 @@ const WaitingDataBlock: React.FC<{
 
   const userTel = useBreakpointValue({
     base: userData.tel.substring(userData.tel.length - 4, userData.tel.length),
-    desktop: userData.tel,
+    desktop: userData.tel.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3"),
   });
 
   return (
