@@ -100,16 +100,23 @@ const AdminWaitingListContainer = () => {
   const getWaitingData = async () => {
     const waitingState = await getDocs(waitingCol).then((data) => {
       const list: any = [];
+      const nowDate = new Date().getDate();
       data.forEach((doc) => {
         if (waitingSetting === "entered") {
           if (doc.data().isentered === true) {
             const userData = doc.data();
-            list.push({ ...userData, uid: doc.id });
+            const dataDate = new Date(userData.createdAt!).getDate();
+            if (nowDate === dataDate) {
+              list.push({ ...userData, uid: doc.id });
+            }
           }
         } else if (waitingSetting === "entering") {
           if (doc.data().isentered === false) {
             const userData = doc.data();
-            list.push({ ...userData, uid: doc.id });
+            const dataDate = new Date(userData.createdAt!).getDate();
+            if (nowDate === dataDate) {
+              list.push({ ...userData, uid: doc.id });
+            }
           }
         }
       });

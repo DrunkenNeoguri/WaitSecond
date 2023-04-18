@@ -88,6 +88,7 @@ const AdminLoginContainer = () => {
               if (doc.data().firstSetting === false) {
                 userData = { data: doc.data(), uid: doc.id };
               } else if (doc.data().firstSetting === true) {
+                sessionStorage.setItem("storeName", doc.data().storeName);
                 setLoadingState(false);
                 return navigate("/adminwaitinglist");
               }
@@ -96,14 +97,16 @@ const AdminLoginContainer = () => {
           return userData;
         })
         .then((data) => {
-          const receiveData = data.data;
-          setDoc(doc(db, "adminList", `${data.uid}`), {
-            ...receiveData,
-            firstSetting: true,
-          }).then(() => {
-            setCheck(false);
-            setFirstSet(true);
-          });
+          if (data !== undefined) {
+            const receiveData = data.data;
+            setDoc(doc(db, "adminList", `${data.uid}`), {
+              ...receiveData,
+              firstSetting: true,
+            }).then(() => {
+              setCheck(false);
+              setFirstSet(true);
+            });
+          }
         });
     }
   }, [check]);
