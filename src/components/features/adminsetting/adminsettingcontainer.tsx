@@ -57,8 +57,7 @@ const AdminSettingContainer: React.FC = () => {
           id="notice"
           fontSize="1.5rem"
           fontWeight="semibold"
-          as={ReactRouterLink}
-          to="/"
+          href="https://develop-neoguri.notion.site/c98f8baa60bf482d8f58b4be4c7929af?v=b17c559c79e5493ca90753694e79a0fe"
         >
           공지사항
         </Link>
@@ -66,8 +65,7 @@ const AdminSettingContainer: React.FC = () => {
           id="help"
           fontSize="1.5rem"
           fontWeight="semibold"
-          as={ReactRouterLink}
-          to="/"
+          href="https://docs.google.com/presentation/d/1HN5OPfm7l5S8VCeo8CXRyMxA3dQSdwPnjxFWBrC4Qjk/edit?usp=sharing"
         >
           도움말 가이드
         </Link>

@@ -16,7 +16,13 @@ const CommonFooter: React.FC = () => {
         <Link href="https://github.com/DrunkenNeoguri">@DrunkenNeoguri</Link>{" "}
         Present.
       </Text>
-      <Flex margin="auto" justify="space-between" color="#FFFFFF" gap="2rem">
+      <Flex
+        margin="auto"
+        justify="space-between"
+        color="#FFFFFF"
+        gap="2rem"
+        fontSize="0.75rem"
+      >
         <Link href="https://github.com/DrunkenNeoguri">개발자 깃허브</Link>
         <Link href="mailto:developneoguri@gmail.com">개발자 이메일</Link>
         <Link href="https://develop-neoguri.notion.site/Re-da4bf54e1c5e40f1b2e8a22790e2d55e">
