@@ -29,6 +29,7 @@ import CommonLoadingModal from "../../common/commonloadingmodal";
 import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 import CommonSwitchButton from "../../common/commonswitchbutton";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 const AdminStoreManageContainer: React.FC = () => {
   useTitle("매장 관리 ::: 웨잇세컨드");
@@ -41,12 +42,13 @@ const AdminStoreManageContainer: React.FC = () => {
   const toastMsg = useToast();
   const navigate = useNavigate();
   const currentUser = loginStateCheck();
+  const storage = getStorage();
 
   // interface에서 class로 바꿀 수 있는지 확인해보기
   const initialState = {
     uid: "",
     storeName: "",
-    storebg: "",
+    storebg: "https://via.placeholder.com/640x480",
     waitingState: false,
     maximumTeamMemberCount: 1,
     maximumWaitingTeamCount: 1,
@@ -154,6 +156,7 @@ const AdminStoreManageContainer: React.FC = () => {
 
   // 관리자의 설정 정보 가져오기
   const getStoreSettingData = async () => {
+    setLoadingState(true);
     const storeDataState = await getDocs(collection(db, "adminList")).then(
       (data) => {
         let adminData: any;
@@ -188,12 +191,12 @@ const AdminStoreManageContainer: React.FC = () => {
       storeData
     )
       .then((data) => "option-setting-success")
-      .catch((error) => error.message);
+      .catch((error) => console.log(error.message));
     return updateDataState;
   };
 
   const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
-    onError: (error, variable) => console.log(error, variable),
+    onError: (error, variable) => setLoadingState(false),
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
       if (data === "option-setting-success") {
@@ -215,9 +218,61 @@ const AdminStoreManageContainer: React.FC = () => {
 
   const submitUserWaitingData = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoadingState(true);
     updateStoreDataMutation.mutate(storeData);
   };
+
+  // 이미지 업로드하기
+  const uploadImage = async (file: any) => {
+    const storageRef = ref(storage, `images/${file.name}`);
+    const sendData = await uploadBytes(storageRef, file).then((snapshot) =>
+      setDoc(doc(db, "adminList", documentUID), {
+        ...storeData,
+        storebg:
+          process.env.REACT_APP_IMAGE_SRC + snapshot.ref.name + "?alt=media",
+      })
+        .then(() => {
+          setStoreData({
+            ...storeData,
+            storebg:
+              process.env.REACT_APP_IMAGE_SRC +
+              snapshot.ref.name +
+              "?alt=media",
+          });
+          return "image-change-success";
+        })
+        .catch((error) => error.message)
+    );
+    return sendData;
+  };
+
+  const uploadImageMutataion = useMutation(uploadImage, {
+    onError(error, variables, context) {
+      setLoadingModal(false);
+    },
+    onSuccess(data, variables, context) {
+      setLoadingModal(false);
+      if (data === "image-change-success") {
+        return !toastMsg.isActive("image-change-success")
+          ? toastMsg({
+              title: "이미지 변경 완료",
+              id: "image-change-success",
+              description: "이미지가 정상적으로 변경됐습니다.",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            })
+          : null;
+      }
+      queryClient.invalidateQueries(["storeOption"]);
+      queryClient.invalidateQueries(["currentStoreOption"]);
+    },
+  });
+
+  function changeStoreBackGroundImage(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setLoadingModal(true);
+    uploadImageMutataion.mutate(e.target.files![0]);
+  }
 
   if (currentStoreOption.data !== undefined)
     return (
@@ -261,26 +316,46 @@ const AdminStoreManageContainer: React.FC = () => {
                 </FormLabel>
                 <Box background="#8D8D8D" width="100%" height="12rem">
                   <Image
+                    id="storebg"
                     src={storeData.storebg}
                     objectFit="cover"
                     height="100%"
                     width="100%"
+                    loading="lazy"
                   />
                 </Box>
-                <Button
-                  type="button"
+                <Input
+                  type="file"
+                  id="file"
+                  accept="image/*"
+                  display="none"
+                  onChange={changeStoreBackGroundImage}
+                />
+                <Text
+                  as="label"
+                  htmlFor="file"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
                   variant="solid"
                   background="mainBlue"
                   padding="0.5rem auto"
                   fontSize="1.25rem"
+                  fontWeight="semibold"
                   borderRadius="0.25rem"
                   color="#ffffff"
                   width="100%"
                   height="3rem"
                   margin="1.5rem 0 1rem 0"
+                  cursor="pointer"
+                  transition="ease-in-out 0.2s"
+                  _hover={{
+                    textDecoration: "none",
+                    background: "#E2E8F0",
+                  }}
                 >
                   배경 이미지 변경
-                </Button>
+                </Text>
               </Flex>
 
               <Flex direction="column" padding="0.5rem 0" gap="1rem">
