@@ -1,11 +1,16 @@
 import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link as ReactRouterLink } from "react-router-dom";
 import CommonFooter from "../../common/commonfooter";
 
 const MainContainer: React.FC = () => {
   return (
-    <Flex as="section" direction="column">
+    <Flex
+      as="section"
+      direction="column"
+      maxWidth="40rem"
+      justify="center"
+      margin="0 auto"
+    >
       <Flex
         direction="row"
         justify="space-between"
@@ -16,6 +21,7 @@ const MainContainer: React.FC = () => {
         width="100%"
         border="1px solid gray"
         top="0"
+        maxWidth="40rem"
       >
         <Image src={process.env.PUBLIC_URL + "logoheader.png"} width="100px" />
         <Link as={ReactRouterLink} to="/adminlogin" color="mainBlue">
@@ -165,7 +171,7 @@ const MainContainer: React.FC = () => {
               shadow="dark-lg"
             >
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Finfo_image.png?alt=media"
+                src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fmainpage_image.png?alt=media"
                 height="full"
                 objectFit="cover"
                 shadow="dark-lg"
