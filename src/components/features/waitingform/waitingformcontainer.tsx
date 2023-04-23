@@ -287,6 +287,7 @@ const WaitingFormContainer: React.FC = () => {
             objectFit="cover"
             height="100%"
             width="100%"
+            loading="lazy"
           />
         </Box>
         <CheckDataModal
