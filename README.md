@@ -4,13 +4,15 @@
 
 ### **📝 프로젝트 소개**
 
+---
+
 > **맛집 줄서기, 이제 가게 앞에서 기다리지 마세요!**
 
-<img src="https://github.com/DrunkenNeoguri/WaitSecond/blob/main/public/logo800x400.png?raw=true" alt="waitsecond 로고">
+<img src="https://github.com/DrunkenNeoguri/WaitSecond/blob/main/public/logo800x400.png?raw=true" alt="waitsecond 로고"  width="70%" height="70%">
 
 웨잇세컨드는 음식점, 카페 등에서 대기 손님을 관리해주는 웨이팅 관리 웹 사이트입니다.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image1.png?alt=media" alt="waitsecond web pages">
+<img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image1.png?alt=media" alt="waitsecond web pages"  width="70%" height="70%">
 
 - 대기 손님은 QR 코드를 통해 접근한 웹 페이지로 개인 정보를 입력 후 웨이팅을 등록합니다.
 - 관리자는 전용 페이지를 통해 등록된 웨이팅 리스트를 관리합니다.
@@ -20,6 +22,8 @@
 웨잇세컨드를 한 번 이용해보세요!
 
 ### **📃 주요 페이지 및 기능**
+
+---
 
 - 고객 페이지
 
@@ -40,9 +44,13 @@
 
 ### **🖼️ 프로젝트 시연**
 
+---
+
 (현재 영상 제작중입니다.)
 
 ### **🏗️ 기술 스택 / 아키텍쳐**
+
+---
 
 - **Base**
   - HTML5, CSS3, JavaScript, [TypeScript](https://www.typescriptlang.org/)
@@ -57,7 +65,9 @@
   - [Firebase Auth](https://firebase.google.com/?hl=ko)
   - [vercel](https://vercel.com/)
 
-### ℹ️ 프로젝트
+### **ℹ️ 프로젝트 **
+
+---
 
 👨‍💻 **개발 정보**
 
