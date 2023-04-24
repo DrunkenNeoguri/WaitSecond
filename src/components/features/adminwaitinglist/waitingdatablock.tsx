@@ -7,6 +7,7 @@ import {
   Text,
   useBreakpointValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faPhone, faUserPen } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +17,7 @@ import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { StoreOption, UserData } from "../../../utils/typealies";
 import AdminRegisterModal from "./adminregistermodal";
+import * as Sentry from "@sentry/react";
 
 const WaitingDataBlock: React.FC<{
   admin: string;
@@ -27,6 +29,7 @@ const WaitingDataBlock: React.FC<{
   const [openState, setOpenState] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toastMsg = useToast();
 
   // 등록된 손님 정보 지우기
   const db = getFirestore();
@@ -40,12 +43,29 @@ const WaitingDataBlock: React.FC<{
       .then((data) => {
         return "delete-success";
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return changeWaitingState;
   };
 
   const enteredMutation = useMutation(chnageGuestEnterOption, {
-    onError: (error, variable) => console.log(error),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
       if (data === "delete-success") {

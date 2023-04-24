@@ -41,6 +41,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import * as Sentry from "@sentry/react";
 
 const AdminLoginContainer = () => {
   useTitle("로그인 ::: 웨잇세컨드");
@@ -129,13 +130,30 @@ const AdminLoginContainer = () => {
           return "login-success";
         }
       })
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
 
     return loginState;
   };
 
   const loginMutation = useMutation(loginAccount, {
-    onError: (error, variable) => console.log(error),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       if (data === "login-success") {
         if (saveEmailState === true) {
