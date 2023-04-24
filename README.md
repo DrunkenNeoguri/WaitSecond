@@ -4,36 +4,34 @@
 
 ### **📝 프로젝트 소개**
 
-웨잇세컨드는 음식점, 카페 등에서 대기 손님을 관리해주는 웨이팅 관리 웹 사이트입니다.
+> **맛집 줄서기, 이제 가게 앞에서 기다리지 마세요!**
+
 <img src="https://github.com/DrunkenNeoguri/WaitSecond/blob/main/public/logo800x400.png?raw=true" alt="waitsecond 로고">
+
+웨잇세컨드는 음식점, 카페 등에서 대기 손님을 관리해주는 웨이팅 관리 웹 사이트입니다.
+
+<img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image1.png?alt=media" alt="waitsecond web pages">
 
 - 대기 손님은 QR 코드를 통해 접근한 웹 페이지로 개인 정보를 입력 후 웨이팅을 등록합니다.
 - 관리자는 전용 페이지를 통해 등록된 웨이팅 리스트를 관리합니다.
-
-> **맛집 줄서기, 이제 가게 앞에서 기다리지 마세요!**
-
-웨잇세컨드는 음식점이나 카페 등에서 발생하는 대기열을 관리하기 위해 만든 웨이팅 관리 웹 사이트입니다.
-<img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image1.png?alt=media" alt="waitsecond web pages">
-
-대기 손님은 가게 안에 배치된 QR 코드를 통해서 간단한 인적 사항만을 입력하여 웨이팅을 등록할 수 있으며, 관리자는 가게 내에 있는 포스기나 태블릿, 또는 핸드폰을 통해 현재 가게에 있는 웨이팅 리스트를 확인하고 관리할 수 있습니다.
 
 웨이팅 관리용 태블릿을 설치하기 어려운 환경이라면?
 비용적인 부담으로 섣불리 웨이팅 시스템을 설치하기가 부담스럽다면?
 웨잇세컨드를 한 번 이용해보세요!
 
->
-
 ### **📃 주요 페이지 및 기능**
 
 - 고객 페이지
-  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image2.png?alt=media">
+
+  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image2.png?alt=media" width="70%" height="70%">
 
   - 필수 정보만 입력하면 매장 대기열에 등록할 수 있습니다.
   - 기다리는 중, 수정되어야 할 사항이 있다면 수정 버튼을 통해서 언제든지 등록한 정보를 수정할 수 있습니다.
-  - 내 정보 페이지를 벗어나도, 매장 페이지에서 연락처만 입력하면 언제든 내 대기 정보를 확인할 수 있습니다.
+  - 내 정보 페이지를 벗어나도, 매장 페이지에서 연락처만 입력gi하면 언제든 내 대기 정보를 확인할 수 있습니다.
 
 - 관리자 페이지
-  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image3.png?alt=media">
+
+  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image3.png?alt=media"  width="70%" height="70%">
 
   - 현재 대기열을 확인하고 대기 손님에게 전화를 걸거나 대기 정보를 등록, 수정, 입장 완료 처리할 수 있습니다.
   - 기다리는 고객들의 정보와 필요에 따라 추가할 수 있는 매장 옵션 등, 매장 관리 페이지에서 내 매장과 관련한 사항을 설정할 수 있습니다.
