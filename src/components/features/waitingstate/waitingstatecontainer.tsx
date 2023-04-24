@@ -15,6 +15,7 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -25,7 +26,7 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useRouteLoaderData } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
@@ -33,6 +34,7 @@ import AdminRegisterModal from "../adminwaitinglist/adminregistermodal";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 import ErrorPageContainer from "../errorpage/errorpagecontainer";
 import { RepeatIcon } from "@chakra-ui/icons";
+import * as Sentry from "@sentry/react";
 
 const WaitingStateContainer = () => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
@@ -41,6 +43,7 @@ const WaitingStateContainer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { storeuid, telnumber } = useParams();
   const navigate = useNavigate();
+  const toastMsg = useToast();
 
   const db = getFirestore();
   const waitingCol = query(collection(db, `storeList/${storeuid}/waitingList`));
@@ -108,12 +111,29 @@ const WaitingStateContainer = () => {
       doc(db, `storeList/${storeuid}/waitingList`, `${currentUserData.uid}`)
     )
       .then((data) => true)
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return deleteWaitingState;
   };
 
   const deleteMutation = useMutation(deleteWaitingQueryFn, {
-    onError: (error, variable) => console.log(error),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
       navigate(`/store/${storeuid}`);

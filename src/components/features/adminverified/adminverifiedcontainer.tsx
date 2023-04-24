@@ -21,6 +21,7 @@ import { AdminData, EventObject } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
 import { CommonInput } from "../../common/commoninput";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import * as Sentry from "@sentry/react";
 
 const AdminVerifiedContainer = () => {
   const initialState = new AdminData("", "", "");
@@ -65,7 +66,10 @@ const AdminVerifiedContainer = () => {
         confirmPasswordReset(firebaseAuth, actionCode!, userData.password!)
       )
       .then((data) => "")
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return resetPasswordState;
   };
 
@@ -74,7 +78,21 @@ const AdminVerifiedContainer = () => {
       setLoadingState(false);
       setChangeState(true);
     },
-    onError: (error) => console.log(error),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
   });
 
   const inputPasswordData = (e: React.ChangeEvent) => {

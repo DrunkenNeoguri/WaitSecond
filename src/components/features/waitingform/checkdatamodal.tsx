@@ -11,12 +11,14 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  useToast,
 } from "@chakra-ui/react";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { useRecoilValue } from "recoil";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
+import * as Sentry from "@sentry/react";
 
 const CheckDataModal: React.FC<{
   userInfo: UserData;
@@ -27,6 +29,7 @@ const CheckDataModal: React.FC<{
 }> = ({ userInfo, isOpen, onClose, custom, loadingState }) => {
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const [registerState, setRegisterState] = useState(false);
+  const toastMsg = useToast();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -45,12 +48,28 @@ const CheckDataModal: React.FC<{
       sendUserData
     )
       .then((data) => data)
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return addWaitingData;
   };
 
   const waitingMutation = useMutation(sendWaitingDataToDatabase, {
-    onError: (error, variable) => console.log(error, variable),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       queryClient.invalidateQueries(["waitingList"]);
       queryClient.invalidateQueries(["storeOption"]);
