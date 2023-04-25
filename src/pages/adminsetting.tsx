@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonHeader from "../components/common/commonheader";
 import AdminChangePasswordContainer from "../components/features/adminsetting/adminchangepasswordcontainer";
