@@ -32,6 +32,7 @@ import {
   tokenExpirationCheck,
 } from "../../../utils/verifiedcheck";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import * as Sentry from "@sentry/react";
 
 const AdminChangePasswordContainer: React.FC = () => {
   useTitle("비밀번호 변경 ::: 웨잇세컨드");
@@ -119,12 +120,29 @@ const AdminChangePasswordContainer: React.FC = () => {
           () => "change-success"
         )
       )
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return withdrawalState;
   };
 
   const changePasswordMutation = useMutation(changePasswordAccount, {
-    onError: (error, variable) => console.log(error),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
       if (data === "change-success") {

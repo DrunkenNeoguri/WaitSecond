@@ -30,6 +30,7 @@ import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
 import CommonSwitchButton from "../../common/commonswitchbutton";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
+import * as Sentry from "@sentry/react";
 
 const AdminStoreManageContainer: React.FC = () => {
   useTitle("매장 관리 ::: 웨잇세컨드");
@@ -179,6 +180,7 @@ const AdminStoreManageContainer: React.FC = () => {
       if (data !== undefined) {
         setStoreData(data.data);
         setDocumentUID(data.uid);
+        setLoadingState(false);
         setLoadingModal(false);
       }
     },
@@ -191,12 +193,29 @@ const AdminStoreManageContainer: React.FC = () => {
       storeData
     )
       .then((data) => "option-setting-success")
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return updateDataState;
   };
 
   const updateStoreDataMutation = useMutation(updateStoreDataToDatabase, {
-    onError: (error, variable) => setLoadingState(false),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       setLoadingState(false);
       if (data === "option-setting-success") {
@@ -218,6 +237,7 @@ const AdminStoreManageContainer: React.FC = () => {
 
   const submitUserWaitingData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     updateStoreDataMutation.mutate(storeData);
   };
 
@@ -240,7 +260,10 @@ const AdminStoreManageContainer: React.FC = () => {
           });
           return "image-change-success";
         })
-        .catch((error) => error.message)
+        .catch((error) => {
+          Sentry.captureException(error.message);
+          return error.message;
+        })
     );
     return sendData;
   };

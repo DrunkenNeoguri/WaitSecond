@@ -32,6 +32,7 @@ import { CommonInput } from "../../common/commoninput";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import CommonCustomOption from "../../common/commoncustomoption";
+import * as Sentry from "@sentry/react";
 
 const AdminRegisterModal: React.FC<{
   isOpen: boolean;
@@ -280,7 +281,10 @@ const AdminRegisterModal: React.FC<{
         .then((data) => {
           return "modify-success";
         })
-        .catch((error) => console.log(error.message));
+        .catch((error) => {
+          Sentry.captureException(error.message);
+          return error.message;
+        });
       return modifyWaitingData;
     } else if (modify === false) {
       const addWaitingData = await addDoc(
@@ -288,13 +292,30 @@ const AdminRegisterModal: React.FC<{
         sendUserData
       )
         .then((data) => "register-success")
-        .catch((error) => error.message);
+        .catch((error) => {
+          Sentry.captureException(error.message);
+          return error.message;
+        });
       return addWaitingData;
     }
   };
 
   const waitingMutation = useMutation(sendWaitingDataToDatabase, {
-    onError: (error, variable) => setLoadingState(false),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      setLoadingState(false);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data, variable, context) => {
       if (data === "register-success" || data === "modify-success") {
         setLoadingState(false);

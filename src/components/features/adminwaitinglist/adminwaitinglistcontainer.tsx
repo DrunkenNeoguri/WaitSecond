@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import CommonLoadingModal from "../../common/commonloadingmodal";
 import CommonBlankBox from "../../common/commonblankbox";
 import { useMetaTag, useTitle } from "../../../utils/customhook";
+import * as Sentry from "@sentry/react";
 
 const AdminWaitingListContainer = () => {
   useTitle("현재 대기 상황 ::: 웨잇세컨드");
@@ -169,12 +170,28 @@ const AdminWaitingListContainer = () => {
       { ...currentStoreOption, waitingState: currentState }
     )
       .then((data) => "change-setting-success")
-      .catch((error) => error.message);
+      .catch((error) => {
+        Sentry.captureException(error.message);
+        return error.message;
+      });
     return updateDataState;
   };
 
   const receiveMutation = useMutation(changeWaitingReceiveSetting, {
-    onError: (error, variable) => setReceiveState(false),
+    onError: (error, variable) => {
+      Sentry.captureException(error);
+      return !toastMsg.isActive("error-unknown")
+        ? toastMsg({
+            title: "알 수 없는 에러",
+            id: "error-unknown",
+            description:
+              "현재 알 수 없는 문제가 발생해 절차가 진행되지 않았습니다. 잠시 후 다시 시도해주세요.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          })
+        : null;
+    },
     onSuccess: (data) => {
       if (data === "change-setting-success") {
         setReceiveState(false);

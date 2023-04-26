@@ -20,7 +20,6 @@ const CommonQRCodeModal: React.FC<{
 
   const downloadQRCodeImage = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log(loginStateCheck());
     const linkURL = `https://api.qrserver.com/v1/create-qr-code/?data=https://waitsecond.vercel.app/store/${loginStateCheck()}&size=800x800`;
     fetch(linkURL, {
       method: "GET",
