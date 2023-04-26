@@ -180,6 +180,7 @@ const AdminStoreManageContainer: React.FC = () => {
       if (data !== undefined) {
         setStoreData(data.data);
         setDocumentUID(data.uid);
+        setLoadingState(false);
         setLoadingModal(false);
       }
     },
@@ -236,6 +237,7 @@ const AdminStoreManageContainer: React.FC = () => {
 
   const submitUserWaitingData = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingState(true);
     updateStoreDataMutation.mutate(storeData);
   };
 
