@@ -218,18 +218,20 @@ const WaitingFormContainer: React.FC = () => {
   const submitUserData = (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingState(true);
-    if (!agreeState) {
-      setLoadingState(false);
-      return !toastMsg.isActive("error-infoCheck")
-        ? toastMsg({
-            title: "참고 사항 확인",
-            id: "error-infoCheck",
-            description: "참고 사항을 읽어주시고 확인란에 체크해주세요.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          })
-        : undefined;
+    if (storeOption.data?.storeInfo.trim() !== "") {
+      if (!agreeState) {
+        setLoadingState(false);
+        return !toastMsg.isActive("error-infoCheck")
+          ? toastMsg({
+              title: "참고 사항 확인",
+              id: "error-infoCheck",
+              description: "참고 사항을 읽어주시고 확인란에 체크해주세요.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : undefined;
+      }
     }
 
     if (userData.name.trim() === "") {
@@ -370,8 +372,68 @@ const WaitingFormContainer: React.FC = () => {
                       : `${waitingList.data.length} 팀`}
                   </Text>
                 </Flex>
+
                 <form onSubmit={submitUserData}>
                   <FormControl>
+                    {storeOption.data.storeInfo.trim() === "" ? (
+                      <></>
+                    ) : (
+                      <Flex direction="column">
+                        <Flex direction="column" align="center" margin="1rem 0">
+                          <FontAwesomeIcon
+                            icon={faBell}
+                            style={{
+                              color: "orange",
+                              fontSize: visionState ? "1.625rem" : "1.5rem",
+                            }}
+                          />
+                          <Text
+                            margin="0.5rem"
+                            fontSize={visionState ? "1.625rem" : "1rem"}
+                            textAlign="center"
+                            color="mainBlue"
+                            fontWeight="bold"
+                          >
+                            매장에서 알립니다!
+                          </Text>
+                        </Flex>
+                        <Text
+                          background="#F9F9F9"
+                          borderRadius="0.25rem"
+                          fontSize={visionState ? "1.625rem" : "0.75rem"}
+                          letterSpacing="-0.05rem"
+                          lineHeight={visionState ? "2.25rem" : "1rem"}
+                          padding="0.5rem 1rem"
+                          whiteSpace="pre-wrap"
+                          textAlign="left"
+                          fontWeight="semibold"
+                        >
+                          {storeOption.data.storeInfo}
+                        </Text>
+                        <Flex
+                          direction="row"
+                          align="center"
+                          justifyContent="flex-end"
+                          margin="0.5rem 0"
+                        >
+                          <Checkbox
+                            size={visionState ? "lg" : "md"}
+                            id="agree"
+                            onChange={changeAgreeState}
+                            isChecked={!agreeState ? false : true}
+                            variant="customBlue"
+                          />
+                          <FormLabel
+                            htmlFor="agree"
+                            fontSize={visionState ? "1.625rem" : "0.75rem"}
+                            margin="0 0.5rem"
+                            cursor="pointer"
+                          >
+                            확인했습니다.
+                          </FormLabel>
+                        </Flex>
+                      </Flex>
+                    )}
                     <Box
                       display="block"
                       background="#d4d4d4"

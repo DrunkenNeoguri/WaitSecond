@@ -107,6 +107,7 @@ export type StoreOption = {
   uid: string;
   storeName: string;
   storebg: string;
+  storeInfo: string;
   waitingState: boolean;
   maximumTeamMemberCount: number;
   maximumWaitingTeamCount: number;

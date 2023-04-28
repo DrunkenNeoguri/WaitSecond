@@ -9,6 +9,7 @@ import {
   Image,
   Input,
   Text,
+  Textarea,
   useToast,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
@@ -50,6 +51,7 @@ const AdminStoreManageContainer: React.FC = () => {
     uid: "",
     storeName: "",
     storebg: "https://via.placeholder.com/640x480",
+    storeInfo: "",
     waitingState: false,
     maximumTeamMemberCount: 1,
     maximumWaitingTeamCount: 1,
@@ -333,7 +335,7 @@ const AdminStoreManageContainer: React.FC = () => {
                   fontSize="0.75rem"
                 />
               </Flex>
-              <Flex direction="column" padding="0.5rem 0 1.5rem 0">
+              <Flex direction="column" padding="0.5rem 0 .5rem 0">
                 <FormLabel fontSize="1rem" fontWeight="semibold">
                   배경 이미지
                 </FormLabel>
@@ -345,6 +347,7 @@ const AdminStoreManageContainer: React.FC = () => {
                     height="100%"
                     width="100%"
                     loading="lazy"
+                    alt=""
                   />
                 </Box>
                 <Input
@@ -369,7 +372,7 @@ const AdminStoreManageContainer: React.FC = () => {
                   color="#ffffff"
                   width="100%"
                   height="3rem"
-                  margin="1.5rem 0 1rem 0"
+                  margin="1rem 0 1rem 0"
                   cursor="pointer"
                   transition="ease-in-out 0.2s"
                   _hover={{
@@ -379,6 +382,26 @@ const AdminStoreManageContainer: React.FC = () => {
                 >
                   배경 이미지 변경
                 </Text>
+              </Flex>
+
+              <Flex direction="column" padding="0.5rem 0">
+                <FormLabel htmlFor="storeInfo" fontWeight="semibold">
+                  매장 안내 사항
+                </FormLabel>
+                <Textarea
+                  id="storeInfo"
+                  value={storeData.storeInfo}
+                  onChange={inputStoreOptionData}
+                  placeholder="최대 200글자까지 입력 가능"
+                  resize="none"
+                  maxLength={200}
+                  background="#F9F9F9"
+                  borderColor="#B4B4B4"
+                  size="md"
+                  width="100%"
+                  fontSize="1rem"
+                  marginBottom="1rem"
+                />
               </Flex>
 
               <Flex direction="column" padding="0.5rem 0" gap="1rem">
