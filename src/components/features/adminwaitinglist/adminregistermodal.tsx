@@ -28,7 +28,7 @@ import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { telRegex } from "../../../utils/reqlist";
 import { EventObject, UserData } from "../../../utils/typealies";
 import CommonErrorMsg from "../../common/commonerrormsg";
-import { CommonInput } from "../../common/commoninput";
+import { CommonInput, CommonTelInput } from "../../common/commoninput";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import CommonCustomOption from "../../common/commoncustomoption";
@@ -54,6 +54,7 @@ const AdminRegisterModal: React.FC<{
     false,
     "",
     "",
+    false,
     0,
     0,
     false,
@@ -138,7 +139,32 @@ const AdminRegisterModal: React.FC<{
   // 데이터 입력 정보 반영하기
   const changeCheckState = (e: React.ChangeEvent, state: boolean) => {
     e.preventDefault();
-    setUserData({ ...userData, [e.currentTarget.id]: !state });
+    if (e.currentTarget.id === "nonexistent") {
+      if (!userData.nonexistent) {
+        const nowTime = `${
+          Number(new Date().getMinutes()) < 10
+            ? "0" + new Date().getMinutes()
+            : new Date().getMinutes()
+        }${
+          Number(new Date().getSeconds()) < 10
+            ? "0" + new Date().getSeconds()
+            : new Date().getSeconds()
+        }`;
+        setUserData({
+          ...userData,
+          [e.currentTarget.id]: !state,
+          tel: nowTime,
+        });
+      } else {
+        setUserData({
+          ...userData,
+          [e.currentTarget.id]: !state,
+          tel: "",
+        });
+      }
+    } else {
+      setUserData({ ...userData, [e.currentTarget.id]: !state });
+    }
   };
 
   const inputUserText = (e: React.ChangeEvent) => {
@@ -215,18 +241,20 @@ const AdminRegisterModal: React.FC<{
         : null;
     }
 
-    if (userData.tel === "" || telRegex.test(userData.tel) === false) {
-      setLoadingState(false);
-      return !toastMsg.isActive("error-telCheck")
-        ? toastMsg({
-            title: "연락처 확인",
-            id: "error-telCheck",
-            description: "연락처를 제대로 입력했는지 확인해주세요.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          })
-        : null;
+    if (userData.nonexistent !== true) {
+      if (userData.tel === "" || !telRegex.test(userData.tel)) {
+        setLoadingState(false);
+        return !toastMsg.isActive("error-telCheck")
+          ? toastMsg({
+              title: "연락처 확인",
+              id: "error-telCheck",
+              description: "연락처를 제대로 입력했는지 확인해주세요.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : undefined;
+      }
     }
 
     if (userData.child === 0 && userData.adult === 0) {
@@ -379,17 +407,36 @@ const AdminRegisterModal: React.FC<{
                 inputCheck={inputCheck}
                 fontSize={visionState ? "1.625rem" : "0.75rem"}
               />
-              <CommonInput
-                id="tel"
-                title="연락처"
-                type="tel"
-                value={userData.tel}
-                onChange={inputUserText}
-                margin="0.25rem 0"
-                placeholder="'-' 빼고 입력해주세요."
-                isDisabled={modify ? true : false}
-                fontSize={visionState ? "1.625rem" : "1rem"}
-              />
+              {modify ? (
+                <CommonInput
+                  id="tel"
+                  title={userData.nonexistent! ? "대기번호" : "연락처"}
+                  type="tel"
+                  value={userData.tel}
+                  margin="0.25rem 0"
+                  isDisabled={true}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                />
+              ) : (
+                <CommonTelInput
+                  id="tel"
+                  title={userData.nonexistent ? "대기번호" : "연락처"}
+                  type="tel"
+                  value={userData.tel}
+                  onChange={inputUserText}
+                  margin="0.25rem 0"
+                  placeholder={
+                    userData.nonexistent ? "" : "'-' 빼고 입력해주세요."
+                  }
+                  isDisabled={userData.nonexistent ? true : false}
+                  fontSize={visionState ? "1.625rem" : "1rem"}
+                  holderSize={visionState ? "1.625rem" : "0.75rem"}
+                  checkBoxFunc={(e: React.ChangeEvent) =>
+                    changeCheckState(e, userData.nonexistent)
+                  }
+                  checkBoxIsChecked={userData.nonexistent}
+                />
+              )}
               <CommonErrorMsg
                 type="tel"
                 value1={userData.tel}
@@ -403,7 +450,7 @@ const AdminRegisterModal: React.FC<{
                   margin="0.5rem 0"
                   fontSize={visionState ? "1.625rem" : "1rem"}
                 >
-                  인원을 선택하세요.{visionState ? <br /> : " "}(최대 인원:{" "}
+                  입장 인원{visionState ? <br /> : " "}(최대 인원:{" "}
                   {data?.maximumTeamMemberCount}
                   명)
                 </Text>

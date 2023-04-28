@@ -26,7 +26,7 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore";
-import { useNavigate, useParams, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { lowVisionState } from "../../../modules/atoms/atoms";
 import { StoreOption, UserData } from "../../../utils/typealies";
@@ -340,9 +340,7 @@ const WaitingStateContainer = () => {
               letterSpacing="-0.05rem"
               padding="1rem 0"
             >
-              {storeOption.data === undefined
-                ? "불러오는중불러오는중불러오는중불러오는중"
-                : storeOption.data.storeName}
+              {storeOption.data === undefined ? "" : storeOption.data.storeName}
             </Heading>
             <Flex
               direction="row"
@@ -426,7 +424,7 @@ const WaitingStateContainer = () => {
                   width="30%"
                   margin="0"
                 >
-                  연락처
+                  {currentUserData.nonexistent ? "대기번호" : "연락처"}
                 </FormLabel>
                 <Text
                   fontSize={visionState === false ? "1rem" : "1.625rem"}
