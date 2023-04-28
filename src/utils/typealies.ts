@@ -18,7 +18,11 @@ export type TypedCommonInput = {
   inputWidth?: string;
   isDisabled?: boolean;
   holderSize?: string;
-  onChange: (e: React.ChangeEvent) => void;
+  checkBoxState?: boolean;
+  checkBoxId?: string;
+  checkBoxFunc?: (e: React.ChangeEvent) => void;
+  checkBoxIsChecked?: boolean;
+  onChange?: (e: React.ChangeEvent) => void;
 };
 
 // feature type
@@ -54,6 +58,7 @@ export class UserData {
   isentered: boolean;
   name: string;
   tel: string;
+  nonexistent: boolean;
   adult: number;
   child: number;
   pet?: boolean;
@@ -69,6 +74,7 @@ export class UserData {
     isentered: boolean,
     name: string,
     tel: string,
+    nonexistent: boolean,
     adult: number,
     child: number,
     pet: boolean,
@@ -83,6 +89,7 @@ export class UserData {
     this.isentered = isentered;
     this.name = name;
     this.tel = tel;
+    this.nonexistent = nonexistent;
     this.adult = adult;
     this.child = child;
     this.pet = pet;

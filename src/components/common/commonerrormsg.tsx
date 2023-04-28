@@ -5,6 +5,7 @@ const CommonErrorMsg: React.FC<{
   type: string;
   value1: string;
   value2?: string;
+  state?: boolean;
   inputCheck?: {
     email?: boolean;
     password?: boolean;
@@ -16,7 +17,7 @@ const CommonErrorMsg: React.FC<{
     custom?: boolean;
   };
   fontSize: string;
-}> = ({ type, value1, value2, inputCheck, fontSize }) => {
+}> = ({ type, value1, value2, state, inputCheck, fontSize }) => {
   let errorMsg = "　";
 
   switch (type) {
@@ -72,7 +73,8 @@ const CommonErrorMsg: React.FC<{
     case "tel": {
       if (!inputCheck?.tel) errorMsg = "　";
       else if (value1.trim() === "")
-        errorMsg = "연락처를 빈칸으로 둘 수 없습니다.";
+        errorMsg =
+          `${state ? "대기번호" : "연락처"}` + "를 빈칸으로 둘 수 없습니다.";
       break;
     }
     case "custom": {

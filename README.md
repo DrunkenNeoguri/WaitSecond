@@ -27,7 +27,7 @@
 
 - 고객 페이지
 
-  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image2.png?alt=media" width="70%" height="70%">
+  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image3.png?alt=media" width="70%" height="70%">
 
   - 필수 정보만 입력하면 매장 대기열에 등록할 수 있습니다.
   - 기다리는 중, 수정되어야 할 사항이 있다면 수정 버튼을 통해서 언제든지 등록한 정보를 수정할 수 있습니다.
@@ -35,7 +35,7 @@
 
 - 관리자 페이지
 
-  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image3.png?alt=media"  width="70%" height="70%">
+  <img src="https://firebasestorage.googleapis.com/v0/b/waitsecond-2306b.appspot.com/o/images%2Fintroduce_image2.png?alt=media"  width="70%" height="70%">
 
   - 현재 대기열을 확인하고 대기 손님에게 전화를 걸거나 대기 정보를 등록, 수정, 입장 완료 처리할 수 있습니다.
   - 기다리는 고객들의 정보와 필요에 따라 추가할 수 있는 매장 옵션 등, 매장 관리 페이지에서 내 매장과 관련한 사항을 설정할 수 있습니다.

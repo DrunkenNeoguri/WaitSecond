@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EventObject, StoreOption, UserData } from "../../../utils/typealies";
-import { CommonInput } from "../../common/commoninput";
+import { CommonInput, CommonTelInput } from "../../common/commoninput";
 import { faBell, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { telRegex } from "../../../utils/reqlist";
 import CheckDataModal from "./checkdatamodal";
@@ -35,6 +35,7 @@ const WaitingFormContainer: React.FC = () => {
     false,
     "",
     "",
+    false,
     0,
     0,
     false,
@@ -132,7 +133,32 @@ const WaitingFormContainer: React.FC = () => {
   // Func - change state when user clicked checkbox
   const changeCheckState = (e: React.ChangeEvent, state: boolean) => {
     e.preventDefault();
-    setUserData({ ...userData, [e.currentTarget.id]: !state });
+    if (e.currentTarget.id === "nonexistent") {
+      if (!userData.nonexistent) {
+        const nowTime = `${
+          Number(new Date().getMinutes()) < 10
+            ? "0" + new Date().getMinutes()
+            : new Date().getMinutes()
+        }${
+          Number(new Date().getSeconds()) < 10
+            ? "0" + new Date().getSeconds()
+            : new Date().getSeconds()
+        }`;
+        setUserData({
+          ...userData,
+          [e.currentTarget.id]: !state,
+          tel: nowTime,
+        });
+      } else {
+        setUserData({
+          ...userData,
+          [e.currentTarget.id]: !state,
+          tel: "",
+        });
+      }
+    } else {
+      setUserData({ ...userData, [e.currentTarget.id]: !state });
+    }
   };
 
   // Func - change state when user clicked member count button
@@ -220,18 +246,20 @@ const WaitingFormContainer: React.FC = () => {
         : undefined;
     }
 
-    if (userData.tel === "" || !telRegex.test(userData.tel)) {
-      setLoadingState(false);
-      return !toastMsg.isActive("error-telCheck")
-        ? toastMsg({
-            title: "연락처 확인",
-            id: "error-telCheck",
-            description: "연락처를 제대로 입력했는지 확인해주세요.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          })
-        : undefined;
+    if (userData.nonexistent !== true) {
+      if (userData.tel === "" || !telRegex.test(userData.tel)) {
+        setLoadingState(false);
+        return !toastMsg.isActive("error-telCheck")
+          ? toastMsg({
+              title: "연락처 확인",
+              id: "error-telCheck",
+              description: "연락처를 제대로 입력했는지 확인해주세요.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            })
+          : undefined;
+      }
     }
 
     if (userData.child === 0 && userData.adult === 0) {
@@ -316,9 +344,7 @@ const WaitingFormContainer: React.FC = () => {
             letterSpacing="-0.05rem"
             padding="1rem 0"
           >
-            {storeOption.data === undefined
-              ? "불러오는중불러오는중불러오는중불러오는중"
-              : storeOption.data.storeName}
+            {storeOption.data === undefined ? "" : storeOption.data.storeName}
           </Heading>
           {storeOption.data?.waitingState ? (
             storeOption.data.maximumWaitingTeamCount <=
@@ -346,80 +372,6 @@ const WaitingFormContainer: React.FC = () => {
                 </Flex>
                 <form onSubmit={submitUserData}>
                   <FormControl>
-                    <Flex direction="column">
-                      <Flex direction="column" align="center" margin="1rem 0">
-                        <FontAwesomeIcon
-                          icon={faBell}
-                          style={{
-                            color: "orange",
-                            fontSize: visionState ? "1.625rem" : "1.5rem",
-                          }}
-                        />
-                        <Text
-                          margin="0.5rem"
-                          fontSize={visionState ? "1.625rem" : "1rem"}
-                          textAlign="center"
-                          color="mainBlue"
-                          fontWeight="bold"
-                        >
-                          참고해주세요!
-                        </Text>
-                      </Flex>
-                      <Text
-                        background="#F9F9F9"
-                        borderRadius="0.25rem"
-                        fontSize={visionState ? "1.625rem" : "0.75rem"}
-                        letterSpacing="-0.05rem"
-                        lineHeight={visionState ? "2.25rem" : "1.5rem"}
-                        padding="0.5rem"
-                        whiteSpace="pre-wrap"
-                        textAlign="left"
-                      >
-                        대기 등록을 위해 성함과 연락처를 수집하고 있습니다.
-                        {visionState ? (
-                          <>
-                            <br />
-                            <br />
-                          </>
-                        ) : (
-                          <br />
-                        )}
-                        수집한 정보는 대기 취소 버튼을 누르시거나, 입장 후
-                        관리자가 입장 완료 버튼을 누르면 삭제됩니다.
-                        {visionState ? (
-                          <>
-                            <br />
-                            <br />
-                          </>
-                        ) : (
-                          <br />
-                        )}
-                        잘못된 정보를 입력하셨을 시, 매장 입장에 제한이 생길 수
-                        있습니다.
-                      </Text>
-                      <Flex
-                        direction="row"
-                        align="center"
-                        justifyContent="flex-end"
-                        margin="0.5rem 0"
-                      >
-                        <Checkbox
-                          size={visionState ? "lg" : "md"}
-                          id="agree"
-                          onChange={changeAgreeState}
-                          isChecked={!agreeState ? false : true}
-                          variant="customBlue"
-                        />
-                        <FormLabel
-                          htmlFor="agree"
-                          fontSize={visionState ? "1.625rem" : "0.75rem"}
-                          margin="0 0.5rem"
-                          cursor="pointer"
-                        >
-                          확인했습니다.
-                        </FormLabel>
-                      </Flex>
-                    </Flex>
                     <Box
                       display="block"
                       background="#d4d4d4"
@@ -444,16 +396,23 @@ const WaitingFormContainer: React.FC = () => {
                       inputCheck={inputCheck}
                       fontSize={visionState ? "1.5rem" : "0.75rem"}
                     />
-                    <CommonInput
+                    <CommonTelInput
                       id="tel"
-                      title="연락처"
+                      title={userData.nonexistent! ? "대기번호" : "연락처"}
                       type="tel"
                       value={userData.tel}
                       onChange={inputUserText}
                       margin="0.25rem 0"
-                      placeholder="'-' 빼고 입력해주세요."
+                      placeholder={
+                        userData.nonexistent! ? "" : "'-' 빼고 입력해주세요."
+                      }
+                      isDisabled={userData.nonexistent!}
                       fontSize={visionState ? "1.625rem" : "1rem"}
                       holderSize={visionState ? "1.625rem" : "0.75rem"}
+                      checkBoxFunc={(e: React.ChangeEvent) =>
+                        changeCheckState(e, userData.nonexistent!)
+                      }
+                      checkBoxIsChecked={userData.nonexistent!}
                     />
                     <CommonErrorMsg
                       type="tel"
@@ -468,8 +427,8 @@ const WaitingFormContainer: React.FC = () => {
                         margin="0.5rem 0"
                         fontSize={visionState ? "1.625rem" : "1rem"}
                       >
-                        인원을 선택하세요.{visionState ? <br /> : " "}(최대
-                        인원: {storeOption.data?.maximumTeamMemberCount}명)
+                        입장 인원{visionState ? <br /> : " "}(최대 인원:{" "}
+                        {storeOption.data?.maximumTeamMemberCount}명)
                       </Text>
                       <Flex
                         justify="space-between"

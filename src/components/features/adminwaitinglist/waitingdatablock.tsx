@@ -118,7 +118,12 @@ const WaitingDataBlock: React.FC<{
           >
             <Text fontWeight="bold">{userData.name}</Text> 님
             <Box height="1rem" width="2px" background="accentGray" />
-            <Text fontWeight="bold">{userTel}</Text>
+            <Text
+              fontWeight="bold"
+              color={userData.nonexistent ? "errorRed" : "#333333"}
+            >
+              {userTel}
+            </Text>
           </Flex>
           <Flex
             direction="row"
@@ -152,7 +157,7 @@ const WaitingDataBlock: React.FC<{
           </Flex>
         </Flex>
         <Flex direction="row" align="center" gap="1rem" margin="0 0.5rem">
-          {userData.isentered ? (
+          {userData.isentered || userData.nonexistent ? (
             <></>
           ) : (
             <Link
