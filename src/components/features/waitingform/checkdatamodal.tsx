@@ -131,6 +131,7 @@ const CheckDataModal: React.FC<{
                   onClose();
                   setRegisterState(false);
                   navigate(`/store/${storeuid}/waitingstate/${userInfo.tel}`);
+                  window.scrollTo(0, 0);
                 }}
                 fontSize={visionState === false ? "1.25rem" : "1.625rem"}
               >
