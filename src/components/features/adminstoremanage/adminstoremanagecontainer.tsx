@@ -315,7 +315,7 @@ const AdminStoreManageContainer: React.FC = () => {
             매장 관리
           </Heading>
           {currentStoreOption.data !== undefined}
-          <form onSubmit={submitUserWaitingData}>
+          <form>
             <FormControl>
               <Flex direction="column" padding="0.5rem 0">
                 <CommonInput
@@ -610,7 +610,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 </Flex>
               </Flex>
               <Button
-                type="submit"
+                type="button"
                 variant="solid"
                 background="mainBlue"
                 padding="0.5rem auto"
@@ -621,6 +621,7 @@ const AdminStoreManageContainer: React.FC = () => {
                 height="3rem"
                 margin="1.5rem 0 1rem 0"
                 isLoading={loadingState}
+                onClick={submitUserWaitingData}
               >
                 변경 사항 적용
               </Button>

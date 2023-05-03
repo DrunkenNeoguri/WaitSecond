@@ -23,7 +23,7 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginStateCheck } from "../../../utils/verifiedcheck";
 import { telRegex } from "../../../utils/reqlist";
 import { EventObject, UserData } from "../../../utils/typealies";
@@ -77,6 +77,14 @@ const AdminRegisterModal: React.FC<{
   const visionState = useRecoilValue<boolean>(lowVisionState);
   const toastMsg = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const inputComp = document.querySelector<HTMLInputElement>("#name");
+
+    if (inputComp) {
+      inputComp.blur();
+    }
+  }, []);
 
   // 현재 대기열 가져오기
   const getWaitingData = async () => {
@@ -389,7 +397,7 @@ const AdminRegisterModal: React.FC<{
           flexDirection="column"
           justifyContent="space-between"
         >
-          <form onSubmit={submitUserData}>
+          <form>
             <FormControl>
               <CommonInput
                 id="name"
@@ -636,7 +644,7 @@ const AdminRegisterModal: React.FC<{
               )}
               <Flex gap="1rem" margin="0.75rem 0">
                 <Button
-                  type="submit"
+                  type="button"
                   background="mainBlue"
                   fontSize={visionState ? "1.625rem" : "1rem"}
                   color="#FFFFFF"
@@ -646,6 +654,7 @@ const AdminRegisterModal: React.FC<{
                   width="100%"
                   isLoading={loadingState}
                   size="md"
+                  onClick={submitUserData}
                 >
                   {modify ? "정보 수정" : "대기 등록"}
                 </Button>

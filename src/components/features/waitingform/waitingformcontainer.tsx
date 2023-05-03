@@ -373,7 +373,7 @@ const WaitingFormContainer: React.FC = () => {
                   </Text>
                 </Flex>
 
-                <form onSubmit={submitUserData}>
+                <form>
                   <FormControl>
                     {storeOption.data.storeInfo.trim() === "" ? (
                       <></>
@@ -672,7 +672,7 @@ const WaitingFormContainer: React.FC = () => {
                       />
                     </Flex>
                     <Button
-                      type="submit"
+                      type="button"
                       background="mainBlue"
                       fontSize={visionState ? "1.625rem" : "1.5rem"}
                       color="#FFFFFF"
@@ -682,6 +682,7 @@ const WaitingFormContainer: React.FC = () => {
                       height="3rem"
                       width="100%"
                       isLoading={loadingState}
+                      onClick={submitUserData}
                     >
                       대기 등록
                     </Button>
